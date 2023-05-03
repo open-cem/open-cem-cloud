@@ -1,6 +1,9 @@
 package ch.fhnw.cemcloudbackend.controller;
 
+import ch.fhnw.cemcloudbackend.entity.Sensor;
 import ch.fhnw.cemcloudbackend.entity.User;
+import ch.fhnw.cemcloudbackend.model.set.Set;
+import ch.fhnw.cemcloudbackend.repository.SensorRepository;
 import ch.fhnw.cemcloudbackend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,7 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 
+import java.io.IOException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,6 +24,9 @@ public class HelloController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private SensorRepository sensorRepository;
 
     @GetMapping("/hello")
     public User getHello(JwtAuthenticationToken auth) {
@@ -35,8 +45,23 @@ public class HelloController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<String> handleFileUpload(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<Set> handleFileUpload(@RequestParam("file") MultipartFile file) throws IOException {
 
-        return new ResponseEntity<>(file.getOriginalFilename(), HttpStatus.OK);
+        if (!Objects.requireNonNull(file.getOriginalFilename()).endsWith(".yml")) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        Yaml yaml = new Yaml(new Constructor(Set.class));
+        Set set = yaml.load(file.getInputStream());
+
+        Sensor sensor = new Sensor();
+        sensor.setId(UUID.randomUUID());
+        sensor.setName(set.getSensors()[0].getName());
+        sensor.setManufacturer(set.getSensors()[0].getManufacturer());
+        sensor.setModel(set.getSensors()[0].getModel());
+
+        sensorRepository.save(sensor);
+
+        return new ResponseEntity<>(set, HttpStatus.OK);
     }
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { store } from './app/store';
-import App from './app/App';
+import App from './App';
 import './index.css';
 import { AuthProvider } from 'react-oidc-context';
 import { User } from 'oidc-client-ts';
