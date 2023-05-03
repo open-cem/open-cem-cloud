@@ -3,9 +3,11 @@ package ch.fhnw.cemcloudbackend.controller;
 import ch.fhnw.cemcloudbackend.entity.User;
 import ch.fhnw.cemcloudbackend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -30,5 +32,11 @@ public class HelloController {
         }
 
         return u;
+    }
+
+    @PostMapping("/upload")
+    public ResponseEntity<String> handleFileUpload(@RequestParam("file") MultipartFile file) {
+
+        return new ResponseEntity<>(file.getOriginalFilename(), HttpStatus.OK);
     }
 }
