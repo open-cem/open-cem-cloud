@@ -15,7 +15,7 @@ public class JWTSecurityConfig {
                 auth.anyRequest()
                         .authenticated())
                 .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
-
+        http.cors();
         return  http.build();
     }
 }
