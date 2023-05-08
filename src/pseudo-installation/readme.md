@@ -26,3 +26,8 @@ sequenceDiagram
     deactivate Configuration cloud
     deactivate Local Installation
 ```
+
+# Interface
+Die lokale Installation muss sich mit ``username`` und ``password`` bei einem MQTT Broker anmelden. Danach hört es auf das Topic ``installations/{serialnumber}/configuration`` dabei werden alle Nachrichten mit dem Payload ``{ "event": "newConfiguration", "value": "<hashValue>" }`` empfangen. 
+
+Wenn eine Nachricht empfangen wird, wird die Konfiguration vom CEM-Cloud Backend abgerufen. Über die REST API ``/api/installations/{serialnumber}/configuration?hash=<hashValue>`` wird die Konfiguration abgerufen.
