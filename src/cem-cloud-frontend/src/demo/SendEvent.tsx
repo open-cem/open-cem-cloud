@@ -1,6 +1,7 @@
-
 import { useState } from "react";
 import { useAuth } from "react-oidc-context";
+import { Button } from 'primereact/button'
+import { InputText } from 'primereact/inputtext';
 
 
 function SendEvent() {
@@ -35,8 +36,8 @@ function SendEvent() {
     return (
         <div>
             <h3>MQTT Events</h3>
-                <input  onChange={e => setMessage(e.target.value)} placeholder="Message..." name="event"/> 
-                <input type="button" onClick={handleEvent} value="Send" />
+                <InputText  onChange={e => setMessage(e.target.value)} placeholder="Message..." name="event"/> 
+                <Button onClick={handleEvent} label="Send" />
         </div>
         );
 }

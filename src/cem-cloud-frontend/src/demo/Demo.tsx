@@ -1,20 +1,20 @@
-import { useState } from "react";
-import { useAuth } from "react-oidc-context";
+import { useAuth } from 'react-oidc-context';
+import { PrimeIcons } from 'primereact/api';
+import { Toast } from 'primereact/toast';
+import { Tooltip } from 'primereact/tooltip';
+import { FileUpload } from 'primereact/fileupload';
+import { useRef } from 'react';
 
 function Demo() {
     const auth = useAuth();
-    const [selectedFile, setSelectedFile] = useState<File>();
-	const [isFilePicked, setIsFilePicked] = useState(false);
+    const toast = useRef<Toast>(null);
+    const fileUpload = useRef<FileUpload>(null);
 
-    const changeHandler = (event : any) => {
-		setSelectedFile(event.target.files[0]);
-		setIsFilePicked(true);
-	};
-
-	const handleSubmission = () => {
-        if (selectedFile != null) {
+	const handleSubmission = (event : any) => {
+        const file = event.files[0];
+        if (file != null) {
             const formData = new FormData();
-            formData.append('file', selectedFile);
+            formData.append('file', file);
             
             fetch(
                 new URL("http://localhost:8080/api/upload"),
@@ -29,6 +29,8 @@ function Demo() {
                 .then((response) => response.json())
                 .then((result) => {
                     console.log('Success:', result);
+                    toast?.current?.show({ severity: 'info', summary: 'Success', detail: 'File Uploaded' });
+                    fileUpload?.current?.clear();
                 })
                 .catch((error) => {
                     console.error('Error:', error);
@@ -36,24 +38,19 @@ function Demo() {
         }
 	};
 
+    const chooseOptions = { icon: PrimeIcons.PLUS, iconOnly: true, className: 'custom-choose-btn' };
+    const uploadOptions = { icon: PrimeIcons.UPLOAD, iconOnly: true, className: 'custom-upload-btn' };
+    const cancelOptions = { icon: PrimeIcons.TIMES, iconOnly: true, className: 'custom-cancel-btn p-button-danger' };
+
     return (
         <div>
-            <label htmlFor="file">Datei</label>
-            <input name="file" type="file" onChange={changeHandler} ></input>
-            {isFilePicked && selectedFile != null ? (
-				<div>
-					<p>Filename: {selectedFile.name}</p>
-					<p>Filetype: {selectedFile.type}</p>
-					<p>Size in bytes: {selectedFile.size}</p>
-					<p>
-						lastModifiedDate:{' '}
-						{new Date(selectedFile.lastModified).toLocaleDateString()}
-					</p>
-				</div>
-			) : (
-				<p>Select a file to show details</p>
-			)}
-            <button onClick={handleSubmission}>Submit</button>
+            <Toast ref={toast}></Toast>
+
+            <Tooltip target=".custom-choose-btn" content="Wählen" position="bottom" />
+            <Tooltip target=".custom-upload-btn" content="Hochladen" position="bottom" />
+            <Tooltip target=".custom-cancel-btn" content="Löschen" position="bottom" />
+
+            <FileUpload ref={fileUpload} name="file" chooseOptions={chooseOptions} uploadOptions={uploadOptions} cancelOptions={cancelOptions} customUpload uploadHandler={handleSubmission} multiple accept=".xml, .yml" maxFileSize={1000000} emptyTemplate={<p className="m-0">Dateien per Drag And Drop hierher ziehen um diese hochzuladen.</p>} />
         </div>
     )
 }
