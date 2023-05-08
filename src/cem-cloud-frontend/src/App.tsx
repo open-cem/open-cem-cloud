@@ -1,5 +1,7 @@
 import './App.css';
 import { useAuth } from 'react-oidc-context';
+import { Counter } from './counter/Counter';
+import Demo from './demo/Demo';
 
 function App() {
   const auth = useAuth();
@@ -24,6 +26,8 @@ function App() {
       <div>
           Hallo {auth.user?.profile.name}{" "}
           <button onClick={() => void auth.removeUser()}>Abmelden</button>
+          <Demo />
+          <Counter />
       </div>
       );
   }

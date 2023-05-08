@@ -6,11 +6,13 @@ import jakarta.persistence.Id;
 import java.util.UUID;
 
 @Entity
-public class User {
+public class Sensor {
+
     @Id
     private UUID id;
-
     private String name;
+    private String manufacturer;
+    private String model;
 
     public UUID getId() {
         return id;
@@ -26,5 +28,21 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getManufacturer() {
+        return manufacturer;
+    }
+
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
     }
 }
