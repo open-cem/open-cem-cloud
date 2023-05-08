@@ -6,6 +6,7 @@ import { useAuth } from 'react-oidc-context';
 import { Button } from 'primereact/button'
 import { Counter } from './counter/Counter';
 import Demo from './demo/Demo';
+import SendEvent from './demo/SendEvent'
 
 function App() {
   const auth = useAuth();
@@ -32,6 +33,7 @@ function App() {
           <Button onClick={() => void auth.removeUser()}>Abmelden</Button>
           <Demo />
           <Counter />
+          <SendEvent />
       </div>
       );
   }

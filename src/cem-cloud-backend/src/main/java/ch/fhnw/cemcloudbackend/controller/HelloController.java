@@ -3,6 +3,7 @@ package ch.fhnw.cemcloudbackend.controller;
 import ch.fhnw.cemcloudbackend.entity.Sensor;
 import ch.fhnw.cemcloudbackend.entity.User;
 import ch.fhnw.cemcloudbackend.model.set.Set;
+import ch.fhnw.cemcloudbackend.mqtt.Mqtt;
 import ch.fhnw.cemcloudbackend.repository.SensorRepository;
 import ch.fhnw.cemcloudbackend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,5 +64,20 @@ public class HelloController {
         sensorRepository.save(sensor);
 
         return new ResponseEntity<>(set, HttpStatus.OK);
+    }
+
+    @PostMapping("/sendEvent")
+    public ResponseEntity<String> sendEvent(@RequestParam String message) {
+        System.out.println(message);
+
+        Mqtt client = new Mqtt();
+        try {
+
+            client.sendMessage("installation/123456789", message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
