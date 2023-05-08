@@ -11,3 +11,18 @@ Run the following command to run the program:
 ```
 python3 main.py
 ```
+
+```mermaid
+sequenceDiagram
+    Local Installation ->> MQTT Broker: Subscribe to installations/{serialnumber}/configuration
+    User->>Configuration cloud: User changed config
+    activate Configuration cloud
+    Configuration cloud-->>MQTT Broker: Publish event in installations/{serialnumber}/configuration
+    activate MQTT Broker
+    MQTT Broker -->> Local Installation: Recieve event in installations/{serialnumber}/configuration
+    deactivate MQTT Broker
+    activate Local Installation
+    Local Installation ->> Configuration cloud: Pull newest configuration /api/installations/{serialnumber}/configuration
+    deactivate Configuration cloud
+    deactivate Local Installation
+```
