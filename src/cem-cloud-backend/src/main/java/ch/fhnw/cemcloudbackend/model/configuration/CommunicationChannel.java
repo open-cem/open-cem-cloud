@@ -3,13 +3,13 @@ package ch.fhnw.cemcloudbackend.model.configuration;
 import java.util.Map;
 import java.util.UUID;
 
-public class Communication {
+public class CommunicationChannel {
     private UUID id;
     private String name;
     private String type;
     private Map<String, Object> extra;
 
-    public Communication(UUID id, String name, String type, Map<String, Object> extra) {
+    public CommunicationChannel(UUID id, String name, String type, Map<String, Object> extra) {
         this.id = id;
         this.name = name;
         this.type = type;

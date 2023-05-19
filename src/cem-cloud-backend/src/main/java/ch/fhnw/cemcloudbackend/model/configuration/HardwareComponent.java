@@ -7,22 +7,24 @@ public class HardwareComponent {
     private UUID id;
     private String name;
     private String manufacturer;
+    private String model;
     private String type;
-    private String kind;
-    private Boolean isSmartGridreadyCompatible;
+    private Boolean isSmartGridready;
     private UUID smartGridreadyFileId;
     private UUID communicationId;
+    private Boolean isLogging;
     private Map<String, Object> extra;
 
-    public HardwareComponent(UUID id, String name, String manufacturer, String type, String kind, Boolean isSmartGridreadyCompatible, UUID smartGridreadyFileId, UUID communicationId) {
+    public HardwareComponent(UUID id, String name, String manufacturer, String model, String type, Boolean isSmartGridready, UUID smartGridreadyFileId, UUID communicationId, Boolean isLogging) {
         this.id = id;
         this.name = name;
         this.manufacturer = manufacturer;
+        this.model = model;
         this.type = type;
-        this.kind = kind;
-        this.isSmartGridreadyCompatible = isSmartGridreadyCompatible;
+        this.isSmartGridready = isSmartGridready;
         this.smartGridreadyFileId = smartGridreadyFileId;
         this.communicationId = communicationId;
+        this.isLogging = isLogging;
     }
 
     public UUID getId() {
@@ -49,6 +51,14 @@ public class HardwareComponent {
         this.manufacturer = manufacturer;
     }
 
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
     public String getType() {
         return type;
     }
@@ -57,20 +67,12 @@ public class HardwareComponent {
         this.type = type;
     }
 
-    public String getKind() {
-        return kind;
+    public Boolean getIsSmartGridready() {
+        return isSmartGridready;
     }
 
-    public void setKind(String kind) {
-        this.kind = kind;
-    }
-
-    public Boolean getSmartGridreadyCompatible() {
-        return isSmartGridreadyCompatible;
-    }
-
-    public void setSmartGridreadyCompatible(Boolean smartGridreadyCompatible) {
-        isSmartGridreadyCompatible = smartGridreadyCompatible;
+    public void setIsSmartGridready(Boolean smartGridreadyCompatible) {
+        isSmartGridready = smartGridreadyCompatible;
     }
 
     public UUID getSmartGridreadyFileId() {
@@ -95,5 +97,13 @@ public class HardwareComponent {
 
     public void setExtra(Map<String, Object> extra) {
         this.extra = extra;
+    }
+
+    public Boolean getIsLogging() {
+        return isLogging;
+    }
+
+    public void setIsLogging(Boolean logging) {
+        isLogging = logging;
     }
 }
