@@ -3,13 +3,13 @@ from paho import mqtt
 
 ## Installation Seriennummer
 installation = "123456789"
-username = ""
-password = ""
+username = "pseudo-installation"
+password = "testing321"
 
 
 # Environment variables
-broker = "6285dd2901794a3ba0a4a03d1823cf50.s2.eu.hivemq.cloud"
-port = 8883
+broker = "localhost"
+port = 1883
 
 
 
@@ -28,14 +28,14 @@ def connect():
     # using MQTT version 5 here, for 3.1.1: MQTTv311, 3.1: MQTTv31
     # userdata is user defined data of any type, updated by user_data_set()
     # client_id is the given name of the client
-    client = paho.Client(client_id="pseudoInstallation", userdata=None, protocol=paho.MQTTv311)
+    client = paho.Client(client_id="pseudoInstallation")
     client.on_connect = on_connect
 
-    # enable TLS for secure connection
-    client.tls_set(tls_version=mqtt.client.ssl.PROTOCOL_TLS)
+    # enable TLS for secure connection => for local development disable
+    # client.tls_set(tls_version=mqtt.client.ssl.PROTOCOL_TLS)
     # set username and password
     client.username_pw_set(username, password)
-    # connect to HiveMQ Cloud on port 8883 (default for MQTT)
+    
     client.connect(broker, port)
 
     # setting callbacks, use separate functions like above for better visibility

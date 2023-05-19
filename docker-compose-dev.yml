@@ -13,9 +13,11 @@ services:
       - db-data:/var/lib/mysql
 
   mqtt:
-    image: hivemq/hivemq-ce:latest
+    image: eclipse-mosquitto
     ports:
       - 1883:1883
+    volumes:
+      - ./src/mqtt-broker/mosquitto.conf:/mosquitto/config/mosquitto.conf
 
   auth:
     image: quay.io/keycloak/keycloak:latest
