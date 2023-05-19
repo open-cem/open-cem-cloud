@@ -16,7 +16,7 @@ public class ParameterMeta {
     @Enumerated(EnumType.STRING)
     private ParameterType listType;
     @OneToOne
-    private HardwareComponentType referenceType;
+    private ComponentFamily referenceType;
     @OneToOne
     private ComponentType componentType;
 
@@ -60,19 +60,19 @@ public class ParameterMeta {
         this.listType = listType;
     }
 
-    public HardwareComponentType getReferenceType() {
+    public ComponentFamily getReferenceType() {
         return referenceType;
     }
 
-    public void setReferenceType(HardwareComponentType referenceType) {
+    public void setReferenceType(ComponentFamily referenceType) {
         this.referenceType = referenceType;
     }
 
-    public ComponentType getComponentType() {
+    public ComponentType getComponentSubType() {
         return componentType;
     }
 
-    public void setComponentType(ComponentType componentType) {
+    public void setComponentSubType(ComponentType componentType) {
         this.componentType = componentType;
     }
 

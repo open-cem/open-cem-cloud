@@ -3,14 +3,12 @@ package ch.fhnw.cemcloudbackend.entity;
 import jakarta.persistence.*;
 
 @Entity
-public abstract class HardwareComponent extends Component {
+public class HardwareComponent extends Component {
     @OneToOne
     private Model model;
     private boolean isSmartGridready;
     @OneToOne
     private SmartGridreadyDefinition smartGridreadyDefinition;
-    @OneToOne
-    private HardwareComponentType type;
 
     public Model getModel() {
         return model;

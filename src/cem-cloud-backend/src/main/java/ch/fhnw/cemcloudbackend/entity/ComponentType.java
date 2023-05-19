@@ -10,6 +10,8 @@ public class ComponentType {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     private String name;
+    @ManyToOne
+    private ComponentFamily componentFamily;
 
     public UUID getId() {
         return id;
@@ -25,5 +27,13 @@ public class ComponentType {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public ComponentFamily getComponentType() {
+        return componentFamily;
+    }
+
+    public void setComponentType(ComponentFamily componentFamily) {
+        this.componentFamily = componentFamily;
     }
 }

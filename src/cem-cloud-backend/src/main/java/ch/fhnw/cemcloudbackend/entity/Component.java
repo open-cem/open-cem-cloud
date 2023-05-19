@@ -12,7 +12,7 @@ public class Component {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     private String name;
-    @OneToOne
+    @ManyToOne
     private ComponentType type;
     @Convert(converter = ParameterConverter.class)
     private Map<String, Object> parameter;
