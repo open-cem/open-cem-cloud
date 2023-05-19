@@ -18,7 +18,7 @@ import java.util.*;
 public class ConfigurationController {
 
     @GetMapping("/installations/{installationnr}/configuration")
-    public String GetConfiguration() {
+    public String getConfiguration() {
         // returns hardcoded configuration for now.
         final String installationName = "EFH Test";
         final int version = 1;
@@ -389,7 +389,6 @@ public class ConfigurationController {
         }
 
         protected Set<Property> getProperties(Class<? extends Object> type) {
-            System.out.println("Called");
             Set<Property> propertySet;
             if (typeDefinitions.containsKey(type)) {
                 propertySet = typeDefinitions.get(type).getProperties();
