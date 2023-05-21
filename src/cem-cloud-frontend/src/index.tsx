@@ -12,30 +12,23 @@ const root = createRoot(container);
 
 const onSigninCallback = (_user: User | void): void => {
   window.history.replaceState(
-  {},
-  document.title,
-  window.location.pathname
+    {},
+    document.title,
+    window.location.pathname
   )
 }
 
-const oidcConfig = {
-  authority: "http://localhost:2000/",
-  client_id: "react-app",
-  redirect_uri: "http://localhost:3000",
-  metadata: {
-    authorization_endpoint: `http://localhost:2000/realms/cem-cloud/protocol/openid-connect/auth`,
-    token_endpoint:         `http://localhost:2000/realms/cem-cloud/protocol/openid-connect/token`
-  },
-  scope: "openid",
-  onSigninCallback: onSigninCallback
-};
-
-root.render(
-  <React.StrictMode>
-    <AuthProvider {... oidcConfig}>
-      <Provider store={store}>
-        <App />
-      </Provider>
-    </AuthProvider>
-  </React.StrictMode>
-);
+fetch('application.json')
+  .then(response => response.json())
+  .then(json => {
+    root.render(
+      <React.StrictMode>
+        <AuthProvider {...json.oidcConfig} onSigninCallback={onSigninCallback}>
+          <Provider store={store}>
+            <App />
+          </Provider>
+        </AuthProvider>
+      </React.StrictMode>
+    );
+  })
+  .catch(reason => console.error('application.json not found or error in configuration.', reason));

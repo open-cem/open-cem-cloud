@@ -1,0 +1,8 @@
+{
+  "oidcConfig": {
+    "authority": "http://localhost:2000/realms/cem-cloud/",
+    "client_id": "react-app",
+    "scope": "openid",
+    "redirect_uri": "http://localhost:3000"
+  }
+}
