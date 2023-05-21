@@ -26,7 +26,7 @@ public class Mqtt extends MqttConfig{
                 .useMqttVersion5()
                 .serverHost(broker)
                 .serverPort(port)
-                .sslWithDefaultConfig()
+                //.sslWithDefaultConfig()
                 .buildBlocking();
 
         // connect to HiveMQ Cloud with TLS and username/pw

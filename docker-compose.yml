@@ -22,7 +22,7 @@ services:
       MYSQL_DATABASE: cemcloud
       MYSQL_USER: cemcloud
       MYSQL_PASSWORD: rx9gfJWU$5aLe-tq
-      MYSQL_RANDOM_ROOT_PASSWORD: yes
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
     ports:
       - 3306:3306
     volumes:
