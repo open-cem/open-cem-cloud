@@ -377,8 +377,6 @@ public class ConfigurationController {
         protected NodeTuple representJavaBeanProperty(Object javaBean, Property property,
                                                       Object propertyValue, Tag customTag) {
 
-
-
             if (UUID.class.equals(property.getType())) {
                 return super
                         .representJavaBeanProperty(javaBean, property, propertyValue == null ? null : propertyValue.toString(), customTag);
