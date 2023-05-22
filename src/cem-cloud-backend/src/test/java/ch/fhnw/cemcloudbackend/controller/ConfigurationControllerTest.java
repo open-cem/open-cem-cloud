@@ -17,7 +17,7 @@ class ConfigurationControllerTest {
 
         // Call getConfiguration() method
         ConfigurationController controller = new ConfigurationController();
-        String actual = controller.getConfiguration();
+        String actual = controller.getConfiguration("123", "abc");
 
         // Compare expected and actual
         assertEquals(ignoreDynamicFields(expected), ignoreDynamicFields(actual));
