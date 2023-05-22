@@ -1,28 +1,53 @@
 import paho.mqtt.client as paho
 from paho import mqtt
+import json
+import requests
+
 
 ## Installation Seriennummer
 installation = "123456789"
 username = "pseudo-installation"
 password = "testing321"
 
+backendurl = "http://localhost:8080/api"
+
 
 # Environment variables
 broker = "localhost"
 port = 1883
 
+def getConfig(hash):
+    print("Getting configuration from backend")
+    r = requests.get(backendurl + "/installations/" + installation + "/configuration?hash=" + hash)
+    if r.status_code == 200:
+        return r.text
+    else:
+        print("Error while getting configuration from backend")
+        return None
+
+
 
 
 
 def on_connect(client, userdata, flags, rc, properties=None):
-    client.subscribe("installation/" + installation, qos=1)
+    client.subscribe("installations/" + installation, qos=1)
 
 def on_subscribe(client, userdata, mid, granted_qos, properties=None):
-    print("Subscribed to topic! installation/" + installation )
+    print("Subscribed to topic! installations/" + installation )
 
 # print message, useful for checking if it was successful
 def on_message(client, userdata, msg):
     print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+
+    # parse payload as json
+    eventMsg = json.loads(msg.payload)
+    if eventMsg["event"] == "newConfiguration":
+        print("Should update configuration")
+        config = getConfig(eventMsg["hash"])
+        if config is not None:
+            print("Got configuration from backend")
+            print(config)
+
 
 def connect():
     # using MQTT version 5 here, for 3.1.1: MQTTv311, 3.1: MQTTv31

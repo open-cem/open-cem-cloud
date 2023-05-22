@@ -29,7 +29,7 @@ public class Mqtt extends MqttConfig{
                 //.sslWithDefaultConfig()
                 .buildBlocking();
 
-        // connect to HiveMQ Cloud with TLS and username/pw
+        // connect to MQTT broker with TLS and username/pw
         client.connectWith()
                 .simpleAuth()
                 .username(userName)

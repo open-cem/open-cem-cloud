@@ -73,7 +73,7 @@ public class HelloController {
         Mqtt client = new Mqtt();
         try {
 
-            client.sendMessage("installation/123456789", message);
+            client.sendMessage("installations/123456789", message);
         } catch (Exception e) {
             e.printStackTrace();
         }

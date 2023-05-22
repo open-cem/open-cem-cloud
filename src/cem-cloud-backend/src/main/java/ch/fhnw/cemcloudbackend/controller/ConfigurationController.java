@@ -5,6 +5,8 @@ import ch.fhnw.cemcloudbackend.model.configuration.Configuration;
 import ch.fhnw.cemcloudbackend.model.configuration.Controller;
 import ch.fhnw.cemcloudbackend.model.configuration.HardwareComponent;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.introspector.Property;
@@ -18,7 +20,13 @@ import java.util.*;
 public class ConfigurationController {
 
     @GetMapping("/installations/{installationnr}/configuration")
-    public String getConfiguration() {
+    public String getConfiguration(
+            @PathVariable("installationnr") String installationnr,
+            @RequestParam("hash") String hash
+    ) {
+        System.out.println("getConfiguration()");
+        System.out.println("installationnr:" + installationnr);
+        System.out.println("hash:" + hash);
         // returns hardcoded configuration for now.
         final String installationName = "EFH Test";
         final int version = 1;
