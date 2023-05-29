@@ -4,9 +4,6 @@ import "./theme.css";
 import './App.css';
 import { useAuth } from 'react-oidc-context';
 import { Button } from 'primereact/button'
-import { Counter } from './counter/Counter';
-import Demo from './demo/Demo';
-import SendEvent from './demo/SendEvent'
 import Installations from "./installation/Installations";
 
 function App() {
@@ -32,9 +29,6 @@ function App() {
       <div>
           Hallo {auth.user?.profile.name}{" "}
           <Button onClick={() => void auth.removeUser()}>Abmelden</Button>
-          <Demo />
-          <Counter />
-          <SendEvent />
           <Installations></Installations>
       </div>
       );
