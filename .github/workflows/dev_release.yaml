@@ -20,7 +20,13 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Run Gradle Tests
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: 17
+        distribution: temurin
+
+    - name: Build Backend
       run: ./gradlew build
       working-directory: ./src/cem-cloud-backend
 
