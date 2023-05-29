@@ -6,6 +6,7 @@ import { useAuth, hasAuthParams } from 'react-oidc-context';
 import { Button } from 'primereact/button'
 import Installations from "./installation/Installations";
 import { useEffect } from "react";
+import { PrimeIcons } from "primereact/api";
 
 function App() {
   const auth = useAuth();
@@ -35,9 +36,15 @@ function App() {
   if (auth.isAuthenticated) {
       return (
       <div>
-          Hallo {auth.user?.profile.name}{" "}
-          <Button onClick={() => void auth.signoutRedirect()}>Abmelden</Button>
+        <nav>
+          <a href="/"><span id="title-nav">CEM-Cloud</span></a>
+          <menu>
+            <li><i className={ PrimeIcons.SIGN_OUT } onClick={() => void auth.signoutRedirect()} title="Abmelden"></i></li>
+          </menu>
+        </nav>
+        <main>
           <Installations></Installations>
+        </main>
       </div>
       );
   }
