@@ -20,6 +20,10 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    - name: Run Gradle Tests
+      run: ./gradlew build
+      working-directory: ./src/cem-cloud-backend
+
     - name: Build backend Docker image
       run: docker build -t backend-image ./src/cem-cloud-backend
 
