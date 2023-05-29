@@ -65,7 +65,7 @@ jobs:
       with:
         host: ${{ secrets.SERVER_IP }}
         username: ${{ secrets.SERVER_USERNAME }}
-        key_path: ~/.ssh/id_rsa
+        key: ${{ secrets.SERVER_SSH_PRIVATE_KEY }}
         envs: DOCKER_PASSWORD, DOCKER_USERNAME, SERVER_USERNAME
         script: |
           echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin ghcr.io
