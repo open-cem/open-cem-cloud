@@ -58,8 +58,8 @@ jobs:
         chmod 644 ~/.ssh/known_hosts
 
     - name: Copy docker-compose.yml to server
-      run: scp -i ~/.ssh/id_rsa -o UserKnownHostsFile=~/.ssh/known_hosts ./docker-compose.yml $SERVER_USERNAME@$SERVER_IP:/home/$SERVER_USERNAME
+      run: scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ./docker-compose.yml $SERVER_USERNAME@$SERVER_IP:/home/$SERVER_USERNAME
 
     - name: SSH into server and run docker-compose
       run: |
-        ssh -i ~/.ssh/id_rsa -o UserKnownHostsFile=~/.ssh/known_hosts $SERVER_USERNAME@$SERVER_IP 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD  ghcr.io && docker-compose -f /home/$SERVER_USERNAME/docker-compose.yml up -d'
+        ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SERVER_USERNAME@$SERVER_IP 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD  ghcr.io && docker-compose -f /home/$SERVER_USERNAME/docker-compose.yml up -d'

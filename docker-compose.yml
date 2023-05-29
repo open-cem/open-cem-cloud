@@ -2,13 +2,13 @@ version: '3.1'
 
 services:
   frontend:
-    build: ./src/cem-cloud-frontend
+    image: ghcr.io/stuni907/frontend-image:latest
     depends_on:
       - backend
     ports:
       - 80:80
   backend:
-    build: ./src/cem-cloud-backend
+    image: ghcr.io/stuni907/backend-image:latest
     depends_on:
       - db
     environment:
