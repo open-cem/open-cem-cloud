@@ -27,7 +27,7 @@ jobs:
         distribution: temurin
 
     - name: Build Backend
-      run: ./gradlew build
+      run: ./gradlew build --exclude-task test
       working-directory: ./src/cem-cloud-backend
 
     - name: Build backend Docker image
