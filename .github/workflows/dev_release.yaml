@@ -54,6 +54,8 @@ jobs:
         mkdir -p ~/.ssh
         echo "$SERVER_SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
+        echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+        chmod 600 ~/.ssh/known_hosts
 
     - name: Copy docker-compose.yml to server
       run: scp -i ~/.ssh/id_rsa ./docker-compose.yml $SERVER_USERNAME@$SERVER_IP:/home/$SERVER_USERNAME
