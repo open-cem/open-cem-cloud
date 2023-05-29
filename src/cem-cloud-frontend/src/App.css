@@ -1,3 +1,12 @@
 body {
   font-family: var(--font-family);
 }                                        
+
+.p-card {
+  background-color: #f4f4f4;
+  box-shadow: .5rem .5rem .5rem #aaaaaa;
+}
+
+.p-divider.p-divider-horizontal:before {
+  border-top: 1px solid var(--primary-color);
+}

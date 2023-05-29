@@ -7,6 +7,7 @@ import { Button } from 'primereact/button'
 import { Counter } from './counter/Counter';
 import Demo from './demo/Demo';
 import SendEvent from './demo/SendEvent'
+import Installations from "./installation/Installations";
 
 function App() {
   const auth = useAuth();
@@ -34,6 +35,7 @@ function App() {
           <Demo />
           <Counter />
           <SendEvent />
+          <Installations></Installations>
       </div>
       );
   }
