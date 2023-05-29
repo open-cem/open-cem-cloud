@@ -19,14 +19,11 @@ const onSigninCallback = (_user: User | void): void => {
 }
 
 const oidcConfig = {
-  authority: "http://localhost:2000/",
+  authority: "http://localhost:2000/realms/cem-cloud/",
   client_id: "react-app",
-  redirect_uri: "http://localhost:3000",
-  metadata: {
-    authorization_endpoint: `http://localhost:2000/realms/cem-cloud/protocol/openid-connect/auth`,
-    token_endpoint:         `http://localhost:2000/realms/cem-cloud/protocol/openid-connect/token`
-  },
   scope: "openid",
+  redirect_uri: "http://localhost:3000",
+  post_logout_redirect_uri: "http://localhost:3000",
   onSigninCallback: onSigninCallback
 };
 
