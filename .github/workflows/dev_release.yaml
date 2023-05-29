@@ -44,10 +44,10 @@ jobs:
         password: ${{secrets.GITHUB_TOKEN}}
 
     - name: Publish backend Docker image
-      run: docker tag backend-image ghcr.io/Stuni907/backend-image:latest && docker push ghcr.io/Stuni907/backend-image:latest
+      run: docker tag backend-image ghcr.io/stuni907/backend-image:latest && docker push ghcr.io/stuni907/backend-image:latest
 
     - name: Publish frontend Docker image
-      run: docker tag frontend-image ghcr.io/Stuni907/frontend-image:latest && docker push ghcr.io/Stuni907/frontend-image:latest
+      run: docker tag frontend-image ghcr.io/stuni907/frontend-image:latest && docker push ghcr.io/stuni907/frontend-image:latest
 
     - name: Install SSH key
       run: |
