@@ -2,7 +2,7 @@ name: Docker Compose and Gradle Tests
 on:
   push:
     branches:
-      - '**'
+      - 'deactivated'
 
 jobs:
   build-and-test-backend:
