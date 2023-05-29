@@ -1,15 +1,21 @@
 package ch.fhnw.cemcloudbackend.controller;
 
 import ch.fhnw.cemcloudbackend.entity.*;
+import ch.fhnw.cemcloudbackend.mqtt.Mqtt;
 import ch.fhnw.cemcloudbackend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 public class HelloController {
@@ -117,5 +123,20 @@ public class HelloController {
         Iterable<HardwareComponent> results = components.findAllByTypeComponentFamilyName("Device");
 
         return new ResponseEntity<>(results, HttpStatus.OK);
+    }
+
+    @PostMapping("/sendEvent")
+    public ResponseEntity<String> sendEvent(@RequestParam String message) {
+        System.out.println(message);
+
+        Mqtt client = new Mqtt();
+        try {
+
+            client.sendMessage("installations/123456789", message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
