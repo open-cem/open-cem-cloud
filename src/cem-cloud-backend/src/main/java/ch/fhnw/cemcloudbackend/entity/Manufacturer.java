@@ -1,15 +1,15 @@
 package ch.fhnw.cemcloudbackend.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.util.UUID;
 
 @Entity
-public class User {
+public class Manufacturer {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "VARCHAR(36)")
     private UUID id;
-
     private String name;
 
     public UUID getId() {

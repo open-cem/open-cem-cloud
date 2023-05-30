@@ -1,22 +1,19 @@
 package ch.fhnw.cemcloudbackend.controller;
 
-import ch.fhnw.cemcloudbackend.entity.Sensor;
-import ch.fhnw.cemcloudbackend.entity.User;
-import ch.fhnw.cemcloudbackend.model.set.Set;
+import ch.fhnw.cemcloudbackend.entity.*;
 import ch.fhnw.cemcloudbackend.mqtt.Mqtt;
-import ch.fhnw.cemcloudbackend.repository.SensorRepository;
-import ch.fhnw.cemcloudbackend.repository.UserRepository;
+import ch.fhnw.cemcloudbackend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,46 +21,107 @@ import java.util.UUID;
 public class HelloController {
 
     @Autowired
-    private UserRepository userRepository;
-
+    private ManufacturerRepository manufacturers;
     @Autowired
-    private SensorRepository sensorRepository;
+    private ModelRepository models;
+    @Autowired
+    private ComponentFamilyRepository componentFamilies;
+    @Autowired
+    private ComponentTypeRepository componentTypes;
+    @Autowired
+    private HardwareComponentRepository components;
+    @Autowired
+    private ParameterMetaRepository parameterMetas;
 
-    @GetMapping("/hello")
-    public User getHello(JwtAuthenticationToken auth) {
-        Optional<User> user = userRepository.findById(UUID.fromString(auth.getName()));
-        User u;
-        if (user.isEmpty()) {
-            u = new User();
-            u.setId(UUID.fromString(auth.getName()));
-            u.setName(auth.getTokenAttributes().get("name").toString());
-            userRepository.save(u);
+    @GetMapping("/test")
+    public ResponseEntity<Iterable<HardwareComponent>> test(JwtAuthenticationToken auth) {
+
+        UUID cID = UUID.fromString("2303aa82-fd14-411b-8166-ebcec59f6e15");
+        Optional<ComponentFamily> optionalComponentType = componentFamilies.findById(cID);
+        ComponentFamily componentFamily;
+        if (optionalComponentType.isEmpty()) {
+            componentFamily = new ComponentFamily();
+            componentFamily.setName("Device");
+            componentFamily = componentFamilies.save(componentFamily);
         } else {
-            u = user.get();
+            componentFamily = optionalComponentType.get();
         }
 
-        return u;
-    }
-
-    @PostMapping("/upload")
-    public ResponseEntity<Set> handleFileUpload(@RequestParam("file") MultipartFile file) throws IOException {
-
-        if (!Objects.requireNonNull(file.getOriginalFilename()).endsWith(".yml")) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        UUID sID = UUID.fromString("e52e4269-95fd-469b-a1a9-6599bda30d4e");
+        Optional<ComponentType> oType = componentTypes.findById(sID);
+        ComponentType type;
+        if (oType.isEmpty()) {
+            type = new ComponentType();
+            type.setId(sID);
+            type.setComponentType(componentFamily);
+            type.setName("PV_PLANT");
+            type = componentTypes.save(type);
+        } else {
+            type = oType.get();
         }
 
-        Yaml yaml = new Yaml(new Constructor(Set.class));
-        Set set = yaml.load(file.getInputStream());
+        UUID manufacturerId = UUID.fromString("c0c653c4-92b6-4f42-a623-8f94fac04480");
+        Optional<Manufacturer> optionalManufacturer = manufacturers.findById(manufacturerId);
+        Manufacturer manufacturer;
+        if (optionalManufacturer.isEmpty()) {
+            manufacturer = new Manufacturer();
+            manufacturer.setId(manufacturerId);
+            manufacturer.setName("Swisssolar");
+            manufacturer = manufacturers.save(manufacturer);
+        } else {
+            manufacturer = optionalManufacturer.get();
+        }
 
-        Sensor sensor = new Sensor();
-        sensor.setId(UUID.randomUUID());
-        sensor.setName(set.getSensors()[0].getName());
-        sensor.setManufacturer(set.getSensors()[0].getManufacturer());
-        sensor.setModel(set.getSensors()[0].getModel());
+        UUID modelId = UUID.fromString("340bbf33-a998-41c2-b9a0-08bf3c9045c9");
+        Optional<Model> optionalModel = models.findById(modelId);
+        Model model;
+        if (optionalModel.isEmpty()) {
+            model = new Model();
+            model.setId(modelId);
+            model.setManufacturer(manufacturer);
+            model.setName("Panel 2100");
+            model = models.save(model);
+        } else {
+            model = optionalModel.get();
+        }
 
-        sensorRepository.save(sensor);
+        UUID deviceId = UUID.fromString("444e5150-a79e-4e8e-83e9-19ff5197ef1a");
+        Optional<HardwareComponent> optionalDevice = components.findById(deviceId);
+        HardwareComponent device;
+        if (optionalDevice.isEmpty()) {
+            device = new HardwareComponent();
+            device.setId(deviceId);
+            device.setName("PV-Anlage West");
+            device.setModel(model);
+            device.setType(type);
+            Map<String, Object> parameter = new HashMap<>();
+            parameter.put("idPowerSensor", "b4791473-37eb-4bea-8255-4a29701245cc");
+            parameter.put("isSimulated", false);
+            parameter.put("maxPower", 5);
+            device.setParameter(parameter);
+            device = components.save(device);
+        } else {
+            device = optionalDevice.get();
+        }
 
-        return new ResponseEntity<>(set, HttpStatus.OK);
+        UUID pid = UUID.fromString("8d41e085-bf6a-416b-99da-d0ba2d74632f");
+        Optional<ParameterMeta> oParam = parameterMetas.findById(pid);
+        ParameterMeta meta;
+        if (oParam.isEmpty()) {
+            meta = new ParameterMeta();
+            meta.setName("idPowerSensor");
+            meta.setReferenceComponentType(type);
+            meta.setType(ParameterMeta.ParameterType.REFERENCE);
+            meta.setReferenceComponentFamily(componentFamily);
+            meta.setLabel("Power Sensor");
+            meta = parameterMetas.save(meta);
+        } else {
+            meta = oParam.get();
+        }
+
+        Iterable<HardwareComponent> results = components.findAllByTypeComponentFamilyName("Device");
+
+        return new ResponseEntity<>(results, HttpStatus.OK);
     }
 
     @PostMapping("/sendEvent")
