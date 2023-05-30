@@ -67,7 +67,12 @@ jobs:
         username: ${{ secrets.SERVER_USERNAME }}
         key: ${{ secrets.SERVER_SSH_PRIVATE_KEY }}
         envs: DOCKER_PASSWORD, DOCKER_USERNAME, SERVER_USERNAME
+        # Install docker
         # Had to run sudo chmod 666 /var/run/docker.sock on server after docker installation
+        # sudo ufw enable
+        # sudo ufw allow http
+        # sudo ufw allow ssh
+        
         script: |
           echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin ghcr.io
           docker compose -f /home/$SERVER_USERNAME/docker-compose.yml up -d
