@@ -25,9 +25,9 @@ public class HelloController {
     @Autowired
     private ModelRepository models;
     @Autowired
-    private ComponentTypeRepository componentTypes;
+    private ComponentFamilyRepository componentFamilies;
     @Autowired
-    private ComponentSubTypeRepository componentSubTypes;
+    private ComponentTypeRepository componentTypes;
     @Autowired
     private HardwareComponentRepository components;
     @Autowired
@@ -37,25 +37,25 @@ public class HelloController {
     public ResponseEntity<Iterable<HardwareComponent>> test(JwtAuthenticationToken auth) {
 
         UUID cID = UUID.fromString("2303aa82-fd14-411b-8166-ebcec59f6e15");
-        Optional<ComponentFamily> optionalComponentType = componentTypes.findById(cID);
+        Optional<ComponentFamily> optionalComponentType = componentFamilies.findById(cID);
         ComponentFamily componentFamily;
         if (optionalComponentType.isEmpty()) {
             componentFamily = new ComponentFamily();
             componentFamily.setName("Device");
-            componentFamily = componentTypes.save(componentFamily);
+            componentFamily = componentFamilies.save(componentFamily);
         } else {
             componentFamily = optionalComponentType.get();
         }
 
         UUID sID = UUID.fromString("e52e4269-95fd-469b-a1a9-6599bda30d4e");
-        Optional<ComponentType> oType = componentSubTypes.findById(sID);
+        Optional<ComponentType> oType = componentTypes.findById(sID);
         ComponentType type;
         if (oType.isEmpty()) {
             type = new ComponentType();
             type.setId(sID);
             type.setComponentType(componentFamily);
             type.setName("PV_PLANT");
-            type = componentSubTypes.save(type);
+            type = componentTypes.save(type);
         } else {
             type = oType.get();
         }
@@ -110,9 +110,9 @@ public class HelloController {
         if (oParam.isEmpty()) {
             meta = new ParameterMeta();
             meta.setName("idPowerSensor");
-            meta.setComponentSubType(type);
+            meta.setReferenceComponentType(type);
             meta.setType(ParameterMeta.ParameterType.REFERENCE);
-            meta.setReferenceType(componentFamily);
+            meta.setReferenceComponentFamily(componentFamily);
             meta.setLabel("Power Sensor");
             meta = parameterMetas.save(meta);
         } else {
