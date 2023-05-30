@@ -94,7 +94,6 @@ public class HelloController {
             device.setName("PV-Anlage West");
             device.setModel(model);
             device.setType(type);
-            device.setSmartGridready(false);
             Map<String, Object> parameter = new HashMap<>();
             parameter.put("idPowerSensor", "b4791473-37eb-4bea-8255-4a29701245cc");
             parameter.put("isSimulated", false);
