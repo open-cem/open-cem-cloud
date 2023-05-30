@@ -45,6 +45,7 @@ i.pi:active {
 
 .p-card .p-card-title {
     font-weight: inherit;
+    font-size: large;
     overflow: hidden;
     word-wrap: break-word;
     text-overflow: ellipsis;
@@ -61,6 +62,10 @@ i.pi:active {
 
     .card-container {
         --columns: 4;
+    }
+
+    .p-card .p-card-title {
+        font-size: larger;
     }
 }
 
