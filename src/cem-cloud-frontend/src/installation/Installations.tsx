@@ -6,15 +6,15 @@ import { useAuth } from 'react-oidc-context';
 import './Installations.css';
 import { Installation, InstallationService } from './InstallationsService';
 
-function Installations() {
+function Installations(props: any) {
     const auth = useAuth();
     const [installations, setInstallations] = useState<Installation[]>([]);
 
     useEffect(() => {
-        new InstallationService(auth).loadInstallations()
+        new InstallationService(props.apiUri, auth).loadInstallations()
             .then(setInstallations)
             .catch(console.error);
-    }, [auth]);
+    }, [auth, props.apiUri]);
 
     const header = (
         <div>

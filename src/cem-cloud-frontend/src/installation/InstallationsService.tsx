@@ -13,14 +13,16 @@ export class Installation {
 }
 
 export class InstallationService {
+    private apiUri: string;
     private auth: AuthContextProps;
 
-    constructor(auth: AuthContextProps) {
+    constructor(apiUri: string, auth: AuthContextProps) {
+        this.apiUri = apiUri;
         this.auth = auth;
     }
 
     public loadInstallations = () => {
-        return fetch("http://localhost:8080/api/installations",
+        return fetch(`${this.apiUri}installations`,
             {
                 headers: [["authorization", `Bearer ${this.auth.user?.access_token}`]]
             })
