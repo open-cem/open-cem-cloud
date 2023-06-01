@@ -15,7 +15,7 @@ function App(props: any) {
         !auth.isAuthenticated && !auth.activeNavigator && !auth.isLoading) {
         auth.signinRedirect();
     }
-}, [auth.isAuthenticated, auth.activeNavigator, auth.isLoading, auth.signinRedirect]);
+  }, [auth, auth.isAuthenticated, auth.activeNavigator, auth.isLoading, auth.signinRedirect]);
 
   switch (auth.activeNavigator) {
     case "signinSilent":
