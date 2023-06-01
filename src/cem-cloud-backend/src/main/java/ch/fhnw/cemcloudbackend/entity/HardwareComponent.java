@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 public class HardwareComponent extends Component {
     @OneToOne
     private Model model;
-    private boolean isSmartGridready;
     @OneToOne
     private SmartGridreadyDefinition smartGridreadyDefinition;
 
@@ -16,14 +15,6 @@ public class HardwareComponent extends Component {
 
     public void setModel(Model model) {
         this.model = model;
-    }
-
-    public boolean isSmartGridready() {
-        return isSmartGridready;
-    }
-
-    public void setSmartGridready(boolean smartGridready) {
-        isSmartGridready = smartGridready;
     }
 
     public SmartGridreadyDefinition getSmartGridreadyDefinition() {

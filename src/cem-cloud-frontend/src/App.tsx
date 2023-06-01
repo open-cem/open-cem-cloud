@@ -7,7 +7,7 @@ import { Button } from 'primereact/button'
 import Installations from "./installation/Installations";
 import { useEffect } from "react";
 
-function App() {
+function App(props: any) {
   const auth = useAuth();
 
   useEffect(() => {
@@ -37,7 +37,7 @@ function App() {
       <div>
           Hallo {auth.user?.profile.name}{" "}
           <Button onClick={() => void auth.signoutRedirect()}>Abmelden</Button>
-          <Installations></Installations>
+          <Installations apiUri={props.apiUri}></Installations>
       </div>
       );
   }

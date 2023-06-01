@@ -8,6 +8,7 @@ import java.util.UUID;
 public class Model {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "VARCHAR(36)")
     private UUID id;
     @OneToOne
     private Manufacturer manufacturer;

@@ -1,7 +1,7 @@
 # CEM-Cloud
 
 ## Development
-Per Docker Compose kann eine Entwicklungsumgebung bestehend aus einem Keycloak Authentifizierungsserver, einem MySQL Datenbankserver und einem HiveMQ MQTT Broker gestartet werden. Das CEM-Cloud Backend kann als [Spring Applikation](src/cem-cloud-backend/src/main/java/ch/fhnw/cemcloudbackend/CemCloudBackendApplication.java) lokal gestartet werden. Das CEM-Cloud Backend kann als [React Applikation](src/cem-cloud-frontend/package.json) lokal gestartet werden.
+Per Docker Compose kann eine Entwicklungsumgebung bestehend aus einem Keycloak Authentifizierungsserver, einem MySQL Datenbankserver und einem MQTT Broker gestartet werden. Das CEM-Cloud Backend kann als [Spring Applikation](src/cem-cloud-backend/src/main/java/ch/fhnw/cemcloudbackend/CemCloudBackendApplication.java) lokal gestartet werden. Das CEM-Cloud Backend kann als [React Applikation](src/cem-cloud-frontend/package.json) lokal gestartet werden.
 
 Mit dem folgenden Befehl kann die Docker Compose Entwicklungsumgebung gestartet werden:
 ```shell
@@ -13,7 +13,7 @@ docker-compose -f .\docker-compose-dev.yml up
 | Frontend | http://localhost:3000/ |
 | Backend | http://localhost:8080/api |
 | Keycloak | http://localhost:2000/ |
-| HiveMQ | http://localhost:1883/ |
+| Mosquitto | http://localhost:1883/ |
 | MySQL | localhost:3306 |
 
 

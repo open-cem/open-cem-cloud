@@ -5,14 +5,12 @@ import java.util.UUID;
 
 public class Controller {
     private UUID id;
-    private String name;
-    private String kind;
+    private String type;
     private Map<String, Object> extra;
 
-    public Controller(UUID id, String name, String kind, Map<String, Object> extra) {
+    public Controller(UUID id, String type, Map<String, Object> extra) {
         this.id = id;
-        this.name = name;
-        this.kind = kind;
+        this.type = type;
         this.extra = extra;
     }
 
@@ -24,20 +22,12 @@ public class Controller {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getType() {
+        return type;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getKind() {
-        return kind;
-    }
-
-    public void setKind(String kind) {
-        this.kind = kind;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public Map<String, Object> getExtra() {
