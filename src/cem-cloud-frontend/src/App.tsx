@@ -7,8 +7,9 @@ import { Button } from 'primereact/button'
 import { Counter } from './counter/Counter';
 import Demo from './demo/Demo';
 import SendEvent from './demo/SendEvent'
+import Installations from "./installation/Installations";
 
-function App() {
+function App(props: any) {
   const auth = useAuth();
 
   switch (auth.activeNavigator) {
@@ -34,6 +35,7 @@ function App() {
           <Demo />
           <Counter />
           <SendEvent />
+          <Installations apiUri={props.apiUri}></Installations>
       </div>
       );
   }

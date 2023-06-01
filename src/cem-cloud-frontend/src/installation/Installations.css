@@ -1,0 +1,63 @@
+.card-container {
+    --gutter: 1rem;
+    display: grid;
+    row-gap: var(--gutter);
+    padding: .5rem;
+}
+
+.p-card:hover, 
+.p-card:focus {
+    transform: translateY(-0.5rem);
+    transition: 0.1s ease-in-out;
+}
+
+.p-card-header {
+    position: relative;
+}
+
+.p-card-header i.pi {
+    position: absolute;
+    top: .5rem;
+    right: .5rem;
+}
+
+i.pi {
+    font-size: 2rem;
+}
+
+i.pi:hover,
+i.pi:active {
+    color: var(--primary-color);
+    filter: drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4));
+}
+
+.p-card-header .p-divider-horizontal {
+    width: 75%;
+    margin: 1.25rem auto;
+}
+
+.p-card .p-card-title {
+    font-weight: inherit;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: center;
+}
+
+@media only screen and (min-width: 768px) {
+    i.pi {
+        font-size: 1.5rem;
+    }
+
+    .card-container {
+        --columns: 4;
+        grid-template-columns: repeat(var(--columns), calc(100% / var(--columns)));
+        column-gap: var(--gutter);
+    }
+}
+
+@media only screen and (min-width: 992px) {
+    .card-container {
+        --columns: 6;
+    }
+}

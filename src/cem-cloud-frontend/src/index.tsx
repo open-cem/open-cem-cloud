@@ -25,7 +25,7 @@ fetch('application.json')
       <React.StrictMode>
         <AuthProvider {...json.oidcConfig} onSigninCallback={onSigninCallback}>
           <Provider store={store}>
-            <App />
+            <App apiUri={json.apiUri} />
           </Provider>
         </AuthProvider>
       </React.StrictMode>
