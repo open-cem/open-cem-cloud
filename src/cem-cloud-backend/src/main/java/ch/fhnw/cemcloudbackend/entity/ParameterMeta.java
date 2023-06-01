@@ -8,6 +8,7 @@ import java.util.UUID;
 public class ParameterMeta {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "VARCHAR(36)")
     private UUID id;
     private String name;
     private String label;
@@ -16,9 +17,9 @@ public class ParameterMeta {
     @Enumerated(EnumType.STRING)
     private ParameterType listType;
     @OneToOne
-    private ComponentFamily referenceType;
+    private ComponentFamily referenceComponentFamily;
     @OneToOne
-    private ComponentType componentType;
+    private ComponentType referenceComponentType;
 
     public UUID getId() {
         return id;
@@ -60,20 +61,20 @@ public class ParameterMeta {
         this.listType = listType;
     }
 
-    public ComponentFamily getReferenceType() {
-        return referenceType;
+    public ComponentFamily getReferenceComponentFamily() {
+        return referenceComponentFamily;
     }
 
-    public void setReferenceType(ComponentFamily referenceType) {
-        this.referenceType = referenceType;
+    public void setReferenceComponentFamily(ComponentFamily referenceType) {
+        this.referenceComponentFamily = referenceType;
     }
 
-    public ComponentType getComponentSubType() {
-        return componentType;
+    public ComponentType getReferenceComponentType() {
+        return referenceComponentType;
     }
 
-    public void setComponentSubType(ComponentType componentType) {
-        this.componentType = componentType;
+    public void setReferenceComponentType(ComponentType componentType) {
+        this.referenceComponentType = componentType;
     }
 
     public enum ParameterType {

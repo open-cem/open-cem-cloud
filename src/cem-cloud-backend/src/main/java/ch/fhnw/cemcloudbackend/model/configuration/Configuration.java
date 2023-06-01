@@ -7,7 +7,7 @@ public class Configuration {
     private Date creationTimestamp;
     private int version;
 
-    private Communication[] communication;
+    private CommunicationChannel[] communicationChannels;
 
     private HardwareComponent[] sensors;
     private HardwareComponent[] actuators;
@@ -18,7 +18,7 @@ public class Configuration {
 
     public Configuration(String installationName,
                          int version,
-                         Communication[] communication,
+                         CommunicationChannel[] communicationChannels,
                          HardwareComponent[] sensors,
                          HardwareComponent[] actuators,
                          HardwareComponent[] devices,
@@ -26,7 +26,7 @@ public class Configuration {
         this.installationName = installationName;
         this.creationTimestamp = new Date();
         this.version = version;
-        this.communication = communication;
+        this.communicationChannels = communicationChannels;
         this.sensors = sensors;
         this.actuators = actuators;
         this.devices = devices;
@@ -81,12 +81,12 @@ public class Configuration {
         this.devices = devices;
     }
 
-    public Communication[] getCommunication() {
-        return communication;
+    public CommunicationChannel[] getCommunicationChannels() {
+        return communicationChannels;
     }
 
-    public void setCommunication(Communication[] communication) {
-        this.communication = communication;
+    public void setCommunicationChannels(CommunicationChannel[] communicationChannel) {
+        this.communicationChannels = communicationChannel;
     }
 
     public Controller[] getControllers() {

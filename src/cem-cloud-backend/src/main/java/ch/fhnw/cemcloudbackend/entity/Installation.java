@@ -11,7 +11,7 @@ public class Installation {
     @Column(columnDefinition = "VARCHAR(36)")
     private UUID id;
     private String name;
-    private int serialNumber;
+    private String serialNumber;
 
     public UUID getId() {
         return id;
@@ -29,11 +29,11 @@ public class Installation {
         this.name = name;
     }
 
-    public int getSerialNumber() {
+    public String getSerialNumber() {
         return serialNumber;
     }
 
-    public void setSerialNumber(int serialNumber) {
+    public void setSerialNumber(String serialNumber) {
         this.serialNumber = serialNumber;
     }
 }

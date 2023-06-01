@@ -8,8 +8,10 @@ import java.util.UUID;
 public class ComponentType {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "VARCHAR(36)")
     private UUID id;
     private String name;
+    private String code;
     @ManyToOne
     private ComponentFamily componentFamily;
 
@@ -19,6 +21,14 @@ public class ComponentType {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getName() {

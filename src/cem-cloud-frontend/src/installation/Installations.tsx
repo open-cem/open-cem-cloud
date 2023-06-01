@@ -4,31 +4,17 @@ import { Card } from 'primereact/card';
 import { Divider } from 'primereact/divider';
 import { useAuth } from 'react-oidc-context';
 import './Installations.css';
+import { Installation, InstallationService } from './InstallationsService';
 
-class Installation {
-    id: string;
-    name: string;
-    serialNumber: number;
-
-    constructor(id: string, name: string, serialNumber: number) {
-        this.id = id;
-        this.name = name;
-        this.serialNumber = serialNumber;
-    }
-}
-
-function Installations() {
+function Installations(props: any) {
     const auth = useAuth();
     const [installations, setInstallations] = useState<Installation[]>([]);
 
-    const loadInstallations = () => {
-        fetch("http://localhost:8080/api/installations", { headers: [["authorization", `Bearer ${auth.user?.access_token}`]] })
-            .then(r => r.json())
-            .then((installations: Installation[]) => setInstallations(installations))
-            .catch(e => console.error(e))
-    }
-
-    useEffect(() => loadInstallations(), [auth]);
+    useEffect(() => {
+        new InstallationService(props.apiUri, auth).loadInstallations()
+            .then(setInstallations)
+            .catch(console.error);
+    }, [auth, props.apiUri]);
 
     const header = (
         <div>

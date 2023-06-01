@@ -6,7 +6,7 @@ import { useAuth } from 'react-oidc-context';
 import { Button } from 'primereact/button'
 import Installations from "./installation/Installations";
 
-function App() {
+function App(props: any) {
   const auth = useAuth();
 
   switch (auth.activeNavigator) {
@@ -29,7 +29,7 @@ function App() {
       <div>
           Hallo {auth.user?.profile.name}{" "}
           <Button onClick={() => void auth.removeUser()}>Abmelden</Button>
-          <Installations></Installations>
+          <Installations apiUri={props.apiUri}></Installations>
       </div>
       );
   }
