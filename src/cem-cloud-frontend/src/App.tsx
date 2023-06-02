@@ -8,7 +8,7 @@ import Installations from "./installation/Installations";
 import { useEffect } from "react";
 import { PrimeIcons } from "primereact/api";
 
-function App() {
+function App(props: any) {
   const auth = useAuth();
 
   useEffect(() => {
@@ -16,7 +16,7 @@ function App() {
         !auth.isAuthenticated && !auth.activeNavigator && !auth.isLoading) {
         auth.signinRedirect();
     }
-}, [auth.isAuthenticated, auth.activeNavigator, auth.isLoading, auth.signinRedirect]);
+  }, [auth, auth.isAuthenticated, auth.activeNavigator, auth.isLoading, auth.signinRedirect]);
 
   switch (auth.activeNavigator) {
     case "signinSilent":
@@ -43,7 +43,7 @@ function App() {
           </menu>
         </nav>
         <main>
-          <Installations></Installations>
+          <Installations apiUri={props.apiUri}></Installations>
         </main>
       </div>
       );
