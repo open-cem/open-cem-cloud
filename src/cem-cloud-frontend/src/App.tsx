@@ -2,12 +2,20 @@ import "primereact/resources/primereact.min.css";
 import 'primeicons/primeicons.css';
 import "./theme.css";
 import './App.css';
-import { useAuth } from 'react-oidc-context';
+import { useAuth, hasAuthParams } from 'react-oidc-context';
 import { Button } from 'primereact/button'
 import Installations from "./installation/Installations";
+import { useEffect } from "react";
 
 function App(props: any) {
   const auth = useAuth();
+
+  useEffect(() => {
+    if (!hasAuthParams() &&
+        !auth.isAuthenticated && !auth.activeNavigator && !auth.isLoading) {
+        auth.signinRedirect();
+    }
+  }, [auth, auth.isAuthenticated, auth.activeNavigator, auth.isLoading, auth.signinRedirect]);
 
   switch (auth.activeNavigator) {
     case "signinSilent":
@@ -28,7 +36,7 @@ function App(props: any) {
       return (
       <div>
           Hallo {auth.user?.profile.name}{" "}
-          <Button onClick={() => void auth.removeUser()}>Abmelden</Button>
+          <Button onClick={() => void auth.signoutRedirect()}>Abmelden</Button>
           <Installations apiUri={props.apiUri}></Installations>
       </div>
       );

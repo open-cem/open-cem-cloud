@@ -3,7 +3,8 @@
     "authority": "http://localhost:2000/realms/cem-cloud/",
     "client_id": "react-app",
     "scope": "openid",
-    "redirect_uri": "http://localhost:3000"
+    "redirect_uri": "http://localhost:3000",
+    "post_logout_redirect_uri": "http://localhost:3000"
   },
   "apiUri": "http://localhost:8080/api/"
 }
