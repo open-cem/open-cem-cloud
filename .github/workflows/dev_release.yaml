@@ -30,10 +30,6 @@ jobs:
       run: ./gradlew bootJar --exclude-task test
       working-directory: ./src/cem-cloud-backend
 
-    - name: Remove plain Jar
-      run: rm ./build/libs/*plain.jar
-      working-directory: ./src/cem-cloud-backend
-
     - name: Build backend Docker image
       run: docker build -t backend-image ./src/cem-cloud-backend
 
