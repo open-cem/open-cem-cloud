@@ -2,14 +2,21 @@ import "primereact/resources/primereact.min.css";
 import 'primeicons/primeicons.css';
 import "./theme.css";
 import './App.css';
-import { useAuth } from 'react-oidc-context';
+import { useAuth, hasAuthParams } from 'react-oidc-context';
 import { Button } from 'primereact/button'
-import { Counter } from './counter/Counter';
-import Demo from './demo/Demo';
-import SendEvent from './demo/SendEvent'
+import Installations from "./installation/Installations";
+import { useEffect } from "react";
+import { PrimeIcons } from "primereact/api";
 
-function App() {
+function App(props: any) {
   const auth = useAuth();
+
+  useEffect(() => {
+    if (!hasAuthParams() &&
+        !auth.isAuthenticated && !auth.activeNavigator && !auth.isLoading) {
+        auth.signinRedirect();
+    }
+  }, [auth, auth.isAuthenticated, auth.activeNavigator, auth.isLoading, auth.signinRedirect]);
 
   switch (auth.activeNavigator) {
     case "signinSilent":
@@ -29,11 +36,15 @@ function App() {
   if (auth.isAuthenticated) {
       return (
       <div>
-          Hallo {auth.user?.profile.name}{" "}
-          <Button onClick={() => void auth.removeUser()}>Abmelden</Button>
-          <Demo />
-          <Counter />
-          <SendEvent />
+        <nav>
+          <a href="/"><span id="title-nav">CEM-Cloud</span></a>
+          <menu>
+            <li><i className={ PrimeIcons.SIGN_OUT } onClick={() => void auth.signoutRedirect()} title="Abmelden"></i></li>
+          </menu>
+        </nav>
+        <main>
+          <Installations apiUri={props.apiUri}></Installations>
+        </main>
       </div>
       );
   }
