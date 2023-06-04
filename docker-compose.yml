@@ -9,7 +9,6 @@ services:
       MYSQL_DATABASE: cemcloud
       MYSQL_USER: ${DB_USERNAME}
       MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
     ports:
       - 3306:3306
     restart: always
@@ -20,16 +19,22 @@ services:
     depends_on:
       - db
     ports:
-      - 2000:8080
+      - 2000:8443
     environment:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USERNAME}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_DB: mysql
-      KC_DB_URL: db:3306/cemcloud
-      KC_DB_USERNAME: ${DB_USERNAME}
-      KC_DB_PASSWORD: ${DB_PASSWORD}
+      KC_DB_URL: jdbc:mysql://db:3306/keycloak
+      KC_DB_USERNAME: ${KEY_CLOAK_DB_USERNAME}
+      KC_DB_PASSWORD: ${KEY_CLOAK_DB_PASSWORD}
       KC_HOSTNAME: ${HOSTNAME}
+      KC_HTTPS_CERTIFICATE_FILE: /etc/x509/https/tls.crt
+      KC_HTTPS_CERTIFICATE_KEY_FILE: /etc/x509/https/tls.key
     command: start --hostname-port=2000
+      
+    volumes:
+      - ./certs/fullchain.pem:/etc/x509/https/tls.crt
+      - ./certs/privkey.pem:/etc/x509/https/tls.key
   #mqtt:
   #  image: eclipse-mosquitto
   #  depends_on:
@@ -55,6 +60,12 @@ services:
       - backend
     ports:
       - 80:80
+      - 443:443
+    volumes:
+      - ./nginx/:/etc/nginx/conf.d/:ro
+      - ./certs/fullchain.pem:/etc/nginx/ssl/fullchain.pem
+      - ./certs/privkey.pem:/etc/nginx/ssl/privkey.pem
+
     restart: always
 volumes:
   db-data:
