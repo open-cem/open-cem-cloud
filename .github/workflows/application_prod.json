@@ -3,6 +3,7 @@
     "authority": "https://cem-cloud-p5.ch:2000/realms/cem-cloud/",
     "client_id": "react-app",
     "scope": "openid",
-    "redirect_uri": "https://cem-cloud-p5.ch/"
-  }
+    "redirect_uri": "https://cem-cloud-p5.ch"
+  },
+  "apiUri": "https://cem-cloud-p5.ch/api/"
 }
