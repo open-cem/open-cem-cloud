@@ -42,9 +42,9 @@ services:
     depends_on:
       - auth
     environment:
-      MYSQL_HOST: db
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
+      MYSQLHOST: db
+      DBUSERNAME: ${DB_USERNAME}
+      DBPASSWORD: ${DB_PASSWORD}
     ports:
       - 8080:8080
     restart: always
