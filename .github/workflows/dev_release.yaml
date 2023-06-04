@@ -27,7 +27,11 @@ jobs:
         distribution: temurin
 
     - name: Build Backend
-      run: ./gradlew build --exclude-task test
+      run: ./gradlew bootJar --exclude-task test
+      working-directory: ./src/cem-cloud-backend
+
+    - name: Remove plain Jar
+      run: rm ./build/libs/*plain.jar
       working-directory: ./src/cem-cloud-backend
 
     - name: Build backend Docker image
