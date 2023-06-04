@@ -42,7 +42,9 @@ services:
     depends_on:
       - auth
     environment:
-      MYSQL_HOST: db:3306/cemcloud
+      MYSQL_HOST: db
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
     ports:
       - 8080:8080
     restart: always
