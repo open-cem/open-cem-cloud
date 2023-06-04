@@ -51,6 +51,7 @@ services:
       MYSQLHOST:  ${MYSQLHOST}
       DBUSERNAME: ${DB_USERNAME}
       DBPASSWORD: ${DB_PASSWORD}
+      HOST: ${HOST}
     ports:
       - 8080:8080
     restart: always
