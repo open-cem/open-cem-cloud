@@ -1,6 +1,51 @@
 version: '3.1'
 
 services:
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_DATABASE: cemcloud
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+    ports:
+      - 3306:3306
+    restart: always
+    volumes:
+      - db-data:/var/lib/mysql
+  auth:
+    image: quay.io/keycloak/keycloak:latest
+    depends_on:
+      - db
+    ports:
+      - 2000:8080
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USERNAME}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_DB: mysql
+      KC_DB_URL: db:3306/cemcloud
+      KC_DB_USERNAME: ${DB_USERNAME}
+      KC_DB_PASSWORD: ${DB_PASSWORD}
+      KC_HOSTNAME: ${HOSTNAME}
+    command: start --hostname-port=2000
+  #mqtt:
+  #  image: eclipse-mosquitto
+  #  depends_on:
+  #    - auth
+  #  ports:
+  #    - 1883:1883
+  #  volumes:
+  #    - ./src/mqtt-broker/mosquitto.conf:/mosquitto/config/mosquitto.conf
+  backend:
+    image: ghcr.io/stuni907/backend-image:latest
+    depends_on:
+      - auth
+    environment:
+      MYSQL_HOST: db:3306/cemcloud
+    ports:
+      - 8080:8080
+    restart: always
   frontend:
     image: ghcr.io/stuni907/frontend-image:latest
     depends_on:
@@ -8,28 +53,5 @@ services:
     ports:
       - 80:80
     restart: always
-  backend:
-    image: ghcr.io/stuni907/backend-image:latest
-    depends_on:
-      - db
-    environment:
-      MYSQL_HOST: db
-    ports:
-      - 8080:8080
-    restart: always
-  db:
-    image: mysql
-    command: --default-authentication-plugin=mysql_native_password
-    environment:
-      MYSQL_DATABASE: cemcloud
-      MYSQL_USER: cemcloud
-      MYSQL_PASSWORD: rx9gfJWU$5aLe-tq
-      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
-    ports:
-      - 3306:3306
-    restart: always
-    volumes:
-      - db-data:/var/lib/mysql
-
 volumes:
   db-data:
