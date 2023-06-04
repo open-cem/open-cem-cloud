@@ -74,5 +74,6 @@ jobs:
         # sudo ufw allow ssh
         
         script: |
+          docker compose -f /home/$SERVER_USERNAME/docker-compose.yml down --rmi all
           echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin ghcr.io
           docker compose -f /home/$SERVER_USERNAME/docker-compose.yml up -d
