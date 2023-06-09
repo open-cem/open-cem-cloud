@@ -1,8 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { Provider } from 'react-redux';
-import { store } from './app/store';
-import App from './App';
+import App from './app/App';
 import './index.css';
 import { AuthProvider } from 'react-oidc-context';
 import { User } from 'oidc-client-ts';
@@ -18,15 +16,13 @@ const onSigninCallback = (_user: User | void): void => {
   )
 }
 
-fetch('application.json')
+fetch('/application.json')
   .then(response => response.json())
   .then(json => {
     root.render(
       <React.StrictMode>
         <AuthProvider {...json.oidcConfig} onSigninCallback={onSigninCallback}>
-          <Provider store={store}>
-            <App apiUri={json.apiUri} />
-          </Provider>
+          <App apiUri={json.apiUri} />
         </AuthProvider>
       </React.StrictMode>
     );

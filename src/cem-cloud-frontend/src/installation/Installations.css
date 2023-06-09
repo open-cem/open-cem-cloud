@@ -8,16 +8,22 @@
     padding: .5rem;
 }
 
+.card-container a {
+    display: contents;
+    color: unset;
+    text-decoration: unset;
+}
+
 .p-card {
     background-color: #f4f4f4;
     box-shadow: .5rem .5rem .5rem #aaaaaa;
 }
-  
+
 .p-divider.p-divider-horizontal:before {
     border-top: 1px solid var(--primary-color);
 }
 
-.p-card:hover, 
+.p-card:hover,
 .p-card:focus {
     transform: translateY(-0.5rem);
     transition: 0.1s ease-in-out;
@@ -38,7 +44,7 @@
 }
 
 i.pi {
-    font-size: 2rem;
+    font-size: 1.5rem;
 }
 
 i.pi:hover,
@@ -60,15 +66,11 @@ i.pi:active {
     text-overflow: ellipsis;
     text-align: center;
     display: -webkit-box;
-    -webkit-line-clamp: 2; 
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
 }
 
 @media only screen and (min-width: 768px) {
-    i.pi {
-        font-size: 1.5rem;
-    }
-
     .card-container {
         --columns: 4;
     }

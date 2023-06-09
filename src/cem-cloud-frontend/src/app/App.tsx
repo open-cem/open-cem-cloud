@@ -1,31 +1,35 @@
 import "primereact/resources/primereact.min.css";
 import 'primeicons/primeicons.css';
-import "./theme.css";
+import "../theme.css";
 import './App.css';
 import { useAuth, hasAuthParams } from 'react-oidc-context';
 import { Button } from 'primereact/button'
 import { useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Layout from "./pages/Layout";
-import Home from "./pages/Home";
-import Installations from "./installation/Installations";
-import NotFound from "./pages/NotFound";
+import Layout from "../pages/Layout";
+import Home from "../pages/Home";
+import Installations from "../installation/Installations";
+import NotFound from "../pages/NotFound";
+import InstallationConfig from "../installation/config/InstallationConfig";
+import Installation from "../installation/installation";
+import { setApiUri } from "./AppSettings";
 
 function App(props: any) {
+  setApiUri(props.apiUri);
   const auth = useAuth();
 
   useEffect(() => {
     if (!hasAuthParams() &&
-        !auth.isAuthenticated && !auth.activeNavigator && !auth.isLoading) {
-        auth.signinRedirect();
+      !auth.isAuthenticated && !auth.activeNavigator && !auth.isLoading) {
+      auth.signinRedirect();
     }
   }, [auth, auth.isAuthenticated, auth.activeNavigator, auth.isLoading, auth.signinRedirect]);
 
   switch (auth.activeNavigator) {
     case "signinSilent":
-        return <div>Anmelden...</div>;
+      return <div>Anmelden...</div>;
     case "signoutRedirect":
-        return <div>Abmelden...</div>;
+      return <div>Abmelden...</div>;
   }
 
   if (auth.isLoading) {
@@ -33,21 +37,23 @@ function App(props: any) {
   }
 
   if (auth.error) {
-      return <div>Oops... {auth.error.message}</div>;
+    return <div>Oops... {auth.error.message}</div>;
   }
 
   if (auth.isAuthenticated) {
-      return (
-        <BrowserRouter>
+    return (
+      <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
-            <Route index element={<Home apiUri={props.apiUri} />} />
-            <Route path="installations" element={<Installations apiUri={props.apiUri} />} />
+            <Route index element={<Home />} />
+            <Route path="installations" element={<Installations />} />
+            <Route path="installations/:installationId" element={<Installation />} />
+            <Route path="installations/:installationId/config" element={<InstallationConfig />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
       </BrowserRouter>
-      );
+    );
   }
 
   return <Button onClick={() => void auth.signinRedirect()}>Anmelden</Button>;

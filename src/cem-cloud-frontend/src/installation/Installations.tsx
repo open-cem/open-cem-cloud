@@ -5,22 +5,29 @@ import { Divider } from 'primereact/divider';
 import { useAuth } from 'react-oidc-context';
 import './Installations.css';
 import { Installation, InstallationService } from './InstallationsService';
+import { Link } from 'react-router-dom';
 
-function Installations(props: any) {
+function Installations() {
     const auth = useAuth();
     const [installations, setInstallations] = useState<Installation[]>([]);
 
     useEffect(() => {
-        new InstallationService(props.apiUri, auth).loadInstallations()
-            .then(setInstallations)
-            .catch(console.error);
-    }, [auth, props.apiUri]);
+        if (auth.user) {
+            new InstallationService().loadInstallations(auth.user.access_token)
+                .then(setInstallations)
+                .catch(console.error);
+        }
+    }, [auth]);
 
-    const header = (
+    const header = (i: Installation) => (
         <div>
-            <i className={ PrimeIcons.COG }></i>
-            <img alt="Card" src="/img/placeholder.png" />
-            <Divider />
+            <Link to={`/installations/${i.id}/config`}>
+                <i className={PrimeIcons.COG}></i>
+            </Link>
+            <Link to={`/installations/${i.id}`}>
+                <img alt="Card" src="/img/placeholder.png" />
+                <Divider />
+            </Link>
         </div>
     );
 
@@ -28,7 +35,11 @@ function Installations(props: any) {
         <div className="card-container">
             {
                 installations.map(i =>
-                    <Card key={i.id} title={i.name} header={header}></Card>
+                    <Card key={i.id} title={
+                        <Link to={`/installations/${i.id}`} key={i.id}>
+                            {i.name}
+                        </Link>
+                    } header={header(i)} />
                 )
             }
         </div>

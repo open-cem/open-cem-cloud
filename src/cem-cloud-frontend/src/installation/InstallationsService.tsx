@@ -1,6 +1,6 @@
-import { AuthContextProps } from "react-oidc-context";
+import { ApiService } from "../app/ApiService";
 
-export class Installation {
+class Installation {
     id: string;
     name: string;
     serialNumber: number;
@@ -12,21 +12,20 @@ export class Installation {
     }
 }
 
-export class InstallationService {
-    private apiUri: string;
-    private auth: AuthContextProps;
+class InstallationService extends ApiService {
+    public loadInstallations = (accessToken: string) => {
+        return this.apiBuilder<Installation[]>()
+            .withUri("installations")
+            .withAuthorization(accessToken)
+            .fetch()
+    };
 
-    constructor(apiUri: string, auth: AuthContextProps) {
-        this.apiUri = apiUri;
-        this.auth = auth;
-    }
-
-    public loadInstallations = () => {
-        return fetch(`${this.apiUri}installations`,
-            {
-                headers: [["authorization", `Bearer ${this.auth.user?.access_token}`]]
-            })
-            .then(r => r.json())
-            .then((installations: Installation[]) => installations)
+    public loadInstallation = (id: string, accessToken: string) => {
+        return this.apiBuilder<Installation>()
+            .withUri(`installations/${id}`)
+            .withAuthorization(accessToken)
+            .fetch()
     };
 }
+
+export { Installation, InstallationService };
