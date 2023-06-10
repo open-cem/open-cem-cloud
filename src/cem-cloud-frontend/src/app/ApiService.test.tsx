@@ -32,7 +32,7 @@ describe('Api builder', () => {
     const emptyRequestInit = { "headers": [] };
     const builder = new ApiBuilder<any>();
 
-    builder.fetch();
+    builder.fetchBody();
 
     expect(fetchMock).toHaveBeenCalled();
     expect(fetchMock).toHaveBeenCalledWith(baseUrl, emptyRequestInit);
@@ -43,7 +43,7 @@ describe('Api builder', () => {
     const builder = new ApiBuilder<any>()
       .withAuthorization("abc123");
 
-    builder.fetch();
+    builder.fetchBody();
 
     expect(fetchMock).toHaveBeenCalled();
     expect(fetchMock).toHaveBeenCalledWith(baseUrl, requestWithAuthHeader);
@@ -54,7 +54,7 @@ describe('Api builder', () => {
     const builder = new ApiBuilder<any>()
       .withUri("test");
 
-    builder.fetch();
+    builder.fetchBody();
 
     expect(fetchMock).toHaveBeenCalled();
     expect(fetchMock).toHaveBeenCalledWith(`${baseUrl}test`, emptyRequestHeaders);

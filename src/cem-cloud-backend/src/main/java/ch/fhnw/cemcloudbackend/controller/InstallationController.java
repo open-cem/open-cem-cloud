@@ -1,11 +1,14 @@
 package ch.fhnw.cemcloudbackend.controller;
 
+import ch.fhnw.cemcloudbackend.dto.InstallationCreateRequest;
 import ch.fhnw.cemcloudbackend.entity.Installation;
 import ch.fhnw.cemcloudbackend.repository.InstallationRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -32,5 +35,20 @@ public class InstallationController {
         Optional<Installation> installation = installations.findById(id);
 
         return ResponseEntity.of(installation);
+    }
+
+    @PostMapping
+    @CrossOrigin(exposedHeaders = "Location")
+    public ResponseEntity<Void> post(@RequestBody InstallationCreateRequest request) throws URISyntaxException {
+
+        Installation installation = new Installation();
+        installation.setId(UUID.randomUUID());
+        installation.setName(request.name());
+        installation.setSerialNumber(request.serialNumber());
+
+        installation = installations.save(installation);
+        URI uri = new URI(String.format("/%s", installation.getId()));
+
+        return ResponseEntity.created(uri).build();
     }
 }

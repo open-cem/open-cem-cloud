@@ -43,12 +43,12 @@
     padding: 0 1rem;
 }
 
-i.pi {
+a i.pi {
     font-size: 1.5rem;
 }
 
-i.pi:hover,
-i.pi:active {
+a i.pi:hover,
+a i.pi:active {
     color: var(--primary-color);
     filter: drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4));
 }
