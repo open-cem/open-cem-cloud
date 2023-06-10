@@ -15,17 +15,19 @@ import _ from 'lodash';
 function Installations() {
     const auth = useAuth();
     const navigate = useNavigate();
+    const [searchTerm, setSearchTerm] = useState<string>("");
     const [installations, setInstallations] = useState<Installation[]>([]);
 
     useEffect(() => {
         if (auth.user) {
             new InstallationService()
                 .loadInstallations(auth.user.access_token)
+                .then(i => _.filter(i, i => i.name.toLowerCase().includes(searchTerm.toLowerCase())))
                 .then(i => _.sortBy(i, i => i.name))
                 .then(setInstallations)
                 .catch(console.error);
         }
-    }, [auth]);
+    }, [auth, searchTerm]);
 
     const createNewInstallation = () => {
         if (auth.user) {
@@ -52,7 +54,7 @@ function Installations() {
         <Fragment>
             <span className="p-input-icon-left">
                 <i className={PrimeIcons.SEARCH} />
-                <InputText placeholder="Suche" />
+                <InputText placeholder="Suche" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
             </span>
         </Fragment>
     );
