@@ -29,7 +29,11 @@ describe('Api builder', () => {
   });
 
   it('empty builder does call fetch', () => {
-    const emptyRequestInit = { "headers": [] };
+    const emptyRequestInit = { 
+      body: undefined,
+      headers: [],
+      method: "GET"
+    };
     const builder = new ApiBuilder<any>();
 
     builder.fetchBody();
@@ -39,7 +43,11 @@ describe('Api builder', () => {
   });
 
   it('builder add authorization headers', () => {
-    const requestWithAuthHeader = { "headers": [["authorization", "Bearer abc123"]] };
+    const requestWithAuthHeader = { 
+      body: undefined,
+      headers: [["authorization", "Bearer abc123"]],
+      method: "GET"
+    };
     const builder = new ApiBuilder<any>()
       .withAuthorization("abc123");
 
@@ -50,7 +58,11 @@ describe('Api builder', () => {
   });
 
   it('builder add uri', () => {
-    const emptyRequestHeaders = { "headers": [] };
+    const emptyRequestHeaders = { 
+      body: undefined,
+      headers: [],
+      method: "GET"
+    };
     const builder = new ApiBuilder<any>()
       .withUri("test");
 
