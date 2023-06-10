@@ -4,7 +4,7 @@ describe('Api builder', () => {
   const baseUrl = "";
   let fetchMock: any = undefined;
 
-  let mockApiUri = jest.fn(function() {
+  let mockApiUri = jest.fn(function () {
     return baseUrl;
   });
   jest.mock('./AppSettings', () => {
@@ -17,7 +17,8 @@ describe('Api builder', () => {
     const assetsFetchMock = () => Promise.resolve({
       ok: true,
       status: 200,
-      json: async () => new Object()
+      headers: new Headers([["Location", "testHeader123"]]),
+      json: async () => ({ id: 9, name: "TestObject" })
     } as Response);
 
     fetchMock = jest.spyOn(global, "fetch")
@@ -29,7 +30,7 @@ describe('Api builder', () => {
   });
 
   it('empty builder does call fetch', () => {
-    const emptyRequestInit = { 
+    const emptyRequestInit = {
       body: undefined,
       headers: [],
       method: "GET"
@@ -42,8 +43,8 @@ describe('Api builder', () => {
     expect(fetchMock).toHaveBeenCalledWith(baseUrl, emptyRequestInit);
   });
 
-  it('builder add authorization headers', () => {
-    const requestWithAuthHeader = { 
+  it('add authorization headers', () => {
+    const requestWithAuthHeader = {
       body: undefined,
       headers: [["authorization", "Bearer abc123"]],
       method: "GET"
@@ -57,8 +58,8 @@ describe('Api builder', () => {
     expect(fetchMock).toHaveBeenCalledWith(baseUrl, requestWithAuthHeader);
   });
 
-  it('builder add uri', () => {
-    const emptyRequestHeaders = { 
+  it('add uri', () => {
+    const emptyRequestInit = {
       body: undefined,
       headers: [],
       method: "GET"
@@ -69,6 +70,65 @@ describe('Api builder', () => {
     builder.fetchBody();
 
     expect(fetchMock).toHaveBeenCalled();
-    expect(fetchMock).toHaveBeenCalledWith(`${baseUrl}test`, emptyRequestHeaders);
+    expect(fetchMock).toHaveBeenCalledWith(`${baseUrl}test`, emptyRequestInit);
+  });
+
+  it('add body', () => {
+    const request = {
+      body: "{\"name\":\"test\"}",
+      headers: [["Content-Type", "application/json"]],
+      method: "GET"
+    };
+    const builder = new ApiBuilder<any>()
+      .withBody({ name: "test" });
+
+    builder.fetchBody();
+
+    expect(fetchMock).toHaveBeenCalled();
+    expect(fetchMock).toHaveBeenCalledWith(baseUrl, request);
+  });
+
+  it('add set method', () => {
+    const request = {
+      body: undefined,
+      headers: [],
+      method: "OPTIONS"
+    };
+    const builder = new ApiBuilder<any>()
+      .withMethod("OPTIONS");
+
+    builder.fetchBody();
+
+    expect(fetchMock).toHaveBeenCalled();
+    expect(fetchMock).toHaveBeenCalledWith(baseUrl, request);
+  });
+
+  it('as POST request', () => {
+    const request = {
+      body: undefined,
+      headers: [],
+      method: "POST"
+    };
+    const builder = new ApiBuilder<any>()
+      .post();
+
+    builder.fetchBody();
+
+    expect(fetchMock).toHaveBeenCalled();
+    expect(fetchMock).toHaveBeenCalledWith(baseUrl, request);
+  });
+
+  it('fetch Location header', () => {
+    const location = new ApiBuilder<any>()
+      .fetchLocationHeader();
+
+    expect(location).toStrictEqual(Promise.resolve("testHeader123"));
+  });
+
+  it('fetch body', () => {
+    const obj = new ApiBuilder<{ id: number, name: string }>()
+      .fetchBody();
+
+    expect(obj).toStrictEqual(Promise.resolve({ id: 9, name: "TestObject" }));
   });
 });
