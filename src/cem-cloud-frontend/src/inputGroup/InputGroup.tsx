@@ -13,9 +13,12 @@ import { ChangeEventHandler } from "react";
  * @param value The value of the input field
  * @param isReadOnly True, if the input field is read only, else false
  */
-export const InputGroup = ({ label, id, changeFn, name, value, isReadOnly }: { label: string, id: string, changeFn: ChangeEventHandler<HTMLInputElement>, name: string, value: string | undefined, isReadOnly?: boolean | undefined | null }) => {
+export const InputGroup = ({ label, id, changeFn, name, value, isReadOnly }: { label: string, id: string, changeFn: ChangeEventHandler<HTMLInputElement>, name?: string, value: string | undefined, isReadOnly?: boolean }) => {
     if (!isReadOnly) {
         isReadOnly = false;
+    }
+    if (!name) {
+        name = '';
     }
 
     return (

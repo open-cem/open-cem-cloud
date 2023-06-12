@@ -1,14 +1,19 @@
 import { useAuth } from "react-oidc-context";
-import { useParams } from "react-router-dom";
-import { InstallationService, Installation as InstallationModel } from "../InstallationsService";
-import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { InstallationService, Installation } from "../InstallationsService";
+import { useEffect, useRef, useState } from "react";
 import { InputGroup, PictureInputGroup } from "../../inputGroup/InputGroup";
+import { Button } from "primereact/button";
+import presentError from "../../app/ErrorPresenter";
+import { Toast } from "primereact/toast";
 
 const InstallationConfig = () => {
     const params = useParams<string>();
+    const navigate = useNavigate();
     const auth = useAuth();
+    const toast = useRef<Toast>(null);
 
-    const [installation, setInstallation] = useState<InstallationModel | null>(null);
+    const [installation, setInstallation] = useState<Installation | null>(null);
 
     useEffect(() => {
         const installationId = params.installationId;
@@ -18,19 +23,28 @@ const InstallationConfig = () => {
 
         new InstallationService().loadInstallation(installationId, auth.user.access_token)
             .then(setInstallation)
-            .catch(console.error);
+            .catch(e => presentError('Installation konnnte nicht geladen werden, versuchen Sie es später erneut.', undefined, e, toast.current));
     }, [auth, params.installationId]);
 
-    const onChange = (value: string) => {
-
+    const onChange = (propertyName: string, value: any) => {
+        const i = { ...installation } as Installation;
+        (i as {[key: string]: any})[propertyName] = value;
+        setInstallation(i);
     };
 
     return (
-        <div className="form">
-            <InputGroup id="name" label="Name" value={installation?.name} setValue={onChange} />
-            <InputGroup id="id" label="ID der Installation" value={installation?.serialNumber} setValue={onChange} />
-            <PictureInputGroup id="image" label="Anzeigbild" />
-        </div>
+        <>
+            <Toast ref={toast} />
+            <div className="form">
+                <InputGroup id="formName" label="Name" value={installation?.name} changeFn={(e) => onChange('name', e.target.value)} />
+                <InputGroup id="id" label="ID der Installation" value={installation?.serialNumber} changeFn={(e) => onChange('serialNumber', e.target.value)} />
+                <PictureInputGroup id="image" label="Anzeigbild" />
+                <div className="button-bar">
+                    <Button severity="secondary" outlined onClick={() => navigate(-1)}>Abbrechen</Button>
+                    <Button>Speichern</Button>
+                </div>
+            </div>
+        </>
     )
 };
 

@@ -1,4 +1,4 @@
-import { useEffect, useState, Fragment } from 'react';
+import { useEffect, useState, Fragment, useRef } from 'react';
 import { PrimeIcons } from 'primereact/api';
 import { Card } from 'primereact/card';
 import { Divider } from 'primereact/divider';
@@ -9,12 +9,15 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Toolbar } from 'primereact/toolbar';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
+import { Toast } from 'primereact/toast'
+import presentError from '../app/ErrorPresenter';
 import _ from 'lodash';
         
 
 function Installations() {
     const auth = useAuth();
     const navigate = useNavigate();
+    const toast = useRef<Toast>(null);
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [installations, setInstallations] = useState<Installation[]>([]);
 
@@ -25,7 +28,7 @@ function Installations() {
                 .then(i => _.filter(i, i => i.name.toLowerCase().includes(searchTerm.toLowerCase())))
                 .then(i => _.sortBy(i, i => i.name))
                 .then(setInstallations)
-                .catch(console.error);
+                .catch(e => presentError('Die Installationen konnten nicht geladen werden, versuchen Sie es später erneut.', undefined, e, toast.current));
         }
     }, [auth, searchTerm]);
 
@@ -34,7 +37,7 @@ function Installations() {
             new InstallationService()
                 .createInstallation('Neue Installation', auth.user?.access_token)
                 .then(id => navigate(`/installations/${id}/config`))
-                .catch(console.error)
+                .catch(e => presentError('Die Installation konnte nicht erstellt werden, versuchen Sie es später erneut.', undefined, e, toast.current));
         }
     };
 
@@ -67,6 +70,7 @@ function Installations() {
 
     return (
         <>
+            <Toast ref={toast} />
             <Toolbar start={startContent} end={endContent} />
             <div className="card-container">
                 {

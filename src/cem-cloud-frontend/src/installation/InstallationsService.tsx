@@ -3,9 +3,9 @@ import { ApiService } from "../app/ApiService";
 class Installation {
     id: string;
     name: string;
-    serialNumber: number;
+    serialNumber: string;
 
-    constructor(id: string, name: string, serialNumber: number) {
+    constructor(id: string, name: string, serialNumber: string) {
         this.id = id;
         this.name = name;
         this.serialNumber = serialNumber;
@@ -31,10 +31,16 @@ class InstallationService extends ApiService {
         return this.apiBuilder()
             .withUri('installations')
             .withAuthorization(accessToken)
-            .withBody({ name: name })
+            .withBody({ name: name, serialNumber: crypto.randomUUID() })
             .post()
             .fetchLocationHeader()
-            .then(location => location?.substring(location.lastIndexOf('/') + 1));
+            .then(location => {
+                if (location) {
+                    return location?.substring(location.lastIndexOf('/') + 1)
+                } else {
+                    throw new Error("No location header present.")
+                }
+            });
     }
 }
 
