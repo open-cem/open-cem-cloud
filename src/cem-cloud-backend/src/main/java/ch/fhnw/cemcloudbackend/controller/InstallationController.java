@@ -1,12 +1,12 @@
 package ch.fhnw.cemcloudbackend.controller;
 
 import ch.fhnw.cemcloudbackend.dto.InstallationCreateRequest;
+import ch.fhnw.cemcloudbackend.dto.InstallationUpdateRequest;
 import ch.fhnw.cemcloudbackend.entity.Installation;
 import ch.fhnw.cemcloudbackend.repository.InstallationRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -52,5 +52,20 @@ public class InstallationController {
         URI uri = new URI(String.format("/%s", installation.getId()));
 
         return ResponseEntity.created(uri).build();
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<Void> put(@PathVariable UUID id, @Valid @RequestBody InstallationUpdateRequest request) {
+        Optional<Installation> optionalInstallation = installations.findById(id);
+        if (optionalInstallation.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Installation installation = optionalInstallation.get();
+        installation.setName(request.name());
+        installation.setSerialNumber(request.serialNumber());
+        installations.save(installation);
+
+        return ResponseEntity.ok().build();
     }
 }

@@ -118,6 +118,21 @@ describe('Api builder', () => {
     expect(fetchMock).toHaveBeenCalledWith(baseUrl, request);
   });
 
+  it('as PUT request', () => {
+    const request = {
+      body: undefined,
+      headers: [],
+      method: "PUT"
+    };
+    const builder = new ApiBuilder<any>()
+      .put();
+
+    builder.fetchBody();
+
+    expect(fetchMock).toHaveBeenCalled();
+    expect(fetchMock).toHaveBeenCalledWith(baseUrl, request);
+  });
+
   it('fetch Location header', () => {
     const location = new ApiBuilder<any>()
       .fetchLocationHeader();

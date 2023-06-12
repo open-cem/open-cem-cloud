@@ -19,4 +19,16 @@ const presentError = (description: string, title?: string, error?:any, toast?: T
     }
 }
 
-export default presentError;
+const presentSuccess = (toast: Toast, description: string, title?: string) => {
+    if (!title) {
+        title = "Erfolg";
+    }
+    toast.show({
+        severity:'success', 
+        summary: title, 
+        detail: description,
+        life: 3_000
+    });
+}
+
+export { presentError, presentSuccess };

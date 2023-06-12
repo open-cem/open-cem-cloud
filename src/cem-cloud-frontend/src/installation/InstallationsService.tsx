@@ -12,6 +12,12 @@ class Installation {
     }
 }
 
+class NullInstallation extends Installation {
+    constructor() {
+        super('', '', '');
+    }
+}
+
 class InstallationService extends ApiService {
     public loadInstallations = (accessToken: string) => {
         return this.apiBuilder<Installation[]>()
@@ -42,6 +48,15 @@ class InstallationService extends ApiService {
                 }
             });
     }
+
+    public saveInstallation = (installation: Installation, accessToken: string) => {
+        return this.apiBuilder()
+            .withUri(`installations/${installation.id}`)
+            .withAuthorization(accessToken)
+            .withBody(installation)
+            .put()
+            .fetch();
+    }
 }
 
-export { Installation, InstallationService };
+export { Installation, NullInstallation, InstallationService };

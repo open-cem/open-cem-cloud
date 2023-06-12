@@ -10,7 +10,7 @@ import { Toolbar } from 'primereact/toolbar';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { Toast } from 'primereact/toast'
-import presentError from '../app/ErrorPresenter';
+import { presentError } from '../app/NotificationPresenter';
 import _ from 'lodash';
         
 

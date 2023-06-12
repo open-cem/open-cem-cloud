@@ -34,6 +34,10 @@ class ApiBuilder<ResultType> {
         return this.withMethod('POST');
     }
 
+    public put() {
+        return this.withMethod('PUT');
+    }
+
     public withAuthorization(accessToken: string) {
         if (!this.headers.find(h => h[0] === "Authorization")) {
             this.headers.push(this.createAuthorizationHeader(accessToken));
@@ -50,6 +54,11 @@ class ApiBuilder<ResultType> {
                 headers: this.headers,
                 body: this.body
             });
+    }
+
+    public fetch() {
+        return this.fetchResponse()
+            .then(_ => Promise<void>);
     }
 
     public fetchBody() {
