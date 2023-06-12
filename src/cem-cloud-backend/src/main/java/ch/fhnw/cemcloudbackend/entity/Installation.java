@@ -1,6 +1,7 @@
 package ch.fhnw.cemcloudbackend.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -13,7 +14,11 @@ public class Installation {
     @Column(columnDefinition = "VARCHAR(36)")
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID id;
+
+    @NotEmpty
     private String name;
+
+    @NotEmpty
     private String serialNumber;
 
     public UUID getId() {

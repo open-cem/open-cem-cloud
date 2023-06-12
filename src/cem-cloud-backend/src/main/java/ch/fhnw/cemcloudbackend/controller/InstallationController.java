@@ -3,8 +3,10 @@ package ch.fhnw.cemcloudbackend.controller;
 import ch.fhnw.cemcloudbackend.dto.InstallationCreateRequest;
 import ch.fhnw.cemcloudbackend.entity.Installation;
 import ch.fhnw.cemcloudbackend.repository.InstallationRepository;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -39,7 +41,7 @@ public class InstallationController {
 
     @PostMapping
     @CrossOrigin(exposedHeaders = "Location")
-    public ResponseEntity<Void> post(@RequestBody InstallationCreateRequest request) throws URISyntaxException {
+    public ResponseEntity<Void> post(@Valid @RequestBody InstallationCreateRequest request) throws URISyntaxException {
 
         Installation installation = new Installation();
         installation.setId(UUID.randomUUID());
