@@ -17,6 +17,7 @@
 .p-card {
     background-color: #f4f4f4;
     box-shadow: .5rem .5rem .5rem #aaaaaa;
+    overflow: hidden;
 }
 
 .p-divider.p-divider-horizontal:before {

@@ -1,7 +1,9 @@
+import { ChangeEventHandler } from "react";
 import { InputText } from "primereact/inputtext";
 import { Image } from "primereact/image";
 import "./InputGroup.css";
-import { ChangeEventHandler } from "react";
+import AuthorizedImage from "../authorizedImage/authorizedImage";
+import { Installation } from "../installation/InstallationsService";
 
 /**
  * Shows a label and an input field.
@@ -29,11 +31,16 @@ export const InputGroup = ({ label, id, changeFn, name, value, isReadOnly }: { l
     )
 };
 
-export const PictureInputGroup = ({ id, label }: { id: string, label: string }) => {
+export const PictureInputGroup = ({ id, label, installation }: { id: string, label: string, installation: Installation }) => {
     return (
         <div className="input-group">
             <label htmlFor={id}>{label}</label>
-            <Image id={id} src="/img/placeholder.png" alt="Image" />
+            {
+                // blobs do not need to be authorized
+                installation.imageUrl.startsWith("blob")
+                ? <Image src={installation.imageUrl} />
+                : <AuthorizedImage installation={installation} id={id} />
+            }
         </div>
     )
 };

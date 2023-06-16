@@ -21,6 +21,8 @@ public class Installation {
     @NotEmpty
     private String serialNumber;
 
+    private String filename;
+
     public UUID getId() {
         return id;
     }
@@ -43,5 +45,13 @@ public class Installation {
 
     public void setSerialNumber(String serialNumber) {
         this.serialNumber = serialNumber;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 }

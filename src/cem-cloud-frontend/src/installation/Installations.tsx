@@ -12,6 +12,7 @@ import { InputText } from 'primereact/inputtext';
 import { Toast } from 'primereact/toast'
 import { presentError } from '../app/NotificationPresenter';
 import _ from 'lodash';
+import AuthorizedImage from '../authorizedImage/authorizedImage';
         
 
 function Installations() {
@@ -47,7 +48,7 @@ function Installations() {
                 <i className={PrimeIcons.COG}></i>
             </Link>
             <Link to={`/installations/${i.id}`}>
-                <img alt="Card" src="/img/placeholder.png" />
+                <AuthorizedImage installation={i}/>
                 <Divider />
             </Link>
         </div>

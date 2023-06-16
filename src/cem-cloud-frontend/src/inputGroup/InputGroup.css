@@ -18,6 +18,17 @@
     flex: 1 1 auto;
 }
 
+.input-group .p-image > img {
+    width: 100%;
+}
+
+@media only screen and (min-width: 768px) {
+    .input-group .p-image > img {
+        width: unset;
+        height: 10rem;
+    }
+}
+
 .input-group input[type="checkbox"],
 .input-group input[type="radio"] {
     order: 1;

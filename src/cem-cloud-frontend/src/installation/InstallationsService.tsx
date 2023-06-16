@@ -4,11 +4,14 @@ class Installation {
     id: string;
     name: string;
     serialNumber: string;
+    imageUrl: string;
 
-    constructor(id: string, name: string, serialNumber: string) {
+
+    constructor(id: string, name: string, serialNumber: string, image?: string) {
         this.id = id;
         this.name = name;
         this.serialNumber = serialNumber;
+        this.imageUrl = image ?? '';
     }
 }
 
@@ -49,13 +52,28 @@ class InstallationService extends ApiService {
             });
     }
 
-    public saveInstallation = (installation: Installation, accessToken: string) => {
+    public saveInstallation = (installation: Installation, accessToken: string, file?: File) => {
+        const formData = new FormData();
+        formData.append("installation", new Blob([JSON.stringify(installation)], {
+          type: 'application/json'
+        }));
+        if (file) {
+            formData.append("image", file);
+        }
+
         return this.apiBuilder()
             .withUri(`installations/${installation.id}`)
             .withAuthorization(accessToken)
-            .withBody(installation)
+            .withFormData(formData)
             .put()
             .fetch();
+    }
+
+    public loadInstallationImage = (installation: Installation, accessToken: string) => {
+        return this.apiBuilder()
+            .withUri(`installations/${installation.imageUrl}`)
+            .withAuthorization(accessToken)
+            .fetchBlobResponse();
     }
 }
 

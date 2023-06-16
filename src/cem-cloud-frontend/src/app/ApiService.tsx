@@ -10,7 +10,8 @@ class ApiBuilder<ResultType> {
     private uri: string = "";
     private headers: [string, string][] = [];
     private method: string = "GET";
-    private body: string|null|undefined;
+    private body?: string;
+    private formData?: FormData;
 
     public withUri(uri: string) {
         this.uri = uri;
@@ -22,6 +23,11 @@ class ApiBuilder<ResultType> {
         if (!this.headers.find(h => h[0] === "Content-Type")) {
             this.headers.push(["Content-Type", "application/json"])
         }
+        return this;
+    }
+
+    public withFormData(formData: FormData) {
+        this.formData = formData;
         return this;
     }
 
@@ -52,7 +58,7 @@ class ApiBuilder<ResultType> {
             {
                 method: this.method,
                 headers: this.headers,
-                body: this.body
+                body: this.body ?? this.formData,
             });
     }
 
@@ -70,6 +76,12 @@ class ApiBuilder<ResultType> {
     public fetchLocationHeader() {
         return this.fetchResponse()
             .then(r => r.headers.get('Location'));
+    }
+
+    public fetchBlobResponse() {
+        return this.fetchResponse()
+            .then(r => r.blob())
+            .then(b => b.size === 0 ? null : URL.createObjectURL(b));
     }
 
     private createAuthorizationHeader(accessToken: string): [string, string] {
