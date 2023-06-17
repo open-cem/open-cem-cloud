@@ -7,6 +7,10 @@ import { Button } from "primereact/button";
 import { presentError, presentSuccess } from "../../app/NotificationPresenter";
 import { Toast } from "primereact/toast";
 import { FileUpload, FileUploadHandlerEvent } from "primereact/fileupload";
+import { Accordion, AccordionTab } from 'primereact/accordion';
+import { CommunicationChannel, CommunicationChannelService } from "../CommunicationChannelsService";
+import ComponentListEntry from "../../componentListEntry/ComponentListEntry";
+import ComponentListHeader from "../../componentListHeader/ComponentListHeader";
 
 const InstallationConfig = () => {
     const params = useParams<string>();
@@ -17,6 +21,8 @@ const InstallationConfig = () => {
     const [installation, setInstallation] = useState<Installation>(new NullInstallation());
     const [image, setImage] = useState<File>();
     const [hasChanges, setHasChanges] = useState<boolean>(false);
+    const [communicationChannels, setCommunicationChannels] = useState<CommunicationChannel[]>([]);
+    const [activeIndex, setActiveIndex] = useState<number|undefined>(undefined);
 
     useEffect(() => {
         const installationId = params.installationId;
@@ -27,6 +33,11 @@ const InstallationConfig = () => {
         new InstallationService().loadInstallation(installationId, auth.user.access_token)
             .then(setInstallation)
             .catch(e => presentError('Installation konnnte nicht geladen werden, versuchen Sie es später erneut.', undefined, e, toast.current));
+
+        new CommunicationChannelService().loadCommunicationChannel(installationId)
+            .then(setCommunicationChannels)
+            .then(_ => setActiveIndex(0))
+            .catch(e => presentError('Kommunikationskanäle konnnte nicht geladen werden, versuchen Sie es später erneut.', undefined, e, toast.current));
     }, [auth, params.installationId]);
 
     const saveImage = async (event: FileUploadHandlerEvent) => {
@@ -57,6 +68,16 @@ const InstallationConfig = () => {
         }
     };
 
+    const channels = (cs: CommunicationChannel[]) => {
+        return communicationChannels.map(c =>
+            <ComponentListEntry key={c.id} label={c.name} />
+        );
+    };
+
+    const addChannel = () => {
+
+    };
+
     return (
         <>
             <Toast ref={toast} />
@@ -67,21 +88,30 @@ const InstallationConfig = () => {
                     installation.imageUrl
                     ? (
                         <>
-                            <PictureInputGroup id="image" label="Anzeigbild" installation={installation} />
-                            <FileUpload mode="basic" name="image" accept="image/*" auto={true} customUpload uploadHandler={saveImage} maxFileSize={1_000_000} />
+                            <PictureInputGroup id="image" label="Anzeigebild" installation={installation} />
+                            <FileUpload mode="basic" name="image" accept="image/*" auto={true} customUpload uploadHandler={saveImage} maxFileSize={1_000_000} chooseLabel="Bild wählen" />
                         </>
                         
                     )
                     : <></>
                 }
-                <div className="button-bar">
-                    <Button severity="secondary" outlined onClick={() => navigate(-1)}>Abbrechen</Button>
+            </div>
+            <Accordion activeIndex={activeIndex}>
+                <AccordionTab header={<ComponentListHeader label="Kommunikationskanäle" addAction={addChannel} />}>
                     {
-                        hasChanges 
-                            ? <Button onClick={onSave}>Speichern</Button>       
-                            : <></>
+                        communicationChannels.length
+                        ? channels(communicationChannels)
+                        : <p>Erstellen Sie neue Kommunikationskanäle mit dem +.</p>
                     }
-                </div>
+                </AccordionTab>
+            </Accordion> 
+            <div className="button-bar">
+                <Button severity="secondary" outlined onClick={() => navigate(-1)}>Abbrechen</Button>
+                {
+                    hasChanges 
+                        ? <Button onClick={onSave}>Speichern</Button>       
+                        : <></>
+                }
             </div>
         </>
     )
