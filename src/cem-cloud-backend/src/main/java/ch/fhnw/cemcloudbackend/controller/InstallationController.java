@@ -88,7 +88,7 @@ public class InstallationController {
 
     @PutMapping(value = "{id}", consumes = { "multipart/form-data" })
     public ResponseEntity<Void> put(@PathVariable UUID id, @Valid @RequestPart("installation") InstallationUpdateRequest request,
-                                    @RequestPart("image") MultipartFile image) throws IOException {
+                                    @RequestPart(value = "image", required = false) MultipartFile image) throws IOException {
         Optional<Installation> optionalInstallation = installations.findById(id);
         if (optionalInstallation.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -98,7 +98,7 @@ public class InstallationController {
         installation.setName(request.name());
         installation.setSerialNumber(request.serialNumber());
 
-        if (!image.isEmpty()) {
+        if (image != null && !image.isEmpty()) {
             String filename = image.getOriginalFilename();
             if (filename == null || filename.isBlank()) {
                 filename = UUID.randomUUID().toString();
