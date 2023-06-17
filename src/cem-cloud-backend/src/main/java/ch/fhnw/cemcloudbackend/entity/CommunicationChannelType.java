@@ -1,28 +1,22 @@
 package ch.fhnw.cemcloudbackend.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.util.UUID;
 
 @Entity
-public class CommunicationChannel {
+public class CommunicationChannelType {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(columnDefinition = "VARCHAR(36)")
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID id;
 
-    @NotEmpty
     private String name;
 
-    @ManyToOne
-    private Installation installation;
-
-    @OneToOne
-    private CommunicationChannelType typ;
+    private String code;
 
     public UUID getId() {
         return id;
@@ -40,19 +34,11 @@ public class CommunicationChannel {
         this.name = name;
     }
 
-    public Installation getInstallation() {
-        return installation;
+    public String getCode() {
+        return code;
     }
 
-    public void setInstallation(Installation installation) {
-        this.installation = installation;
-    }
-
-    public CommunicationChannelType getTyp() {
-        return typ;
-    }
-
-    public void setTyp(CommunicationChannelType typ) {
-        this.typ = typ;
+    public void setCode(String code) {
+        this.code = code;
     }
 }

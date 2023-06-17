@@ -7,10 +7,13 @@ import { Button } from "primereact/button";
 import { presentError, presentSuccess } from "../../app/NotificationPresenter";
 import { Toast } from "primereact/toast";
 import { FileUpload, FileUploadHandlerEvent } from "primereact/fileupload";
-import { Accordion, AccordionTab } from 'primereact/accordion';
-import { CommunicationChannel, CommunicationChannelService } from "../CommunicationChannelsService";
+import { Accordion, AccordionTab } from "primereact/accordion";
+import { Dialog } from "primereact/dialog";
+import { CommunicationChannel, CommunicationChannelService, CommunicationChannelType } from "../CommunicationChannelsService";
 import ComponentListEntry from "../../componentListEntry/ComponentListEntry";
 import ComponentListHeader from "../../componentListHeader/ComponentListHeader";
+import _ from "lodash";
+import "./InstallationConfig.css";
 
 const InstallationConfig = () => {
     const params = useParams<string>();
@@ -23,6 +26,8 @@ const InstallationConfig = () => {
     const [hasChanges, setHasChanges] = useState<boolean>(false);
     const [communicationChannels, setCommunicationChannels] = useState<CommunicationChannel[]>([]);
     const [activeIndex, setActiveIndex] = useState<number|undefined>(undefined);
+    const [typesVisible, setTypesVisible] = useState<boolean>(false);
+    const [channelTypes, setChannelTypes] = useState<CommunicationChannelType[]>([]);
 
     useEffect(() => {
         const installationId = params.installationId;
@@ -34,10 +39,13 @@ const InstallationConfig = () => {
             .then(setInstallation)
             .catch(e => presentError('Installation konnnte nicht geladen werden, versuchen Sie es später erneut.', undefined, e, toast.current));
 
-        new CommunicationChannelService().loadCommunicationChannel(installationId, auth.user.access_token)
+        const channels = new CommunicationChannelService()
+        channels.loadCommunicationChannel(installationId, auth.user.access_token)
             .then(setCommunicationChannels)
             .then(_ => setActiveIndex(0))
             .catch(e => presentError('Kommunikationskanäle konnnte nicht geladen werden, versuchen Sie es später erneut.', undefined, e, toast.current));
+        channels.loadCommunicationChannelTypes(auth.user.access_token)
+            .then(types => setChannelTypes(_.sortBy(types, t => t.name)));
     }, [auth, params.installationId]);
 
     const saveImage = async (event: FileUploadHandlerEvent) => {
@@ -74,13 +82,25 @@ const InstallationConfig = () => {
         );
     };
 
-    const addChannel = () => {
-
+    const addChannel = (typeId: string) => {
+        if (auth.user) {
+            new CommunicationChannelService()
+                .createCommunicationChannel(installation.id, typeId, auth.user.access_token)
+                .then(id => navigate(`/communicationChannels/${id}`))
+                .catch(e => presentError('Der Kommunikationskanal konnte nicht erstellt werden, versuchen Sie es später erneut.', undefined, e, toast.current));
+        }
     };
 
     return (
         <>
             <Toast ref={toast} />
+            <Dialog header="Kommunikationskanal Typ auswählen" visible={typesVisible} onHide={() => setTypesVisible(false)}>
+                <div className="types-container">
+                    {
+                        channelTypes.map(type => <Button key={type.id} onClick={() => addChannel(type.id)}>{type.name}</Button>)
+                    }
+                </div>
+            </Dialog>
             <div className="form">
                 <InputGroup id="formName" label="Name" value={installation?.name} changeFn={(e) => onChange('name', e.target.value)} />
                 <InputGroup id="id" label="ID der Installation" value={installation?.serialNumber} changeFn={(e) => onChange('serialNumber', e.target.value)} />
@@ -97,7 +117,7 @@ const InstallationConfig = () => {
                 }
             </div>
             <Accordion activeIndex={activeIndex}>
-                <AccordionTab header={<ComponentListHeader label="Kommunikationskanäle" addAction={addChannel} />}>
+                <AccordionTab header={<ComponentListHeader label="Kommunikationskanäle" addAction={() => setTypesVisible(true)} />}>
                     {
                         communicationChannels.length
                         ? channels(communicationChannels)
