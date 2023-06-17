@@ -24,7 +24,7 @@ public class Installation {
 
     private String filename;
 
-    @OneToMany
+    @OneToMany(mappedBy = "installation")
     private Set<CommunicationChannel> communicationChannels;
 
     public UUID getId() {

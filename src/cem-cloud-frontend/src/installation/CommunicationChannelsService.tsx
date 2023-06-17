@@ -51,6 +51,14 @@ class CommunicationChannelService extends ApiService {
                 }
             });
     }
+
+    public deleteCommunicationChannel(channelId: string, accessToken: string) {
+        return this.apiBuilder()
+            .withUri(`communicationChannels/${channelId}`)
+            .withAuthorization(accessToken)
+            .delete()
+            .fetch();
+    }
 }
 
 export { CommunicationChannel, CommunicationChannelType, CommunicationChannelService };

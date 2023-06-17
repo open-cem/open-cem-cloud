@@ -78,7 +78,7 @@ const InstallationConfig = () => {
 
     const channels = (cs: CommunicationChannel[]) => {
         return cs.map(c =>
-            <ComponentListEntry key={c.id} label={c.name} />
+            <ComponentListEntry key={c.id} label={c.name} selectAction={() => navigate(`/communicationChannels/${c.id}`)} deleteAction={() => deleteChannel(c.id)} />
         );
     };
 
@@ -88,6 +88,15 @@ const InstallationConfig = () => {
                 .createCommunicationChannel(installation.id, typeId, auth.user.access_token)
                 .then(id => navigate(`/communicationChannels/${id}`))
                 .catch(e => presentError('Der Kommunikationskanal konnte nicht erstellt werden, versuchen Sie es später erneut.', undefined, e, toast.current));
+        }
+    };
+
+    const deleteChannel = (channelId: string) => {
+        if (auth.user) {
+            new CommunicationChannelService()
+                .deleteCommunicationChannel(channelId, auth.user.access_token)
+                .then((v) => setCommunicationChannels(_.reject(communicationChannels, c => c.id === channelId)))
+                .catch(e => presentError('Der Kommunikationskanal konnte nicht gelöscht werden, versuchen Sie es später erneut.', undefined, e, toast.current));
         }
     };
 

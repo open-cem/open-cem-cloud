@@ -73,12 +73,25 @@ public class CommunicationChannelController {
 
         var channel = new ch.fhnw.cemcloudbackend.entity.CommunicationChannel();
         channel.setTyp(type.get());
-        channel.setName("Neuer Kommunikationskanal");
+        channel.setName(String.format("Neuer %s Kommunikationskanal", type.get().getName()));
         channel.setInstallation(installation.get());
 
         channel = channels.save(channel);
         URI uri = new URI(String.format("/%s", channel.getId()));
 
         return ResponseEntity.created(uri).build();
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+        Optional<ch.fhnw.cemcloudbackend.entity.CommunicationChannel> channel = channels.findById(id);
+
+        if (channel.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        channels.delete(channel.get());
+
+        return ResponseEntity.noContent().build();
     }
 }

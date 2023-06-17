@@ -55,6 +55,10 @@ class ApiBuilder<ResultType> {
         return this.withMethod('PUT');
     }
 
+    public delete() {
+        return this.withMethod('DELETE');
+    }
+
     public withAuthorization(accessToken: string) {
         if (!this.headers.find(h => h[0] === "Authorization")) {
             this.headers.push(this.createAuthorizationHeader(accessToken));
