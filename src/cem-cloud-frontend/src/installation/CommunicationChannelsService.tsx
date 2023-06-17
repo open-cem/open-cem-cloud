@@ -11,8 +11,12 @@ class CommunicationChannel {
 }
 
 class CommunicationChannelService extends ApiService {
-    public loadCommunicationChannel(installationId: string) {
-        return Promise.resolve([new CommunicationChannel("123", "Modbus RTU")]);
+    public loadCommunicationChannel(installationId: string, accessToken: string) {
+        return this.apiBuilder<CommunicationChannel[]>()
+            .withUri("communicationChannels")
+            .withParameter("installationId", installationId)
+            .withAuthorization(accessToken)
+            .fetchBody();
     }
 }
 

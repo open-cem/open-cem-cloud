@@ -1,4 +1,5 @@
 import { getApiUri } from "./AppSettings";
+import _ from "lodash";
 
 class ApiService {
     protected apiBuilder<ResponseType>() {
@@ -12,9 +13,19 @@ class ApiBuilder<ResultType> {
     private method: string = "GET";
     private body?: string;
     private formData?: FormData;
+    private parameters: { name: string, value: string }[] = [];
 
     public withUri(uri: string) {
         this.uri = uri;
+        return this;
+    }
+
+    public withParameter(name: string, value: string) {
+        if (this.parameters.find(p => p.name === name)) {
+            throw new Error(`There is already a parameter with the name: ${name}`);
+        }
+
+        this.parameters.push({ name: name, value: value });
         return this;
     }
 
@@ -54,7 +65,12 @@ class ApiBuilder<ResultType> {
 
     private fetchResponse() {
         const apiUri = getApiUri();
-        return fetch(`${apiUri}${this.uri}`,
+        let queryString = "";
+        if (this.parameters.length) {
+            const keyValueString = this.parameters.map(p => `${p.name}=${p.value}`);
+            queryString = `?${_.join(keyValueString, "&")}`;
+        }
+        return fetch(`${apiUri}${this.uri}${queryString}`,
             {
                 method: this.method,
                 headers: this.headers,

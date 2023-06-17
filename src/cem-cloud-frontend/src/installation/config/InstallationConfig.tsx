@@ -34,7 +34,7 @@ const InstallationConfig = () => {
             .then(setInstallation)
             .catch(e => presentError('Installation konnnte nicht geladen werden, versuchen Sie es später erneut.', undefined, e, toast.current));
 
-        new CommunicationChannelService().loadCommunicationChannel(installationId)
+        new CommunicationChannelService().loadCommunicationChannel(installationId, auth.user.access_token)
             .then(setCommunicationChannels)
             .then(_ => setActiveIndex(0))
             .catch(e => presentError('Kommunikationskanäle konnnte nicht geladen werden, versuchen Sie es später erneut.', undefined, e, toast.current));
@@ -69,7 +69,7 @@ const InstallationConfig = () => {
     };
 
     const channels = (cs: CommunicationChannel[]) => {
-        return communicationChannels.map(c =>
+        return cs.map(c =>
             <ComponentListEntry key={c.id} label={c.name} />
         );
     };

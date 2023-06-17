@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -22,6 +23,9 @@ public class Installation {
     private String serialNumber;
 
     private String filename;
+
+    @OneToMany
+    private Set<CommunicationChannel> communicationChannels;
 
     public UUID getId() {
         return id;
@@ -53,5 +57,13 @@ public class Installation {
 
     public void setFilename(String filename) {
         this.filename = filename;
+    }
+
+    public Set<CommunicationChannel> getCommunicationChannels() {
+        return communicationChannels;
+    }
+
+    public void setCommunicationChannels(Set<CommunicationChannel> communicationChannels) {
+        this.communicationChannels = communicationChannels;
     }
 }
