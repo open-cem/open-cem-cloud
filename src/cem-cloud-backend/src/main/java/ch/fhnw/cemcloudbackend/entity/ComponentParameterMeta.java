@@ -8,7 +8,7 @@ public class ComponentParameterMeta extends ParameterMeta {
     @ManyToOne
     private ComponentFamily referenceComponentFamily;
     @ManyToOne
-    private ComponentType ComponentType;
+    private ComponentType componentType;
 
     public ComponentFamily getReferenceComponentFamily() {
         return referenceComponentFamily;
@@ -19,10 +19,10 @@ public class ComponentParameterMeta extends ParameterMeta {
     }
 
     public ComponentType getComponentType() {
-        return ComponentType;
+        return componentType;
     }
 
     public void setComponentType(ComponentType componentType) {
-        this.ComponentType = componentType;
+        this.componentType = componentType;
     }
 }
