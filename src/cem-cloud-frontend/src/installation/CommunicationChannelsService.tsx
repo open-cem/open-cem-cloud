@@ -1,18 +1,21 @@
 import { ApiService } from "../app/ApiService";
+import { ParameterMeta } from "../parameterInput/ParameterInput";
 
 class CommunicationChannel {
     id: string;
     name: string;
+    parameter: Map<string, Object>;
 
-    constructor(id: string, name: string) {
+    constructor(id: string, name: string, parameter: Map<string, Object>) {
         this.id = id;
         this.name = name;
+        this.parameter = parameter;
     }
 }
 
 class NullCommunicationChannel extends CommunicationChannel {
     constructor() {
-        super('', '');
+        super('', '', new Map<string, Object>());
     }
 }
 
@@ -47,6 +50,13 @@ class CommunicationChannelService extends ApiService {
     public loadCommunicationChannelTypes(accessToken: string) {
         return this.apiBuilder<CommunicationChannelType[]>()
             .withUri(`${this.endpoint}/types`)
+            .withAuthorization(accessToken)
+            .fetchBody();
+    }
+
+    public loadCommunicationChannelParameterMeta(channelId: string, accessToken: string) {
+        return this.apiBuilder<ParameterMeta[]>()
+            .withUri(`${this.endpoint}/${channelId}/meta`)
             .withAuthorization(accessToken)
             .fetchBody();
     }

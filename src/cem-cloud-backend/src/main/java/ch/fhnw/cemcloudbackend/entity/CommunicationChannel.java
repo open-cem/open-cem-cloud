@@ -1,10 +1,12 @@
 package ch.fhnw.cemcloudbackend.entity;
 
+import ch.fhnw.cemcloudbackend.entity.converter.ParameterConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.util.Map;
 import java.util.UUID;
 
 @Entity
@@ -23,6 +25,9 @@ public class CommunicationChannel {
 
     @OneToOne
     private CommunicationChannelType typ;
+
+    @Convert(converter = ParameterConverter.class)
+    private Map<String, Object> parameter;
 
     public UUID getId() {
         return id;
@@ -54,5 +59,13 @@ public class CommunicationChannel {
 
     public void setTyp(CommunicationChannelType typ) {
         this.typ = typ;
+    }
+
+    public Map<String, Object> getParameter() {
+        return parameter;
+    }
+
+    public void setParameter(Map<String, Object> parameter) {
+        this.parameter = parameter;
     }
 }

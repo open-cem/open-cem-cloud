@@ -1,10 +1,8 @@
 package ch.fhnw.cemcloudbackend.controller;
 
-import ch.fhnw.cemcloudbackend.dto.CommunicationChannel;
-import ch.fhnw.cemcloudbackend.dto.CommunicationChannelTypCreationRequest;
-import ch.fhnw.cemcloudbackend.dto.CommunicationChannelType;
-import ch.fhnw.cemcloudbackend.dto.CommunicationChannelUpdateRequest;
+import ch.fhnw.cemcloudbackend.dto.*;
 import ch.fhnw.cemcloudbackend.entity.Installation;
+import ch.fhnw.cemcloudbackend.repository.CommunicationChannelParameterMetaRepository;
 import ch.fhnw.cemcloudbackend.repository.CommunicationChannelRepository;
 import ch.fhnw.cemcloudbackend.repository.CommunicationChannelTypeRepository;
 import ch.fhnw.cemcloudbackend.repository.InstallationRepository;
@@ -14,8 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.StreamSupport;
 
 @RestController
@@ -24,18 +21,21 @@ public class CommunicationChannelController {
 
     private final CommunicationChannelRepository channels;
     private final CommunicationChannelTypeRepository types;
+    private final CommunicationChannelParameterMetaRepository meta;
     private final InstallationRepository installations;
 
     public CommunicationChannelController(CommunicationChannelRepository channels,
                                           CommunicationChannelTypeRepository types,
+                                          CommunicationChannelParameterMetaRepository meta,
                                           InstallationRepository installations) {
         this.channels = channels;
         this.types = types;
+        this.meta = meta;
         this.installations = installations;
     }
 
     @GetMapping()
-    public ResponseEntity<Iterable<CommunicationChannel>> getAll(@RequestParam Optional<UUID> installationId) {
+    public ResponseEntity<Iterable<CommunicationChannelListItem>> getAll(@RequestParam Optional<UUID> installationId) {
         Iterable<ch.fhnw.cemcloudbackend.entity.CommunicationChannel> channels;
         if (installationId.isEmpty()) {
             channels = this.channels.findAll();
@@ -45,7 +45,7 @@ public class CommunicationChannelController {
 
         return ResponseEntity.ok(StreamSupport
                 .stream(channels.spliterator(), false)
-                .map(channel -> new CommunicationChannel(channel.getId(), channel.getName()))
+                .map(channel -> new CommunicationChannelListItem(channel.getId(), channel.getName()))
                 .toList());
     }
 
@@ -57,7 +57,27 @@ public class CommunicationChannelController {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(new CommunicationChannel(channel.get().getId(), channel.get().getName()));
+        Map<String, Object> parameter = channel.get().getParameter() != null
+            ? channel.get().getParameter() : new HashMap<>();
+
+        return ResponseEntity.ok(new CommunicationChannel(channel.get().getId(), channel.get().getName(), parameter));
+    }
+
+    @GetMapping("{id}/meta")
+    public ResponseEntity<Iterable<CommunicationChannelParameterMeta>> getMeta(@PathVariable UUID id) {
+        Optional<ch.fhnw.cemcloudbackend.entity.CommunicationChannel> channel = channels.findById(id);
+        if (channel.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Iterable<ch.fhnw.cemcloudbackend.entity.CommunicationChannelParameterMeta> parameterMeta =
+                meta.findAllByCommunicationChannelTypeId(channel.get().getTyp().getId());
+
+        return ResponseEntity.ok(StreamSupport
+                .stream(parameterMeta.spliterator(), false)
+                .map(m -> new CommunicationChannelParameterMeta(m.getName(), m.getLabel(), m.getType().toString(),
+                        m.getListType() != null ? m.getListType().toString() : null))
+                .toList());
     }
 
     @GetMapping("/types")
