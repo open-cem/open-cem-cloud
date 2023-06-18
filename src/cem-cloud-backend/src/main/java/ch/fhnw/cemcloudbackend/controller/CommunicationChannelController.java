@@ -3,6 +3,7 @@ package ch.fhnw.cemcloudbackend.controller;
 import ch.fhnw.cemcloudbackend.dto.CommunicationChannel;
 import ch.fhnw.cemcloudbackend.dto.CommunicationChannelTypCreationRequest;
 import ch.fhnw.cemcloudbackend.dto.CommunicationChannelType;
+import ch.fhnw.cemcloudbackend.dto.CommunicationChannelUpdateRequest;
 import ch.fhnw.cemcloudbackend.entity.Installation;
 import ch.fhnw.cemcloudbackend.repository.CommunicationChannelRepository;
 import ch.fhnw.cemcloudbackend.repository.CommunicationChannelTypeRepository;
@@ -48,6 +49,17 @@ public class CommunicationChannelController {
                 .toList());
     }
 
+    @GetMapping("{id}")
+    public ResponseEntity<CommunicationChannel> get(@PathVariable UUID id) {
+        Optional<ch.fhnw.cemcloudbackend.entity.CommunicationChannel> channel = channels.findById(id);
+
+        if (channel.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(new CommunicationChannel(channel.get().getId(), channel.get().getName()));
+    }
+
     @GetMapping("/types")
     public ResponseEntity<Iterable<CommunicationChannelType>> getTypes() {
         Iterable<ch.fhnw.cemcloudbackend.entity.CommunicationChannelType> types = this.types.findAll();
@@ -80,6 +92,21 @@ public class CommunicationChannelController {
         URI uri = new URI(String.format("/%s", channel.getId()));
 
         return ResponseEntity.created(uri).build();
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<Void> put(@PathVariable UUID id, @Valid @RequestBody CommunicationChannelUpdateRequest request) {
+        Optional<ch.fhnw.cemcloudbackend.entity.CommunicationChannel> optionalChannel = channels.findById(id);
+
+        if (optionalChannel.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        ch.fhnw.cemcloudbackend.entity.CommunicationChannel channel = optionalChannel.get();
+        channel.setName(request.name());
+        channels.save(channel);
+
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("{id}")

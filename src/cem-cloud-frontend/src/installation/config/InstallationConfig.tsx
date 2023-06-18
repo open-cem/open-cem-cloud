@@ -40,7 +40,7 @@ const InstallationConfig = () => {
             .catch(e => presentError('Installation konnnte nicht geladen werden, versuchen Sie es später erneut.', undefined, e, toast.current));
 
         const channels = new CommunicationChannelService()
-        channels.loadCommunicationChannel(installationId, auth.user.access_token)
+        channels.loadCommunicationChannels(installationId, auth.user.access_token)
             .then(setCommunicationChannels)
             .then(_ => setActiveIndex(0))
             .catch(e => presentError('Kommunikationskanäle konnnte nicht geladen werden, versuchen Sie es später erneut.', undefined, e, toast.current));
