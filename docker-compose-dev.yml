@@ -15,9 +15,9 @@ services:
   mqtt:
     image: eclipse-mosquitto
     ports:
-      - 1883:1883
+      - 1884:1884
     volumes:
-      - ./src/mqtt-broker/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./src/mqtt-broker:/etc/mosquitto
 
   auth:
     image: quay.io/keycloak/keycloak:latest
