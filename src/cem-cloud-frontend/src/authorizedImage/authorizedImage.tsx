@@ -5,7 +5,7 @@ import { Installation, InstallationService } from "../installation/Installations
 
 const AuthorizedImage = ({ installation, id }: ({ installation: Installation, id?: string })) => {
     const auth = useAuth();
-    const [source, setSource] = useState<any>();
+    const [source, setSource] = useState<string>("/img/placeholder.png");
     useEffect(() => {
         if (auth.user) {
             new InstallationService()
