@@ -27,6 +27,9 @@ public class Installation {
     @OneToMany(mappedBy = "installation")
     private Set<CommunicationChannel> communicationChannels;
 
+    @OneToMany(mappedBy = "installation")
+    private Set<Component> components;
+
     public UUID getId() {
         return id;
     }
@@ -65,5 +68,13 @@ public class Installation {
 
     public void setCommunicationChannels(Set<CommunicationChannel> communicationChannels) {
         this.communicationChannels = communicationChannels;
+    }
+
+    public Set<Component> getComponents() {
+        return components;
+    }
+
+    public void setComponents(Set<Component> components) {
+        this.components = components;
     }
 }

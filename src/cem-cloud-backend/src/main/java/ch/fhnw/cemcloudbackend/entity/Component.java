@@ -21,6 +21,9 @@ public class Component {
     @Convert(converter = ParameterConverter.class)
     private Map<String, Object> parameter;
 
+    @ManyToOne
+    private Installation installation;
+
     public UUID getId() {
         return id;
     }
@@ -51,5 +54,13 @@ public class Component {
 
     public void setParameter(Map<String, Object> parameter) {
         this.parameter = parameter;
+    }
+
+    public Installation getInstallation() {
+        return installation;
+    }
+
+    public void setInstallation(Installation installation) {
+        this.installation = installation;
     }
 }
