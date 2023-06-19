@@ -1,4 +1,4 @@
-import { InputGroup } from "../inputGroup/InputGroup";
+import { InputGroup, NumberInputGroup } from "../inputGroup/InputGroup";
 
 class ParameterMeta {
     name: string; 
@@ -14,10 +14,15 @@ class ParameterMeta {
     }
 }
 
-const ParameterInput = ({ meta, value }: { meta: ParameterMeta, value: any }) => {
-    if (meta.type === "TEXT" || meta.type === "NUMBER") {
+const ParameterInput = ({ meta, value, changeFn }: { meta: ParameterMeta, value: any, changeFn: (prop: string, value: any) => void }) => {
+
+    if (meta.type === "TEXT") {
         return (
-            <InputGroup id={meta.name} label={meta.label} name={meta.name} value={value} changeFn={() => {}} />
+            <InputGroup id={meta.name} label={meta.label} name={meta.name} value={value} changeFn={e => changeFn(meta.name, e.target.value)} />
+        );
+    } else if (meta.type === "NUMBER") {
+        return (
+            <NumberInputGroup id={meta.name} label={meta.label} name={meta.name} value={value} changeFn={e => changeFn(meta.name, e.target.value)} />
         );
     } else {
         throw new Error(`The type '${meta.type}' is out of range.`)

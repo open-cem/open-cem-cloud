@@ -124,6 +124,7 @@ public class CommunicationChannelController {
 
         ch.fhnw.cemcloudbackend.entity.CommunicationChannel channel = optionalChannel.get();
         channel.setName(request.name());
+        channel.setParameter(request.parameters());
         channels.save(channel);
 
         return ResponseEntity.ok().build();

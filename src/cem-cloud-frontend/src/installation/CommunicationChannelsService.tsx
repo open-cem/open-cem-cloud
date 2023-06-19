@@ -89,7 +89,7 @@ class CommunicationChannelService extends ApiService {
         return this.apiBuilder()
             .withUri(`${this.endpoint}/${channel.id}`)
             .withAuthorization(accessToken)
-            .withBody({ name: channel.name })
+            .withBody({ name: channel.name, parameters: channel.parameter })
             .put()
             .fetch();
     }

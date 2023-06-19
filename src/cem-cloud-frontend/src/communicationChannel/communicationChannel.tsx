@@ -7,6 +7,7 @@ import { Button } from "primereact/button";
 import { presentError, presentSuccess } from "../app/NotificationPresenter";
 import { Toast } from "primereact/toast";
 import { ParameterInput, ParameterMeta } from "../parameterInput/ParameterInput";
+import _ from "lodash";
 
 const CommunicationChannel = () => {
     const auth = useAuth();
@@ -26,6 +27,7 @@ const CommunicationChannel = () => {
                     setChannel(c);
                     if (auth.user) {
                         service.loadCommunicationChannelParameterMeta(c.id, auth.user?.access_token)
+                            .then(ps => _.orderBy(ps, p => p.label))
                             .then(setParameters)
                     }
                     
@@ -53,7 +55,14 @@ const CommunicationChannel = () => {
                 })
                 .catch(e => presentError('Kommunikationskanal konnte nicht gespeichert werden, versuchen Sie es später erneut.', undefined, e, toast.current));
         }
-    }
+    };
+
+    const onParameterChange = (parameterName: string, value: any) => {
+        const i = { ...channel } as CommunicationChannelModel;
+        (i.parameter as any)[parameterName] = value;
+        setChannel(i);
+        setHasChanges(true);
+    };
 
     return (
         <>
@@ -63,7 +72,7 @@ const CommunicationChannel = () => {
                 {
                     parameters.length === 0 && channel instanceof NullCommunicationChannel
                     ? <></>
-                    : parameters.map(p => <ParameterInput key={p.name} meta={p} value={""} />)
+                    : parameters.map(p => <ParameterInput key={p.name} meta={p} value={(channel.parameter as any)[p.name]} changeFn={onParameterChange} />)
                 }
             </div>
             <div className="button-bar">

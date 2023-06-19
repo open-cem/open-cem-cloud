@@ -11,6 +11,7 @@
 }
 
 .input-group input, 
+.input-group .p-inputnumber,
 .input-group textarea,
 .input-group select,
 .input-group .p-image {

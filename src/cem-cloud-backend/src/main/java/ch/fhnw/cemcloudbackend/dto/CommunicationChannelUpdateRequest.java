@@ -2,5 +2,7 @@ package ch.fhnw.cemcloudbackend.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record CommunicationChannelUpdateRequest(@NotBlank String name) {
+import java.util.Map;
+
+public record CommunicationChannelUpdateRequest(@NotBlank String name, Map<String, Object> parameters) {
 }
