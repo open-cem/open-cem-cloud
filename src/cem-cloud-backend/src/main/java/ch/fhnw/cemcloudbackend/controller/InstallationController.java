@@ -110,7 +110,7 @@ public class InstallationController {
 
         installations.save(installation);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     private static String getInstallationImageUrl(Installation installation) {

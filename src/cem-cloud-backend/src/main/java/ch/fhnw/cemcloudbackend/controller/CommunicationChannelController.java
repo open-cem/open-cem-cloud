@@ -127,7 +127,7 @@ public class CommunicationChannelController {
         channel.setParameter(request.parameters());
         channels.save(channel);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("{id}")
