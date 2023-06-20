@@ -1,0 +1,45 @@
+.input-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.input-group label {
+    order: 1;
+    width: 15em;
+    padding-right: 0.5em;
+}
+
+.input-group input, 
+.input-group .p-inputnumber,
+.input-group textarea,
+.input-group select,
+.input-group .p-image {
+    order: 2;
+    flex: 1 1 auto;
+}
+
+.input-group .p-image > img {
+    width: 100%;
+}
+
+@media only screen and (min-width: 768px) {
+    .input-group .p-image > img {
+        width: unset;
+        height: 10rem;
+    }
+}
+
+.input-group input[type="checkbox"],
+.input-group input[type="radio"] {
+    order: 1;
+    flex: none;
+    width: auto;
+    margin-left: 10em;
+}
+
+.input-group input[type="checkbox"] ~ label,
+.input-group input[type="radio"] ~ label {
+    width: auto;
+    padding-left: 0.4em;
+}

@@ -1,0 +1,14 @@
+.p-accordion-header-text {
+    width: 100%;
+}
+
+.component-list-header {
+    display: flex;
+    align-items: center;
+}
+
+.component-list-header .tools {
+    display: flex;
+    flex-direction: row-reverse;
+    width: 100%;
+}

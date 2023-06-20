@@ -1,0 +1,15 @@
+.component-list-entry.container {
+    display: flex;
+    gap: .5rem;
+}
+
+.component-list-entry.container > button:nth-child(1) {
+    width: 100%;
+    justify-content: center;
+}
+
+.p-accordion-content:has( > .component-list-entry.container) {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}

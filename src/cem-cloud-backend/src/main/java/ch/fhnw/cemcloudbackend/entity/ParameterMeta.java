@@ -1,14 +1,18 @@
 package ch.fhnw.cemcloudbackend.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.UUID;
 
 @Entity
+@DiscriminatorColumn(length = 50)
 public class ParameterMeta {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(columnDefinition = "VARCHAR(36)")
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID id;
     private String name;
     private String label;
@@ -16,10 +20,6 @@ public class ParameterMeta {
     private ParameterType type;
     @Enumerated(EnumType.STRING)
     private ParameterType listType;
-    @OneToOne
-    private ComponentFamily referenceComponentFamily;
-    @OneToOne
-    private ComponentType referenceComponentType;
 
     public UUID getId() {
         return id;
@@ -59,22 +59,6 @@ public class ParameterMeta {
 
     public void setListType(ParameterType listType) {
         this.listType = listType;
-    }
-
-    public ComponentFamily getReferenceComponentFamily() {
-        return referenceComponentFamily;
-    }
-
-    public void setReferenceComponentFamily(ComponentFamily referenceType) {
-        this.referenceComponentFamily = referenceType;
-    }
-
-    public ComponentType getReferenceComponentType() {
-        return referenceComponentType;
-    }
-
-    public void setReferenceComponentType(ComponentType componentType) {
-        this.referenceComponentType = componentType;
     }
 
     public enum ParameterType {
