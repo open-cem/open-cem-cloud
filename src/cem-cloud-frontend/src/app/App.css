@@ -21,12 +21,30 @@ body {
   justify-content: center;
 }
 
+.p-dialog {
+  width: 100%;
+}
+
+.types-container {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+.types-container button {
+  justify-content: center;
+}
+
 @media only screen and (min-width: 768px) {
   .button-bar {
     width: unset;
   }
   
   .button-bar button {
+    width: unset;
+  }
+
+  .p-dialog {
     width: unset;
   }
 }

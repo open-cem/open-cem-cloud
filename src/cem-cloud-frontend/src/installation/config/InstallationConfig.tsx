@@ -13,7 +13,6 @@ import { CommunicationChannel, CommunicationChannelService, CommunicationChannel
 import ComponentListEntry from "../../componentListEntry/ComponentListEntry";
 import ComponentListHeader from "../../componentListHeader/ComponentListHeader";
 import _ from "lodash";
-import "./InstallationConfig.css";
 
 const InstallationConfig = () => {
     const params = useParams<string>();

@@ -11,7 +11,7 @@ import Home from "../pages/Home";
 import Installations from "../installation/Installations";
 import NotFound from "../pages/NotFound";
 import InstallationConfig from "../installation/config/InstallationConfig";
-import Installation from "../installation/installation";
+import Installation from "../installation/Installation";
 import { setApiUri } from "./AppSettings";
 import CommunicationChannel from "../communicationChannel/communicationChannel";
 
