@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Entity
 @DiscriminatorColumn(length = 50)
-public class ParameterMeta {
+public abstract class ParameterMeta {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(columnDefinition = "VARCHAR(36)")
