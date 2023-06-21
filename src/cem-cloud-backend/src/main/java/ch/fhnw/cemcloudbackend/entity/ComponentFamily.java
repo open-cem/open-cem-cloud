@@ -15,6 +15,8 @@ public class ComponentFamily {
     private UUID id;
     private String name;
 
+    private boolean isHardwareComponent;
+
     public UUID getId() {
         return id;
     }
@@ -29,5 +31,13 @@ public class ComponentFamily {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isHardwareComponent() {
+        return isHardwareComponent;
+    }
+
+    public void setHardwareComponent(boolean hardwareComponent) {
+        isHardwareComponent = hardwareComponent;
     }
 }
