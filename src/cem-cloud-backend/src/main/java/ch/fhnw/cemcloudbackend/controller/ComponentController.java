@@ -15,7 +15,7 @@ import java.util.UUID;
 import java.util.stream.StreamSupport;
 
 @RestController
-@RequestMapping("/components")
+@RequestMapping("components")
 public class ComponentController {
 
     private final ComponentRepository components;
@@ -48,6 +48,17 @@ public class ComponentController {
         return ResponseEntity.ok(StreamSupport.stream(components.spliterator(), false)
                 .map(c -> new ComponentListItem(c.getId(), c.getName(), c.getType().getComponentType().getName()))
                 .toList());
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<Component> get(@PathVariable UUID id) {
+        Optional<ch.fhnw.cemcloudbackend.entity.Component> component = components.findById(id);
+
+        if (component.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(new Component(component.get().getId(), component.get().getName()));
     }
 
     @GetMapping("/types")
@@ -87,6 +98,22 @@ public class ComponentController {
         URI uri = new URI(String.format("/%s", component.getId()));
 
         return ResponseEntity.created(uri).build();
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<Void> put(@PathVariable UUID id, @RequestBody @Valid ComponentUpdateRequest request) {
+        Optional<ch.fhnw.cemcloudbackend.entity.Component> optionalComponent = components.findById(id);
+
+        if (optionalComponent.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        ch.fhnw.cemcloudbackend.entity.Component component = optionalComponent.get();
+        component.setName(request.name());
+
+        components.save(component);
+
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("{id}")

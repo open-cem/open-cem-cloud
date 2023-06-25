@@ -5,7 +5,7 @@ import { Accordion, AccordionTab } from "primereact/accordion";
 import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import { presentError } from "../app/NotificationPresenter";
-import { ActuatorFamily, Component, ComponentType, ComponentsService, ControllerFamily, DeviceFamily, SensorFamily } from "./ComponentsService";
+import { ActuatorFamily, ComponentListItem, ComponentType, ComponentsService, ControllerFamily, DeviceFamily, SensorFamily } from "../component/ComponentsService";
 import ComponentListHeader from "../componentListHeader/ComponentListHeader";
 import ComponentListEntry from "../componentListEntry/ComponentListEntry";
 import _ from "lodash";
@@ -18,7 +18,7 @@ const Installation = () => {
     const toast = useRef<Toast>(null);
 
     const [activeIndex, setActiveIndex] = useState<number | undefined>(undefined);
-    const [components, setComponents] = useState<Component[]>([]);
+    const [components, setComponents] = useState<ComponentListItem[]>([]);
     const [types, setTypes] = useState<ComponentType[]>([]);
     const [familyTypes, setFamilyTypes] = useState<ComponentType[]>([]);
     const [typeDialogVisible, setTypeDialogVisible] = useState<boolean>(false);
@@ -49,7 +49,7 @@ const Installation = () => {
         }
     };
 
-    const deleteComponent = (component: Component) => {
+    const deleteComponent = (component: ComponentListItem) => {
         if (auth.user) {
             new ComponentsService()
                 .deleteComponent(component.id, auth.user.access_token)
@@ -63,13 +63,13 @@ const Installation = () => {
         setTypeDialogVisible(true);
     };
 
-    const createComponentEntries = (components: Component[]) => {
+    const createComponentEntries = (components: ComponentListItem[]) => {
         return components.map(component =>
             <ComponentListEntry key={component.id} label={component.name} selectAction={() => navigate(`/components/${component.id}`)} deleteAction={() => deleteComponent(component)} />
         );
     };
 
-    const createComponentGroup = (name: string, group: string, components: Component[]) => {
+    const createComponentGroup = (name: string, group: string, components: ComponentListItem[]) => {
         const componentsInFamily = _.filter(components, component => component.family === group);
         return <AccordionTab header={<ComponentListHeader label={name} addAction={() => showTypeDialog(group)} />}>
             {

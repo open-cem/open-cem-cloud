@@ -5,7 +5,17 @@ const ActuatorFamily: string = "ACTUATORS";
 const SensorFamily: string = "SENSORS";
 const ControllerFamily: string = "CONTROLLERS";
 
-class Component {
+interface Component {
+    id: string;
+    name: string;
+}
+
+class NullComponent implements Component {
+    id: string = '';
+    name: string = '';
+}
+
+class ComponentListItem {
     id: string;
     name: string;
     family: string;
@@ -32,8 +42,15 @@ class ComponentType {
 class ComponentsService extends ApiService {
     private readonly endpoint: string = "components";
 
+    public loadComponent(componentId: string, accessToken: string) {
+        return this.apiBuilder<Component>()
+            .withUri(`${this.endpoint}/${componentId}`)
+            .withAuthorization(accessToken)
+            .fetchBody();
+    }
+
     public loadComponents(installationId: string, accessToken: string) {
-        return this.apiBuilder<Component[]>()
+        return this.apiBuilder<ComponentListItem[]>()
             .withUri(this.endpoint)
             .withParameter("installationId", installationId)
             .withAuthorization(accessToken)
@@ -63,6 +80,15 @@ class ComponentsService extends ApiService {
             });
     }
 
+    public saveComponent(component: Component, accessToken: string) {
+        return this.apiBuilder()
+            .withUri(`${this.endpoint}/${component.id}`)
+            .withAuthorization(accessToken)
+            .withBody(component)
+            .put()
+            .fetch();
+    }
+
     public deleteComponent(componentId: string, accessToken: string) {
         return this.apiBuilder()
             .withUri(`${this.endpoint}/${componentId}`)
@@ -72,4 +98,5 @@ class ComponentsService extends ApiService {
     }
 }
 
-export { Component, ComponentType, ComponentsService, DeviceFamily, ActuatorFamily, SensorFamily, ControllerFamily };
+export { NullComponent, ComponentListItem, ComponentType, ComponentsService, DeviceFamily, ActuatorFamily, SensorFamily, ControllerFamily };
+export type { Component };
