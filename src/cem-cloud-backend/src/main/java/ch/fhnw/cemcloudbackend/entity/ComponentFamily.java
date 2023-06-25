@@ -1,6 +1,8 @@
 package ch.fhnw.cemcloudbackend.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.UUID;
 
@@ -9,8 +11,11 @@ public class ComponentFamily {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(columnDefinition = "VARCHAR(36)")
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID id;
     private String name;
+
+    private boolean isHardwareComponent;
 
     public UUID getId() {
         return id;
@@ -26,5 +31,13 @@ public class ComponentFamily {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isHardwareComponent() {
+        return isHardwareComponent;
+    }
+
+    public void setHardwareComponent(boolean hardwareComponent) {
+        isHardwareComponent = hardwareComponent;
     }
 }

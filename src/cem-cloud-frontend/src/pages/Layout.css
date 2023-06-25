@@ -1,0 +1,27 @@
+nav {
+    position: sticky;
+    top: 0;
+    padding: 1rem;
+    z-index: 1;
+    background-color: #f4f4f4;
+    margin-bottom: 1rem;
+    display: grid;
+    grid-template-columns: min-content auto;
+}
+
+nav a:-webkit-any-link {
+    text-decoration: none;
+    color: unset;
+    align-self: center;
+}
+
+menu {
+    display: flex;
+    list-style: none;
+    flex-direction: row-reverse;
+}
+
+#title-nav {
+    white-space: nowrap;
+    font-size: x-large;
+}

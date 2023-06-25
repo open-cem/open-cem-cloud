@@ -2,6 +2,8 @@ package ch.fhnw.cemcloudbackend.entity;
 
 import ch.fhnw.cemcloudbackend.entity.converter.ParameterConverter;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.Map;
 import java.util.UUID;
@@ -11,12 +13,16 @@ public class Component {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(columnDefinition = "VARCHAR(36)")
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID id;
     private String name;
     @ManyToOne
     private ComponentType type;
     @Convert(converter = ParameterConverter.class)
     private Map<String, Object> parameter;
+
+    @ManyToOne
+    private Installation installation;
 
     public UUID getId() {
         return id;
@@ -48,5 +54,13 @@ public class Component {
 
     public void setParameter(Map<String, Object> parameter) {
         this.parameter = parameter;
+    }
+
+    public Installation getInstallation() {
+        return installation;
+    }
+
+    public void setInstallation(Installation installation) {
+        this.installation = installation;
     }
 }
