@@ -44,7 +44,7 @@ const Installation = () => {
         if (auth.user && params.installationId) {
             new ComponentsService()
                 .createComponent(params.installationId, typeId, auth.user.access_token)
-                .then(id => navigate(`/component/${id}`))
+                .then(id => navigate(`/components/${id}`))
                 .catch(e => presentError('Die Komponente konnte nicht erstellt werden, versuchen Sie es später erneut.', undefined, e, toast.current));
         }
     };
@@ -65,7 +65,7 @@ const Installation = () => {
 
     const createComponentEntries = (components: Component[]) => {
         return components.map(component =>
-            <ComponentListEntry key={component.id} label={component.name} selectAction={() => { }} deleteAction={() => deleteComponent(component)} />
+            <ComponentListEntry key={component.id} label={component.name} selectAction={() => navigate(`/components/${component.id}`)} deleteAction={() => deleteComponent(component)} />
         );
     };
 
