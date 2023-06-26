@@ -68,21 +68,25 @@ const Component = () => {
     };
 
     const onSelectedManufacturerChanged = (manufacturer: Manufacturer | undefined, component: ComponentModel) => {
+        if (component.manufacturerId === manufacturer?.id) {
+            return;
+        }
+
         setSelectedManufacturer(manufacturer);
         const c = { ...component };
         if (manufacturer) {
             c.manufacturerId = manufacturer.id;
         } else {
             c.manufacturerId = undefined;
-            c.modelId = undefined;
         }
+        c.modelId = undefined;
         setComponent(c);
         setHasChanges(true);
-
+        
+        setSelectedModel(undefined);
         if (manufacturer) {
             loadModels(manufacturer, component);
         } else {
-            setSelectedModel(undefined);
             setModels([]);
         }
     };
