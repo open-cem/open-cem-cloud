@@ -2,5 +2,7 @@ package ch.fhnw.cemcloudbackend.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record ComponentUpdateRequest(@NotBlank String name) {
+import java.util.UUID;
+
+public record ComponentUpdateRequest(@NotBlank String name, UUID manufacturerId, UUID modelId) {
 }

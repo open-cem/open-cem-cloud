@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -14,6 +15,9 @@ public class Manufacturer {
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID id;
     private String name;
+
+    @OneToMany(mappedBy = "manufacturer")
+    private Set<Model> models;
 
     public UUID getId() {
         return id;
@@ -29,5 +33,13 @@ public class Manufacturer {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Set<Model> getModels() {
+        return models;
+    }
+
+    public void setModels(Set<Model> models) {
+        this.models = models;
     }
 }

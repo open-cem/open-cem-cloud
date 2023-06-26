@@ -8,11 +8,15 @@ const ControllerFamily: string = "CONTROLLERS";
 interface Component {
     id: string;
     name: string;
+    family: string
+    manufacturerId?: string;
+    modelId?: string;
 }
 
 class NullComponent implements Component {
     id: string = '';
     name: string = '';
+    family: string = '';
 }
 
 class ComponentListItem {

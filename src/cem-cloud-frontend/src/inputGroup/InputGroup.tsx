@@ -2,9 +2,11 @@ import { ChangeEventHandler } from "react";
 import { InputText } from "primereact/inputtext";
 import { InputNumber, InputNumberValueChangeEvent } from 'primereact/inputnumber';
 import { Image } from "primereact/image";
+import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import "./InputGroup.css";
 import AuthorizedImage from "../authorizedImage/authorizedImage";
 import { Installation } from "../installation/InstallationsService";
+import { SelectItemOptionsType } from "primereact/selectitem";
 
 /**
  * Shows a label and an input field.
@@ -71,3 +73,22 @@ export const PictureInputGroup = ({ id, label, installation }: { id: string, lab
         </div>
     )
 };
+
+/**
+ * Shows a label and an dropdown.
+ * 
+ * @param label The label of the dropdown
+ * @param id The id which connects the label and the dropdown(for - id)
+ * @param value The selected value of the dropdown
+ * @param onChangeFn The onChange function of the dropdown
+ * @param options The dropdown values available for selection
+ * @param optionLabel The property name of the object to select as label
+ */
+export const DropdownInputGroup = ({ label, id, value, onChangeFn, options, optionLabel, disabled}: { label: string, id: string, value: any, onChangeFn: (event: DropdownChangeEvent) => void, options: SelectItemOptionsType, optionLabel: string, disabled?: boolean }) => {
+    return (
+        <div className="input-group">
+            <label htmlFor={id}>{label}</label>
+            <Dropdown id={id} placeholder={`${label} auswählen`} value={value} options={options} optionLabel={optionLabel} onChange={onChangeFn} filter showClear disabled={disabled} />
+        </div>
+    )
+}

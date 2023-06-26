@@ -12,6 +12,7 @@
 
 .input-group input, 
 .input-group .p-inputnumber,
+.input-group .p-dropdown,
 .input-group textarea,
 .input-group select,
 .input-group .p-image {
@@ -19,13 +20,18 @@
     flex: 1 1 auto;
 }
 
-.input-group .p-image > img {
+.input-group .p-image > img,
+.input-group .p-dropdown {
     width: 100%;
 }
 
 @media only screen and (min-width: 768px) {
-    .input-group .p-image > img {
+    .input-group .p-image > img,
+    .input-group .p-dropdown {
         width: unset;
+    }
+    
+    .input-group .p-image > img {
         height: 10rem;
     }
 }
