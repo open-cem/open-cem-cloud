@@ -29,6 +29,11 @@ class CommunicationChannelType {
     }
 }
 
+interface CommunicationChannelListItem {
+    id: string;
+    name: string;
+}
+
 class CommunicationChannelService extends ApiService {
     private readonly endpoint: string = "communicationChannels";
 
@@ -57,6 +62,13 @@ class CommunicationChannelService extends ApiService {
     public loadCommunicationChannelParameterMeta(channelId: string, accessToken: string) {
         return this.apiBuilder<ParameterMeta[]>()
             .withUri(`${this.endpoint}/${channelId}/meta`)
+            .withAuthorization(accessToken)
+            .fetchBody();
+    }
+
+    public loadCommunicationChannelsByComponentId(componentId: string, accessToken: string) {
+        return this.apiBuilder<CommunicationChannelListItem[]>()
+            .withUri(`components/${componentId}/communicationChannels`)
             .withAuthorization(accessToken)
             .fetchBody();
     }
@@ -96,3 +108,4 @@ class CommunicationChannelService extends ApiService {
 }
 
 export { CommunicationChannel, NullCommunicationChannel, CommunicationChannelType, CommunicationChannelService };
+export type { CommunicationChannelListItem };

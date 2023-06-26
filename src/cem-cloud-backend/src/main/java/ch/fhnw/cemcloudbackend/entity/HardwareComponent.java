@@ -11,7 +11,8 @@ public class HardwareComponent extends Component {
     private Model model;
     @OneToOne
     private SmartGridreadyDefinition smartGridreadyDefinition;
-
+    @ManyToOne
+    private CommunicationChannel communicationChannel;
     public Manufacturer getManufacturer() {
         return manufacturer;
     }
@@ -34,5 +35,13 @@ public class HardwareComponent extends Component {
 
     public void setSmartGridreadyDefinition(SmartGridreadyDefinition smartGridreadyDefinition) {
         this.smartGridreadyDefinition = smartGridreadyDefinition;
+    }
+
+    public CommunicationChannel getCommunicationChannel() {
+        return communicationChannel;
+    }
+
+    public void setCommunicationChannel(CommunicationChannel communicationChannel) {
+        this.communicationChannel = communicationChannel;
     }
 }

@@ -11,6 +11,7 @@ interface Component {
     family: string
     manufacturerId?: string;
     modelId?: string;
+    channelId?: string;
 }
 
 class NullComponent implements Component {

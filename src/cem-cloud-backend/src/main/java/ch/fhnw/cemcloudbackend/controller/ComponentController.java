@@ -72,9 +72,12 @@ public class ComponentController {
             var model = hardwareComponent.getModel() != null
                 ? hardwareComponent.getModel().getId()
                 : null;
+            var channel = hardwareComponent.getCommunicationChannel() != null
+                ? hardwareComponent.getCommunicationChannel().getId()
+                : null;
 
             dto = new Component(component.getId(), component.getName(), component.getType().getComponentType().getName(),
-                    manufacturer, model);
+                    channel, manufacturer, model);
         } else {
             dto = new Component(component.getId(), component.getName(), component.getType().getComponentType().getName());
         }
@@ -82,12 +85,24 @@ public class ComponentController {
         return ResponseEntity.ok(dto);
     }
 
-    @GetMapping("/types")
+    @GetMapping("types")
     public ResponseEntity<Iterable<ComponentType>> getTypes() {
         Iterable<ch.fhnw.cemcloudbackend.entity.ComponentType> allTypes = types.findAll();
 
         return ResponseEntity.ok(StreamSupport.stream(allTypes.spliterator(), false)
                 .map(type -> new ComponentType(type.getId(), type.getName(), type.getComponentType().getName()))
+                .toList());
+    }
+
+    @GetMapping("{id}/communicationChannels")
+    public ResponseEntity<Iterable<CommunicationChannelListItem>> getCommunicationChannels(@PathVariable UUID id) {
+        Optional<ch.fhnw.cemcloudbackend.entity.Component> component = components.findById(id);
+        if (component.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(component.get().getInstallation().getCommunicationChannels().stream()
+                .map(channel -> new CommunicationChannelListItem(channel.getId(), channel.getName()))
                 .toList());
     }
 
@@ -156,6 +171,17 @@ public class ComponentController {
                 }
             } else {
                 hardwareComponent.setManufacturer(null);
+            }
+            if (request.channelId() != null) {
+                Optional<ch.fhnw.cemcloudbackend.entity.CommunicationChannel> channel = hardwareComponent.getInstallation().getCommunicationChannels()
+                        .stream()
+                        .filter(c -> c.getId().equals(request.channelId()))
+                        .findFirst();
+
+                if (channel.isEmpty()) {
+                    return ResponseEntity.badRequest().build();
+                }
+                hardwareComponent.setCommunicationChannel(channel.get());
             }
         }
 

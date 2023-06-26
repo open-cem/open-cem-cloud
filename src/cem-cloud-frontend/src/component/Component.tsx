@@ -8,6 +8,7 @@ import { Component as ComponentModel, ComponentsService, NullComponent } from ".
 import { presentError, presentSuccess } from "../app/NotificationPresenter";
 import { Manufacturer, ManufacturersService, Model } from "./ManufacturersService";
 import _ from "lodash";
+import { CommunicationChannelListItem, CommunicationChannelService } from "../installation/CommunicationChannelsService";
 
 const Component = () => {
     const params = useParams();
@@ -21,6 +22,8 @@ const Component = () => {
     const [selectedManufacturer, setSelectedManufacturer] = useState<Manufacturer | undefined>(undefined);
     const [models, setModels] = useState<Model[]>([]);
     const [selectedModel, setSelectedModel] = useState<Model | undefined>(undefined);
+    const [channels, setChannels] = useState<CommunicationChannelListItem[]>([]);
+    const [selectedChannel, setSelectedChannel] = useState<CommunicationChannelListItem | undefined>(undefined);
 
     const loadModels = useCallback((manufacturer: Manufacturer, component: ComponentModel) => {
         if (auth.user) {
@@ -50,13 +53,16 @@ const Component = () => {
 
         const components = new ComponentsService().loadComponent(componentId, auth.user?.access_token);
         const manufacturers = new ManufacturersService().loadManufacturers(auth.user?.access_token);
+        const channels = new CommunicationChannelService().loadCommunicationChannelsByComponentId(componentId, auth.user.access_token);
 
-        Promise.all([components, manufacturers])
-            .then(([c, ms]) => {
+        Promise.all([components, manufacturers, channels])
+            .then(([c, ms, cs]) => {
                 setComponent(c);
                 setManufacturers(_.orderBy(ms, m => m.name));
+                setChannels(_.orderBy(cs, c => c.name));
                 if (isHardwareComponent(c)) {
                     selectManufacturer(c, ms);
+                    setSelectedChannel(_.find(cs, x => x.id === c.channelId))
                 }
             })
             .catch(e => presentError('Komponente konnnte nicht geladen werden, versuchen Sie es später erneut.', undefined, e, toast.current));
@@ -73,16 +79,13 @@ const Component = () => {
         }
 
         setSelectedManufacturer(manufacturer);
-        const c = { ...component };
         if (manufacturer) {
-            c.manufacturerId = manufacturer.id;
+            onChange('manufacturerId', manufacturer.id);
         } else {
-            c.manufacturerId = undefined;
+            onChange('manufacturerId', undefined);
         }
-        c.modelId = undefined;
-        setComponent(c);
-        setHasChanges(true);
-        
+        onChange('modelId', undefined);
+
         setSelectedModel(undefined);
         if (manufacturer) {
             loadModels(manufacturer, component);
@@ -93,15 +96,17 @@ const Component = () => {
 
     const onSelectedModelChanged = (model: Model | undefined, component: ComponentModel) => {
         setSelectedModel(model);
-        const c = { ...component };
         if (model) {
-            c.modelId = model.id;
+            onChange('modelId', model.id);
         } else {
-            c.modelId = undefined;
+            onChange('modelId', undefined);
         }
-        setComponent(c);
-        setHasChanges(true);
     };
+
+    const onSelectedChannelChanged = (channel: CommunicationChannelListItem | undefined, component: ComponentModel) => {
+        setSelectedChannel(channel);
+        onChange('channelId', channel?.id);
+    }
 
     const onChange = (propertyName: string, value: any) => {
         const i = { ...component } as ComponentModel;
@@ -137,6 +142,7 @@ const Component = () => {
                         <>
                             <DropdownInputGroup id="formManufacturer" label="Hersteller" value={selectedManufacturer} options={manufacturers} optionLabel="name" onChangeFn={(e) => onSelectedManufacturerChanged(e.value, component)} />
                             <DropdownInputGroup id="formModel" label="Modell" value={selectedModel} options={models} optionLabel="name" onChangeFn={(e) => onSelectedModelChanged(e.value, component)} disabled={!selectedManufacturer} />
+                            <DropdownInputGroup id="formChannel" label="Kommunikationskanal" value={selectedChannel} options={channels} optionLabel="name" onChangeFn={(e) => onSelectedChannelChanged(e.target.value, component)} />
                         </>
                         : <></>
                 }
