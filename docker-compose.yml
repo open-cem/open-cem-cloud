@@ -53,6 +53,8 @@ services:
     ports:
       - 8080:8080
     restart: always
+    volumes:
+      - ./uploads:/app/uploads
   frontend:
     image: ghcr.io/stuni907/frontend-image:latest
     depends_on:

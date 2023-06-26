@@ -7,12 +7,12 @@ import requests
 ## Installation Seriennummer
 installation = "123456789"
 password = "testing321"
-
-backendurl = "http://localhost:8080/api"
+token = ""
+backendurl = "https://cem-cloud-p5.ch/api"
 
 
 # Environment variables
-broker = "localhost"
+broker = "https://cem-cloud-p5.ch"
 port = 1883
 
 def getConfig(hash):
