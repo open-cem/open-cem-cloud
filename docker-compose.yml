@@ -35,14 +35,12 @@ services:
     volumes:
       - ./certs/fullchain.pem:/etc/x509/https/tls.crt
       - ./certs/privkey.pem:/etc/x509/https/tls.key
-  #mqtt:
-  #  image: eclipse-mosquitto
-  #  depends_on:
-  #    - auth
-  #  ports:
-  #    - 1883:1883
-  #  volumes:
-  #    - ./src/mqtt-broker/mosquitto.conf:/mosquitto/config/mosquitto.conf
+  mqtt:
+    image: iegomez/mosquitto-go-auth
+    ports:
+      - 1883:1883
+    volumes:
+      - ./mqtt-broker:/etc/mosquitto
   backend:
     image: ghcr.io/stuni907/backend-image:latest
     depends_on:

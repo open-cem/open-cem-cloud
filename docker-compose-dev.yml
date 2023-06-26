@@ -13,9 +13,9 @@ services:
       - db-data:/var/lib/mysql
 
   mqtt:
-    image: eclipse-mosquitto
+    image: iegomez/mosquitto-go-auth
     ports:
-      - 1884:1884
+      - 1883:1883
     volumes:
       - ./src/mqtt-broker:/etc/mosquitto
 

@@ -21,12 +21,10 @@ public class ConfigurationController {
 
     @GetMapping("/installations/{installationnr}/configuration")
     public String getConfiguration(
-            @PathVariable("installationnr") String installationnr,
-            @RequestParam("hash") String hash
+            @PathVariable("installationnr") String installationnr
     ) {
         System.out.println("getConfiguration()");
         System.out.println("installationnr:" + installationnr);
-        System.out.println("hash:" + hash);
         // returns hardcoded configuration for now.
         final String installationName = "EFH Test";
         final int version = 1;
