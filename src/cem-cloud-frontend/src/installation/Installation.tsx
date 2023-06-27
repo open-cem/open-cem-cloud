@@ -35,7 +35,7 @@ const Installation = () => {
             .then(_ => setActiveIndex(0))
             .catch(e => presentError('Komponenten konnnte nicht geladen werden, versuchen Sie es später erneut.', undefined, e, toast.current));
         
-        service.loadTypes(auth.user.access_token)
+        service.loadComponentTypes(auth.user.access_token)
             .then(setTypes)
             .catch(e => presentError('Komponenten-Typen konnnte nicht geladen werden, versuchen Sie es später erneut.', undefined, e, toast.current));
     }, [auth.user, params.installationId]);
@@ -44,7 +44,7 @@ const Installation = () => {
         if (auth.user && params.installationId) {
             new ComponentsService()
                 .createComponent(params.installationId, typeId, auth.user.access_token)
-                .then(id => navigate(`/components/${id}`))
+                .then(id => navigate(`components/${id}`))
                 .catch(e => presentError('Die Komponente konnte nicht erstellt werden, versuchen Sie es später erneut.', undefined, e, toast.current));
         }
     };
@@ -65,7 +65,7 @@ const Installation = () => {
 
     const createComponentEntries = (components: ComponentListItem[]) => {
         return components.map(component =>
-            <ComponentListEntry key={component.id} label={component.name} selectAction={() => navigate(`/components/${component.id}`)} deleteAction={() => deleteComponent(component)} />
+            <ComponentListEntry key={component.id} label={component.name} selectAction={() => navigate(`components/${component.id}`)} deleteAction={() => deleteComponent(component)} />
         );
     };
 

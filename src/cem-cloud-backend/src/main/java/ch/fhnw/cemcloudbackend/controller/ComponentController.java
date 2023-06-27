@@ -1,16 +1,15 @@
 package ch.fhnw.cemcloudbackend.controller;
 
 import ch.fhnw.cemcloudbackend.dto.*;
-import ch.fhnw.cemcloudbackend.repository.ComponentRepository;
-import ch.fhnw.cemcloudbackend.repository.ComponentTypeRepository;
-import ch.fhnw.cemcloudbackend.repository.InstallationRepository;
-import ch.fhnw.cemcloudbackend.repository.ManufacturerRepository;
+import ch.fhnw.cemcloudbackend.repository.*;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.StreamSupport;
@@ -23,23 +22,27 @@ public class ComponentController {
     private final InstallationRepository installations;
     private final ComponentTypeRepository types;
     private final ManufacturerRepository manufacturers;
+    private final ComponentParameterMetaRepository meta;
 
     public ComponentController(ComponentRepository components,
                                ComponentTypeRepository types,
                                InstallationRepository installations,
-                               ManufacturerRepository manufacturers) {
+                               ManufacturerRepository manufacturers,
+                               ComponentParameterMetaRepository meta) {
         this.components = components;
         this.types = types;
         this.installations = installations;
         this.manufacturers = manufacturers;
+        this.meta = meta;
     }
 
     @GetMapping()
-    public ResponseEntity<Iterable<ComponentListItem>> getAll(@RequestParam Optional<UUID> installationId) {
+    public ResponseEntity<Iterable<ComponentListItem>> getAll(@RequestParam Optional<UUID> installationId,
+                                                              @RequestParam Optional<UUID> typeFamilyId) {
         Iterable<ch.fhnw.cemcloudbackend.entity.Component> components;
-        if (installationId.isEmpty()) {
-            components = this.components.findAll();
-        } else {
+        if (installationId.isPresent() && typeFamilyId.isPresent()) {
+            components = this.components.findAllByTypeComponentFamilyIdAndInstallationId(typeFamilyId.get(), installationId.get());
+        } else if (installationId.isPresent()) {
             var optionalInstallation = installations.findById(installationId.get());
 
             if (optionalInstallation.isEmpty()) {
@@ -47,6 +50,8 @@ public class ComponentController {
             }
 
             components = optionalInstallation.get().getComponents();
+        } else {
+            components = this.components.findAll();
         }
 
         return ResponseEntity.ok(StreamSupport.stream(components.spliterator(), false)
@@ -64,6 +69,9 @@ public class ComponentController {
 
         ch.fhnw.cemcloudbackend.entity.Component component = optionalComponent.get();
 
+        Map<String, Object> parameter = component.getParameter() != null
+                ? component.getParameter() : new HashMap<>();
+
         Component dto;
         if (component instanceof ch.fhnw.cemcloudbackend.entity.HardwareComponent hardwareComponent) {
             var manufacturer = hardwareComponent.getManufacturer() != null
@@ -77,9 +85,10 @@ public class ComponentController {
                 : null;
 
             dto = new Component(component.getId(), component.getName(), component.getType().getComponentType().getName(),
-                    channel, manufacturer, model);
+                    channel, manufacturer, model, parameter);
         } else {
-            dto = new Component(component.getId(), component.getName(), component.getType().getComponentType().getName());
+            dto = new Component(component.getId(), component.getName(), component.getType().getComponentType().getName(),
+                    parameter);
         }
 
         return ResponseEntity.ok(dto);
@@ -103,6 +112,24 @@ public class ComponentController {
 
         return ResponseEntity.ok(component.get().getInstallation().getCommunicationChannels().stream()
                 .map(channel -> new CommunicationChannelListItem(channel.getId(), channel.getName()))
+                .toList());
+    }
+
+    @GetMapping("{id}/meta")
+    public ResponseEntity<Iterable<ParameterMeta>> getMeta(@PathVariable UUID id) {
+        Optional<ch.fhnw.cemcloudbackend.entity.Component> component = components.findById(id);
+        if (component.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Iterable<ch.fhnw.cemcloudbackend.entity.ComponentParameterMeta> parameterMeta =
+                meta.findAllByComponentType(component.get().getType());
+
+        return ResponseEntity.ok(StreamSupport
+                .stream(parameterMeta.spliterator(), false)
+                .map(m -> new ParameterMeta(m.getName(), m.getLabel(), m.getType().toString(),
+                        m.getListType() != null ? m.getListType().toString() : null,
+                        m.getReferenceComponentFamily() != null ? m.getReferenceComponentFamily().getId() : null))
                 .toList());
     }
 
@@ -146,6 +173,7 @@ public class ComponentController {
 
         ch.fhnw.cemcloudbackend.entity.Component component = optionalComponent.get();
         component.setName(request.name());
+        component.setParameter(request.parameter());
 
         if (component instanceof ch.fhnw.cemcloudbackend.entity.HardwareComponent hardwareComponent) {
 

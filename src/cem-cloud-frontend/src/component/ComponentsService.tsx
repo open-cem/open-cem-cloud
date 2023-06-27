@@ -1,4 +1,5 @@
 import { ApiService } from "../app/ApiService";
+import { ParameterMeta } from "../parameterInput/ParameterInput";
 
 const DeviceFamily: string = "DEVICES";
 const ActuatorFamily: string = "ACTUATORS";
@@ -12,12 +13,14 @@ interface Component {
     manufacturerId?: string;
     modelId?: string;
     channelId?: string;
+    parameter: Map<string, Object>;
 }
 
 class NullComponent implements Component {
     id: string = '';
     name: string = '';
     family: string = '';
+    parameter: Map<string, Object> = new Map<string, Object>();
 }
 
 class ComponentListItem {
@@ -62,9 +65,25 @@ class ComponentsService extends ApiService {
             .fetchBody();
     }
 
-    public loadTypes(accessToken: string) {
+    public loadComponentsByFamily(installationId: string, familyId: string, accessToken: string) {
+        return this.apiBuilder<ComponentListItem[]>()
+            .withUri(this.endpoint)
+            .withParameter("installationId", installationId)
+            .withParameter("typeFamilyId", familyId)
+            .withAuthorization(accessToken)
+            .fetchBody();
+    }
+
+    public loadComponentTypes(accessToken: string) {
         return this.apiBuilder<ComponentType[]>()
             .withUri(`${this.endpoint}/types`)
+            .withAuthorization(accessToken)
+            .fetchBody();
+    }
+
+    public loadComponentParameterMeta(componentId: string, accessToken: string) {
+        return this.apiBuilder<ParameterMeta[]>()
+            .withUri(`${this.endpoint}/${componentId}/meta`)
             .withAuthorization(accessToken)
             .fetchBody();
     }

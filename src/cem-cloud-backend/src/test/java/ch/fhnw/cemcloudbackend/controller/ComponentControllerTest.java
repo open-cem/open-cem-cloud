@@ -2,10 +2,7 @@ package ch.fhnw.cemcloudbackend.controller;
 
 import ch.fhnw.cemcloudbackend.dto.ComponentUpdateRequest;
 import ch.fhnw.cemcloudbackend.entity.*;
-import ch.fhnw.cemcloudbackend.repository.ComponentRepository;
-import ch.fhnw.cemcloudbackend.repository.ComponentTypeRepository;
-import ch.fhnw.cemcloudbackend.repository.InstallationRepository;
-import ch.fhnw.cemcloudbackend.repository.ManufacturerRepository;
+import ch.fhnw.cemcloudbackend.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -31,11 +28,13 @@ public class ComponentControllerTest {
     private InstallationRepository installations;
     @Mock
     private ManufacturerRepository manufacturers;
+    @Mock
+    private ComponentParameterMetaRepository meta;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        controller = new ComponentController(components, types, installations, manufacturers);
+        controller = new ComponentController(components, types, installations, manufacturers, meta);
     }
 
     @Test
@@ -85,7 +84,7 @@ public class ComponentControllerTest {
         doReturn(Optional.of(manufacturer)).when(manufacturers).findById(any());
 
         controller.put(component.getId(), new ComponentUpdateRequest(component.getName(),
-                component.getManufacturer().getId(), component.getModel().getId()));
+                component.getManufacturer().getId(), component.getModel().getId(), null, null));
 
         verify(components, times(1)).save(any());
     }
@@ -100,7 +99,7 @@ public class ComponentControllerTest {
         doReturn(Optional.of(manufacturer)).when(manufacturers).findById(any());
 
         controller.put(component.getId(), new ComponentUpdateRequest(component.getName(),
-                component.getManufacturer().getId(), null));
+                component.getManufacturer().getId(), null, null, null));
 
         verify(components, times(1)).save(any());
     }
@@ -117,7 +116,7 @@ public class ComponentControllerTest {
         doReturn(Optional.of(manufacturer)).when(manufacturers).findById(any());
 
         controller.put(component.getId(), new ComponentUpdateRequest(component.getName(),
-                component.getManufacturer().getId(), model.getId()));
+                component.getManufacturer().getId(), model.getId(), null, null));
 
         verify(components, times(1)).save(any());
     }
@@ -131,7 +130,7 @@ public class ComponentControllerTest {
         doReturn(Optional.of(component)).when(components).findById(any());
         doReturn(Optional.of(manufacturer)).when(manufacturers).findById(any());
 
-        controller.put(component.getId(), new ComponentUpdateRequest(component.getName(),null, null));
+        controller.put(component.getId(), new ComponentUpdateRequest(component.getName(),null, null, null, null));
 
         verify(components, times(1)).save(any());
     }
@@ -148,7 +147,7 @@ public class ComponentControllerTest {
         doReturn(Optional.of(manufacturer)).when(manufacturers).findById(any());
 
         controller.put(component.getId(), new ComponentUpdateRequest(component.getName(),
-                manufacturer.getId(), model.getId()));
+                manufacturer.getId(), model.getId(), null, null));
 
         verify(components, times(1)).save(any());
     }

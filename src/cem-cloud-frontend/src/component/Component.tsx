@@ -9,6 +9,7 @@ import { presentError, presentSuccess } from "../app/NotificationPresenter";
 import { Manufacturer, ManufacturersService, Model } from "./ManufacturersService";
 import _ from "lodash";
 import { CommunicationChannelListItem, CommunicationChannelService } from "../installation/CommunicationChannelsService";
+import { ParameterInput, ParameterMeta } from "../parameterInput/ParameterInput";
 
 const Component = () => {
     const params = useParams();
@@ -24,6 +25,9 @@ const Component = () => {
     const [selectedModel, setSelectedModel] = useState<Model | undefined>(undefined);
     const [channels, setChannels] = useState<CommunicationChannelListItem[]>([]);
     const [selectedChannel, setSelectedChannel] = useState<CommunicationChannelListItem | undefined>(undefined);
+    const [parameters, setParameters] = useState<ParameterMeta[]>([]);
+
+    const installationId: string = params.installationId ?? "";
 
     const loadModels = useCallback((manufacturer: Manufacturer, component: ComponentModel) => {
         if (auth.user) {
@@ -51,15 +55,18 @@ const Component = () => {
             }
         };
 
-        const components = new ComponentsService().loadComponent(componentId, auth.user?.access_token);
+        const service = new ComponentsService();
+        const components = service.loadComponent(componentId, auth.user?.access_token);
         const manufacturers = new ManufacturersService().loadManufacturers(auth.user?.access_token);
         const channels = new CommunicationChannelService().loadCommunicationChannelsByComponentId(componentId, auth.user.access_token);
+        const parameterMeta = service.loadComponentParameterMeta(componentId, auth.user.access_token);
 
-        Promise.all([components, manufacturers, channels])
-            .then(([c, ms, cs]) => {
+        Promise.all([components, manufacturers, channels, parameterMeta])
+            .then(([c, ms, cs, ps]) => {
                 setComponent(c);
                 setManufacturers(_.orderBy(ms, m => m.name));
                 setChannels(_.orderBy(cs, c => c.name));
+                setParameters(_.orderBy(ps, p => p.label));
                 if (isHardwareComponent(c)) {
                     selectManufacturer(c, ms);
                     setSelectedChannel(_.find(cs, x => x.id === c.channelId))
@@ -115,6 +122,13 @@ const Component = () => {
         setHasChanges(true);
     };
 
+    const onParameterChange = (parameterName: string, value: any) => {
+        const c = { ...component } as ComponentModel;
+        (c.parameter as any)[parameterName] = value;
+        setComponent(c);
+        setHasChanges(true);
+    };
+
     const onSave = () => {
         if (auth.user && !(component instanceof NullComponent)) {
             new ComponentsService()
@@ -145,6 +159,11 @@ const Component = () => {
                             <DropdownInputGroup id="formChannel" label="Kommunikationskanal" value={selectedChannel} options={channels} optionLabel="name" onChangeFn={(e) => onSelectedChannelChanged(e.target.value, component)} />
                         </>
                         : <></>
+                }
+                {
+                    parameters.length === 0 && component instanceof NullComponent
+                    ? <></>
+                    : parameters.map(p => <ParameterInput key={p.name} meta={p} value={(component.parameter as any)[p.name]} changeFn={onParameterChange} installationId={installationId} />)
                 }
             </div>
             <div className="button-bar">

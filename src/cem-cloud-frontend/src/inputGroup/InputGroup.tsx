@@ -7,6 +7,7 @@ import "./InputGroup.css";
 import AuthorizedImage from "../authorizedImage/authorizedImage";
 import { Installation } from "../installation/InstallationsService";
 import { SelectItemOptionsType } from "primereact/selectitem";
+import { InputSwitch, InputSwitchChangeEvent } from "primereact/inputswitch";
 
 /**
  * Shows a label and an input field.
@@ -58,7 +59,7 @@ export const NumberInputGroup = ({ label, id, changeFn, name, value, isReadOnly 
                 <InputNumber id={id} value={value} name={name} onValueChange={changeFn} readOnly={isReadOnly} />
         </div>
     )
-}
+};
 
 export const PictureInputGroup = ({ id, label, installation }: { id: string, label: string, installation: Installation }) => {
     return (
@@ -75,7 +76,7 @@ export const PictureInputGroup = ({ id, label, installation }: { id: string, lab
 };
 
 /**
- * Shows a label and an dropdown.
+ * Shows a label and a dropdown.
  * 
  * @param label The label of the dropdown
  * @param id The id which connects the label and the dropdown(for - id)
@@ -91,4 +92,25 @@ export const DropdownInputGroup = ({ label, id, value, onChangeFn, options, opti
             <Dropdown id={id} placeholder={`${label} auswählen`} value={value} options={options} optionLabel={optionLabel} onChange={onChangeFn} filter showClear disabled={disabled} />
         </div>
     )
-}
+};
+
+/**
+ * Shows a label and a switch.
+ * 
+ * @param label The label of the switch
+ * @param id The id which connects the label and the dropdown(for -id)
+ * @param value True if the input is checked
+ * @param onChangeFn The onChange function of the switch
+ */
+export const SwitchInputGroup = ({label, id, value, onChangeFn}: { label: string, id: string, value?: boolean, onChangeFn: (event: InputSwitchChangeEvent) => void }) => {
+    if (value === undefined) {
+        value = false;
+    }
+
+    return (
+        <div className="input-group">
+            <label htmlFor={id}>{label}</label>
+            <InputSwitch id={id} checked={value} onChange={onChangeFn} />
+        </div>
+    )
+};
