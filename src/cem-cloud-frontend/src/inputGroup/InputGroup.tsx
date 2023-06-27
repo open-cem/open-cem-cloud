@@ -56,7 +56,7 @@ export const NumberInputGroup = ({ label, id, changeFn, name, value, isReadOnly 
     return (
         <div className="input-group">
             <label htmlFor={id}>{label}</label>
-                <InputNumber id={id} value={value} name={name} onValueChange={changeFn} readOnly={isReadOnly} />
+                <InputNumber id={id} value={value} name={name} onValueChange={changeFn} readOnly={isReadOnly} maxFractionDigits={2} />
         </div>
     )
 };
