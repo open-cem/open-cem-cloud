@@ -70,7 +70,8 @@ const Installation = () => {
     };
 
     const createComponentGroup = (name: string, group: string, components: ComponentListItem[]) => {
-        const componentsInFamily = _.filter(components, component => component.family === group);
+        let componentsInFamily = _.filter(components, component => component.family === group);
+        componentsInFamily = _.orderBy(componentsInFamily, f => f.name);
         return <AccordionTab header={<ComponentListHeader label={name} addAction={() => showTypeDialog(group)} />}>
             {
                 componentsInFamily.length > 0
