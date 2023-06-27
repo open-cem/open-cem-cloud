@@ -85,13 +85,13 @@ const Component = () => {
             return;
         }
 
+        const model = { propertyName: 'modelId', value: undefined };
         setSelectedManufacturer(manufacturer);
         if (manufacturer) {
-            onChange('manufacturerId', manufacturer.id);
+            onChange([{ propertyName: 'manufacturerId', value: manufacturer.id}, model], component);
         } else {
-            onChange('manufacturerId', undefined);
+            onChange([{ propertyName: 'manufacturerId', value: undefined}, model], component);
         }
-        onChange('modelId', undefined);
 
         setSelectedModel(undefined);
         if (manufacturer) {
@@ -104,20 +104,22 @@ const Component = () => {
     const onSelectedModelChanged = (model: Model | undefined, component: ComponentModel) => {
         setSelectedModel(model);
         if (model) {
-            onChange('modelId', model.id);
+            onChange([{ propertyName: 'modelId', value: model.id}], component);
         } else {
-            onChange('modelId', undefined);
+            onChange([{ propertyName: 'modelId', value: undefined}], component);
         }
     };
 
     const onSelectedChannelChanged = (channel: CommunicationChannelListItem | undefined, component: ComponentModel) => {
         setSelectedChannel(channel);
-        onChange('channelId', channel?.id);
+        onChange([{propertyName: 'channelId', value: channel?.id}], component);
     }
 
-    const onChange = (propertyName: string, value: any) => {
+    const onChange = (properties: {propertyName: string, value: any}[], component: ComponentModel) => {
         const i = { ...component } as ComponentModel;
-        (i as { [key: string]: any })[propertyName] = value;
+        properties.forEach(p => {
+            (i as { [key: string]: any })[p.propertyName] = p.value;
+        });
         setComponent(i);
         setHasChanges(true);
     };
@@ -149,7 +151,7 @@ const Component = () => {
         <>
             <Toast ref={toast} />
             <div className="form">
-                <InputGroup id="formName" label="Name" value={component?.name} changeFn={(e) => onChange('name', e.target.value)} />
+                <InputGroup id="formName" label="Name" value={component?.name} changeFn={(e) => onChange([{propertyName: 'name', value: e.target.value}], component)} />
                 {
                     isHardwareComponent(component)
                         ?
