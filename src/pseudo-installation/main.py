@@ -12,7 +12,7 @@ backendurl = "https://cem-cloud-p5.ch/api"
 
 
 # Environment variables
-broker = "https://cem-cloud-p5.ch"
+broker = "cem-cloud-p5.ch"
 port = 1883
 
 def getConfig(hash):

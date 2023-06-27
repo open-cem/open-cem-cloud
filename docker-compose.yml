@@ -41,6 +41,8 @@ services:
       - 1883:1883
     volumes:
       - ./mqtt-broker:/etc/mosquitto
+    depends_on:
+      - db
   backend:
     image: ghcr.io/stuni907/backend-image:latest
     depends_on:
@@ -54,7 +56,7 @@ services:
       - 8080:8080
     restart: always
     volumes:
-      - ./uploads:/app/uploads
+      - ./uploads:/uploads
   frontend:
     image: ghcr.io/stuni907/frontend-image:latest
     depends_on:
