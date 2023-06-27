@@ -64,7 +64,7 @@ public class CommunicationChannelController {
     }
 
     @GetMapping("{id}/meta")
-    public ResponseEntity<Iterable<CommunicationChannelParameterMeta>> getMeta(@PathVariable UUID id) {
+    public ResponseEntity<Iterable<ParameterMeta>> getMeta(@PathVariable UUID id) {
         Optional<ch.fhnw.cemcloudbackend.entity.CommunicationChannel> channel = channels.findById(id);
         if (channel.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -75,8 +75,8 @@ public class CommunicationChannelController {
 
         return ResponseEntity.ok(StreamSupport
                 .stream(parameterMeta.spliterator(), false)
-                .map(m -> new CommunicationChannelParameterMeta(m.getName(), m.getLabel(), m.getType().toString(),
-                        m.getListType() != null ? m.getListType().toString() : null))
+                .map(m -> new ParameterMeta(m.getName(), m.getLabel(), m.getType().toString(),
+                        m.getListType() != null ? m.getListType().toString() : null, null))
                 .toList());
     }
 
@@ -124,7 +124,7 @@ public class CommunicationChannelController {
 
         ch.fhnw.cemcloudbackend.entity.CommunicationChannel channel = optionalChannel.get();
         channel.setName(request.name());
-        channel.setParameter(request.parameters());
+        channel.setParameter(request.parameter());
         channels.save(channel);
 
         return ResponseEntity.noContent().build();

@@ -14,6 +14,7 @@ import InstallationConfig from "../installation/config/InstallationConfig";
 import Installation from "../installation/Installation";
 import { setApiUri } from "./AppSettings";
 import CommunicationChannel from "../communicationChannel/communicationChannel";
+import Component from "../component/Component";
 
 function App(props: any) {
   setApiUri(props.apiUri);
@@ -50,7 +51,8 @@ function App(props: any) {
             <Route path="installations" element={<Installations />} />
             <Route path="installations/:installationId" element={<Installation />} />
             <Route path="installations/:installationId/config" element={<InstallationConfig />} />
-            <Route path="communicationChannels/:channelId" element={<CommunicationChannel />} />
+            <Route path="installations/:installationId/communicationChannels/:channelId" element={<CommunicationChannel />} />
+            <Route path="installations/:installationId/components/:componentId" element={<Component />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

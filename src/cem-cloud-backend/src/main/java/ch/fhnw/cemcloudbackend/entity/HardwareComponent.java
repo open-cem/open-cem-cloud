@@ -4,10 +4,22 @@ import jakarta.persistence.*;
 
 @Entity
 public class HardwareComponent extends Component {
-    @OneToOne
+
+    @ManyToOne
+    private Manufacturer manufacturer;
+    @ManyToOne
     private Model model;
     @OneToOne
     private SmartGridreadyDefinition smartGridreadyDefinition;
+    @ManyToOne
+    private CommunicationChannel communicationChannel;
+    public Manufacturer getManufacturer() {
+        return manufacturer;
+    }
+
+    public void setManufacturer(Manufacturer manufacturer) {
+        this.manufacturer = manufacturer;
+    }
 
     public Model getModel() {
         return model;
@@ -23,5 +35,13 @@ public class HardwareComponent extends Component {
 
     public void setSmartGridreadyDefinition(SmartGridreadyDefinition smartGridreadyDefinition) {
         this.smartGridreadyDefinition = smartGridreadyDefinition;
+    }
+
+    public CommunicationChannel getCommunicationChannel() {
+        return communicationChannel;
+    }
+
+    public void setCommunicationChannel(CommunicationChannel communicationChannel) {
+        this.communicationChannel = communicationChannel;
     }
 }

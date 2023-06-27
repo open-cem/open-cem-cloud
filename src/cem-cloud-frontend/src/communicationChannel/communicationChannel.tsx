@@ -19,6 +19,8 @@ const CommunicationChannel = () => {
     const [parameters, setParameters] = useState<ParameterMeta[]>([]);
     const [hasChanges, setHasChanges] = useState<boolean>(false);
 
+    const installationId: string = params.installationId ?? "";
+
     useEffect(() => {
         if (params.channelId && auth.user) {
             const service = new CommunicationChannelService();
@@ -72,7 +74,7 @@ const CommunicationChannel = () => {
                 {
                     parameters.length === 0 && channel instanceof NullCommunicationChannel
                     ? <></>
-                    : parameters.map(p => <ParameterInput key={p.name} meta={p} value={(channel.parameter as any)[p.name]} changeFn={onParameterChange} />)
+                    : parameters.map(p => <ParameterInput key={p.name} meta={p} value={(channel.parameter as any)[p.name]} changeFn={onParameterChange} installationId={installationId} />)
                 }
             </div>
             <div className="button-bar">

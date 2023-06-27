@@ -1,11 +1,29 @@
 import { ApiService } from "../app/ApiService";
+import { ParameterMeta } from "../parameterInput/ParameterInput";
 
 const DeviceFamily: string = "DEVICES";
 const ActuatorFamily: string = "ACTUATORS";
 const SensorFamily: string = "SENSORS";
 const ControllerFamily: string = "CONTROLLERS";
 
-class Component {
+interface Component {
+    id: string;
+    name: string;
+    family: string
+    manufacturerId?: string;
+    modelId?: string;
+    channelId?: string;
+    parameter: Map<string, Object>;
+}
+
+class NullComponent implements Component {
+    id: string = '';
+    name: string = '';
+    family: string = '';
+    parameter: Map<string, Object> = new Map<string, Object>();
+}
+
+class ComponentListItem {
     id: string;
     name: string;
     family: string;
@@ -32,17 +50,40 @@ class ComponentType {
 class ComponentsService extends ApiService {
     private readonly endpoint: string = "components";
 
+    public loadComponent(componentId: string, accessToken: string) {
+        return this.apiBuilder<Component>()
+            .withUri(`${this.endpoint}/${componentId}`)
+            .withAuthorization(accessToken)
+            .fetchBody();
+    }
+
     public loadComponents(installationId: string, accessToken: string) {
-        return this.apiBuilder<Component[]>()
+        return this.apiBuilder<ComponentListItem[]>()
             .withUri(this.endpoint)
             .withParameter("installationId", installationId)
             .withAuthorization(accessToken)
             .fetchBody();
     }
 
-    public loadTypes(accessToken: string) {
+    public loadComponentsByFamily(installationId: string, familyId: string, accessToken: string) {
+        return this.apiBuilder<ComponentListItem[]>()
+            .withUri(this.endpoint)
+            .withParameter("installationId", installationId)
+            .withParameter("typeFamilyId", familyId)
+            .withAuthorization(accessToken)
+            .fetchBody();
+    }
+
+    public loadComponentTypes(accessToken: string) {
         return this.apiBuilder<ComponentType[]>()
             .withUri(`${this.endpoint}/types`)
+            .withAuthorization(accessToken)
+            .fetchBody();
+    }
+
+    public loadComponentParameterMeta(componentId: string, accessToken: string) {
+        return this.apiBuilder<ParameterMeta[]>()
+            .withUri(`${this.endpoint}/${componentId}/meta`)
             .withAuthorization(accessToken)
             .fetchBody();
     }
@@ -63,6 +104,15 @@ class ComponentsService extends ApiService {
             });
     }
 
+    public saveComponent(component: Component, accessToken: string) {
+        return this.apiBuilder()
+            .withUri(`${this.endpoint}/${component.id}`)
+            .withAuthorization(accessToken)
+            .withBody(component)
+            .put()
+            .fetch();
+    }
+
     public deleteComponent(componentId: string, accessToken: string) {
         return this.apiBuilder()
             .withUri(`${this.endpoint}/${componentId}`)
@@ -72,4 +122,5 @@ class ComponentsService extends ApiService {
     }
 }
 
-export { Component, ComponentType, ComponentsService, DeviceFamily, ActuatorFamily, SensorFamily, ControllerFamily };
+export { NullComponent, ComponentListItem, ComponentType, ComponentsService, DeviceFamily, ActuatorFamily, SensorFamily, ControllerFamily };
+export type { Component };

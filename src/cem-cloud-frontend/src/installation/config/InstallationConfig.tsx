@@ -47,6 +47,10 @@ const InstallationConfig = () => {
             .then(types => setChannelTypes(_.sortBy(types, t => t.name)));
     }, [auth, params.installationId]);
 
+    const channelUrl = (channelId: string) => {
+        return `/installations/${params.installationId}/communicationChannels/${channelId}`;
+    };
+
     const saveImage = async (event: FileUploadHandlerEvent) => {
         const install = { ...installation, imageUrl: URL.createObjectURL(event.files[0]) };
         setInstallation(install);
@@ -77,7 +81,7 @@ const InstallationConfig = () => {
 
     const channels = (cs: CommunicationChannel[]) => {
         return cs.map(c =>
-            <ComponentListEntry key={c.id} label={c.name} selectAction={() => navigate(`/communicationChannels/${c.id}`)} deleteAction={() => deleteChannel(c.id)} />
+            <ComponentListEntry key={c.id} label={c.name} selectAction={() => navigate(channelUrl(c.id))} deleteAction={() => deleteChannel(c.id)} />
         );
     };
 
@@ -85,7 +89,7 @@ const InstallationConfig = () => {
         if (auth.user) {
             new CommunicationChannelService()
                 .createCommunicationChannel(installation.id, typeId, auth.user.access_token)
-                .then(id => navigate(`/communicationChannels/${id}`))
+                .then(id => navigate(channelUrl(id)))
                 .catch(e => presentError('Der Kommunikationskanal konnte nicht erstellt werden, versuchen Sie es später erneut.', undefined, e, toast.current));
         }
     };

@@ -13,7 +13,7 @@ public class Model {
     @Column(columnDefinition = "VARCHAR(36)")
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID id;
-    @OneToOne
+    @ManyToOne
     private Manufacturer manufacturer;
     private String name;
 
