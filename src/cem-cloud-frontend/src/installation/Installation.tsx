@@ -59,7 +59,9 @@ const Installation = () => {
     };
 
     const showTypeDialog = (family: string) => {
-        setFamilyTypes(_.filter(types, type => type.family === family))
+        let familyTypes = _.filter(types, type => type.family === family);
+        familyTypes = _.orderBy(familyTypes, t => t.name);
+        setFamilyTypes(familyTypes);
         setTypeDialogVisible(true);
     };
 
