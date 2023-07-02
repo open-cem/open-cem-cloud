@@ -162,6 +162,7 @@ public class ComponentController {
         component.setName(String.format("%s (neu)", type.get().getName()));
         component.setType(type.get());
         component.setInstallation(installation.get());
+        installation.get().setOutOfSync(true);
 
         component = components.save(component);
         URI uri = new URI(String.format("/%s", component.getId()));
@@ -180,6 +181,7 @@ public class ComponentController {
         ch.fhnw.cemcloudbackend.entity.Component component = optionalComponent.get();
         component.setName(request.name());
         component.setParameter(request.parameter());
+        component.getInstallation().setOutOfSync(true);
 
         if (component instanceof ch.fhnw.cemcloudbackend.entity.HardwareComponent hardwareComponent) {
 
@@ -245,6 +247,10 @@ public class ComponentController {
         if (component.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
+
+        ch.fhnw.cemcloudbackend.entity.Installation installation = component.get().getInstallation();
+        installation.setOutOfSync(true);
+        installations.save(installation);
 
         components.delete(component.get());
 

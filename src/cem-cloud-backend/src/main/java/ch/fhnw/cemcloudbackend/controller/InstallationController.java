@@ -55,7 +55,7 @@ public class InstallationController {
 
         return ResponseEntity.ok(new ch.fhnw.cemcloudbackend.dto.Installation(installation.get().getId(),
                 installation.get().getName(), installation.get().getSerialNumber(),
-                getInstallationImageUrl(installation.get())));
+                getInstallationImageUrl(installation.get()), installation.get().isOutOfSync()));
     }
 
     @GetMapping(value = "{id}/image", produces = MediaType.IMAGE_JPEG_VALUE + ";" + MediaType.IMAGE_PNG_VALUE)
@@ -79,11 +79,25 @@ public class InstallationController {
         installation.setId(UUID.randomUUID());
         installation.setName(request.name());
         installation.setSerialNumber(request.serialNumber());
+        installation.setOutOfSync(true);
 
         installation = installations.save(installation);
         URI uri = new URI(String.format("/%s", installation.getId()));
 
         return ResponseEntity.created(uri).build();
+    }
+
+    @PostMapping("{id}/sync")
+    public ResponseEntity<Void> sync(@PathVariable UUID id) {
+        Optional<Installation> installation = installations.findById(id);
+
+        if (installation.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        //TODO: execute MQTT sync
+
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping(value = "{id}", consumes = { "multipart/form-data" })
@@ -97,6 +111,7 @@ public class InstallationController {
         Installation installation = optionalInstallation.get();
         installation.setName(request.name());
         installation.setSerialNumber(request.serialNumber());
+        installation.setOutOfSync(true);
 
         if (image != null && !image.isEmpty()) {
             String filename = image.getOriginalFilename();

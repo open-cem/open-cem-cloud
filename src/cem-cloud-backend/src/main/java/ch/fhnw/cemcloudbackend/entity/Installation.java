@@ -30,6 +30,8 @@ public class Installation {
     @OneToMany(mappedBy = "installation")
     private Set<Component> components;
 
+    private boolean isOutOfSync;
+
     public UUID getId() {
         return id;
     }
@@ -76,5 +78,13 @@ public class Installation {
 
     public void setComponents(Set<Component> components) {
         this.components = components;
+    }
+
+    public boolean isOutOfSync() {
+        return isOutOfSync;
+    }
+
+    public void setOutOfSync(boolean outOfSync) {
+        isOutOfSync = outOfSync;
     }
 }

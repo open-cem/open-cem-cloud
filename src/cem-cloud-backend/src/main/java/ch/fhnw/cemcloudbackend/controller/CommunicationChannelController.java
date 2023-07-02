@@ -107,6 +107,7 @@ public class CommunicationChannelController {
         channel.setTyp(type.get());
         channel.setName(String.format("Neuer %s Kommunikationskanal", type.get().getName()));
         channel.setInstallation(installation.get());
+        installation.get().setOutOfSync(true);
 
         channel = channels.save(channel);
         URI uri = new URI(String.format("/%s", channel.getId()));
@@ -125,6 +126,7 @@ public class CommunicationChannelController {
         ch.fhnw.cemcloudbackend.entity.CommunicationChannel channel = optionalChannel.get();
         channel.setName(request.name());
         channel.setParameter(request.parameter());
+        channel.getInstallation().setOutOfSync(true);
         channels.save(channel);
 
         return ResponseEntity.noContent().build();
@@ -137,6 +139,10 @@ public class CommunicationChannelController {
         if (channel.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
+
+        Installation installation = channel.get().getInstallation();
+        installation.setOutOfSync(true);
+        installations.save(installation);
 
         channels.delete(channel.get());
 
