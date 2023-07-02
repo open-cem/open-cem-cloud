@@ -27,7 +27,7 @@ public class MqttAccessControl {
     public enum AccessLevel {
         READ(1),
         WRITE(2),
-        READWRITE(3);
+        SUBSCRIBE(4);
 
         private final int value;
 
