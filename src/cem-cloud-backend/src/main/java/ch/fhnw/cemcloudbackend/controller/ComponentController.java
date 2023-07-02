@@ -23,17 +23,20 @@ public class ComponentController {
     private final ComponentTypeRepository types;
     private final ManufacturerRepository manufacturers;
     private final ComponentParameterMetaRepository meta;
+    private final SmartGridreadyRepository sgrDefinitions;
 
     public ComponentController(ComponentRepository components,
                                ComponentTypeRepository types,
                                InstallationRepository installations,
                                ManufacturerRepository manufacturers,
-                               ComponentParameterMetaRepository meta) {
+                               ComponentParameterMetaRepository meta,
+                               SmartGridreadyRepository sgrDefinitions) {
         this.components = components;
         this.types = types;
         this.installations = installations;
         this.manufacturers = manufacturers;
         this.meta = meta;
+        this.sgrDefinitions = sgrDefinitions;
     }
 
     @GetMapping()
@@ -83,9 +86,12 @@ public class ComponentController {
             var channel = hardwareComponent.getCommunicationChannel() != null
                 ? hardwareComponent.getCommunicationChannel().getId()
                 : null;
+            var smartGridreadyDefinition = hardwareComponent.getSmartGridreadyDefinition() != null
+                ? hardwareComponent.getSmartGridreadyDefinition().getId()
+                : null;
 
             dto = new Component(component.getId(), component.getName(), component.getType().getComponentType().getName(),
-                    channel, manufacturer, model, parameter);
+                    channel, manufacturer, model, smartGridreadyDefinition, parameter);
         } else {
             dto = new Component(component.getId(), component.getName(), component.getType().getComponentType().getName(),
                     parameter);
@@ -177,7 +183,19 @@ public class ComponentController {
 
         if (component instanceof ch.fhnw.cemcloudbackend.entity.HardwareComponent hardwareComponent) {
 
-            if (request.manufacturerId() != null) {
+            if (request.smartGridreadyDefinitionId() != null) {
+                hardwareComponent.setManufacturer(null);
+                hardwareComponent.setModel(null);
+
+                Optional<ch.fhnw.cemcloudbackend.entity.SmartGridreadyDefinition> sgrDefinition = sgrDefinitions.findById(request.smartGridreadyDefinitionId());
+
+                if (sgrDefinition.isEmpty()) {
+                    return ResponseEntity.badRequest().build();
+                }
+
+                hardwareComponent.setSmartGridreadyDefinition(sgrDefinition.get());
+            }
+            else if (request.manufacturerId() != null) {
                 Optional<ch.fhnw.cemcloudbackend.entity.Manufacturer> manufacturer = manufacturers.findById(request.manufacturerId());
                 if (manufacturer.isEmpty()) {
                     return ResponseEntity.badRequest().build();
@@ -198,8 +216,11 @@ public class ComponentController {
                     hardwareComponent.setModel(null);
                 }
             } else {
+                hardwareComponent.setSmartGridreadyDefinition(null);
                 hardwareComponent.setManufacturer(null);
+                hardwareComponent.setModel(null);
             }
+
             if (request.channelId() != null) {
                 Optional<ch.fhnw.cemcloudbackend.entity.CommunicationChannel> channel = hardwareComponent.getInstallation().getCommunicationChannels()
                         .stream()
