@@ -1,13 +1,12 @@
 package ch.fhnw.cemcloudbackend.controller;
 
+import ch.fhnw.cemcloudbackend.entity.Installation;
 import ch.fhnw.cemcloudbackend.model.configuration.CommunicationChannel;
 import ch.fhnw.cemcloudbackend.model.configuration.Configuration;
 import ch.fhnw.cemcloudbackend.model.configuration.Controller;
 import ch.fhnw.cemcloudbackend.model.configuration.HardwareComponent;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import ch.fhnw.cemcloudbackend.repository.InstallationRepository;
+import org.springframework.web.bind.annotation.*;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.introspector.Property;
 import org.yaml.snakeyaml.nodes.NodeTuple;
@@ -16,15 +15,26 @@ import org.yaml.snakeyaml.representer.Representer;
 
 import java.util.*;
 
-@RestController()
+@RestController
 public class ConfigurationController {
 
-    @GetMapping("/installations/{installationnr}/configuration")
-    public String getConfiguration(
-            @PathVariable("installationnr") String installationnr
-    ) {
+    private InstallationRepository installations;
+
+    public ConfigurationController(InstallationRepository installations) {
+        this.installations = installations;
+    }
+
+    @GetMapping("/installations/{installationNr}/configuration")
+    public String getConfiguration(@PathVariable String installationNr) {
+        Optional<Installation> installation = installations.findBySerialNumber(installationNr);
+
+        if (installation.isPresent()) {
+            installation.get().setOutOfSync(false);
+            installations.save(installation.get());
+        }
+
         System.out.println("getConfiguration()");
-        System.out.println("installationnr:" + installationnr);
+        System.out.println("installationNr:" + installationNr);
         // returns hardcoded configuration for now.
         final String installationName = "EFH Test";
         final int version = 1;

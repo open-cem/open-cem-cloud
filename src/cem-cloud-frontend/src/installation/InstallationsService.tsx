@@ -5,13 +5,14 @@ class Installation {
     name: string;
     serialNumber: string;
     imageUrl: string;
+    isOutOfSync: boolean;
 
-
-    constructor(id: string, name: string, serialNumber: string, image?: string) {
+    constructor(id: string, name: string, serialNumber: string, image?: string, isOutOfSync?: boolean) {
         this.id = id;
         this.name = name;
         this.serialNumber = serialNumber;
         this.imageUrl = image ?? '';
+        this.isOutOfSync = isOutOfSync ?? false;
     }
 }
 
@@ -22,23 +23,25 @@ class NullInstallation extends Installation {
 }
 
 class InstallationService extends ApiService {
+    private readonly endpoint: string = "installations";
+
     public loadInstallations = (accessToken: string) => {
         return this.apiBuilder<Installation[]>()
-            .withUri("installations")
+            .withUri(this.endpoint)
             .withAuthorization(accessToken)
             .fetchBody();
     }
 
     public loadInstallation = (id: string, accessToken: string) => {
         return this.apiBuilder<Installation>()
-            .withUri(`installations/${id}`)
+            .withUri(`${this.endpoint}/${id}`)
             .withAuthorization(accessToken)
             .fetchBody();
     }
 
     public createInstallation = (name: string, accessToken: string) => {
         return this.apiBuilder()
-            .withUri('installations')
+            .withUri(this.endpoint)
             .withAuthorization(accessToken)
             .withBody({ name: name, serialNumber: crypto.randomUUID() })
             .post()
@@ -62,7 +65,7 @@ class InstallationService extends ApiService {
         }
 
         return this.apiBuilder()
-            .withUri(`installations/${installation.id}`)
+            .withUri(`${this.endpoint}/${installation.id}`)
             .withAuthorization(accessToken)
             .withFormData(formData)
             .put()
@@ -71,9 +74,17 @@ class InstallationService extends ApiService {
 
     public loadInstallationImage = (installation: Installation, accessToken: string) => {
         return this.apiBuilder()
-            .withUri(`installations/${installation.imageUrl}`)
+            .withUri(`${this.endpoint}/${installation.imageUrl}`)
             .withAuthorization(accessToken)
             .fetchBlobResponse();
+    }
+
+    public syncInstallation = (installationId: string, accessToken: string) => {
+        return this.apiBuilder()
+            .withUri(`${this.endpoint}/${installationId}/sync`)
+            .withAuthorization(accessToken)
+            .post()
+            .fetch();
     }
 }
 

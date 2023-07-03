@@ -9,10 +9,10 @@ import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.UUID;
 
-public class SmartGridReadyRepository {
+public class SmartGridReadyXmlRepository {
     private final Path uploadDirPath;
 
-    public SmartGridReadyRepository(ApplicationProperties applicationProperties) {
+    public SmartGridReadyXmlRepository(ApplicationProperties applicationProperties) {
         uploadDirPath = Paths.get(applicationProperties.uploadDirectory()).toAbsolutePath().normalize().resolve("smartgridready");
     }
 

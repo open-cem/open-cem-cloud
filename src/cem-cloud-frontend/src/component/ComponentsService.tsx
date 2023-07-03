@@ -13,6 +13,7 @@ interface Component {
     manufacturerId?: string;
     modelId?: string;
     channelId?: string;
+    smartGridreadyDefinitionId?: string;
     parameter: Map<string, Object>;
 }
 
