@@ -36,6 +36,7 @@ services:
       - ./certs/fullchain.pem:/etc/x509/https/tls.crt
       - ./certs/privkey.pem:/etc/x509/https/tls.key
   mqtt:
+    container_name: mqtt
     image: iegomez/mosquitto-go-auth
     ports:
       - 1883:1883
