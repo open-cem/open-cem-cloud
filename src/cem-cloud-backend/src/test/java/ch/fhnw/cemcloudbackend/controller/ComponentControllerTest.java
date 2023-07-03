@@ -161,6 +161,7 @@ public class ComponentControllerTest {
         component.setModel(mockMockModel());
         component.setName("Mock Component");
         component.setType(mockComponentType());
+        component.setInstallation(mockInstallation());
 
         return component;
     }
@@ -195,5 +196,12 @@ public class ComponentControllerTest {
         family.setName("Mock family");
 
         return family;
+    }
+
+    private Installation mockInstallation() {
+        Installation installation = new Installation();
+        installation.setOutOfSync(false);
+
+        return installation;
     }
 }
