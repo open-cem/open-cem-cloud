@@ -1,110 +1,110 @@
 installationName: EFH Test
-creationTimestamp: 2023-05-19T17:33:32.841Z
+creationTimestamp: 2023-06-26T15:45:51.775Z
 version: 1
 communicationChannels:
-- id: 7de29627-78c8-4702-a1b3-a89ca9ad15ce
+- id: 66ebcb57-9483-43f0-80c1-10d22dd2bc47
   name: Modbus RTU
   type: MODBUS_RTU
   extra:
     baudrate: 19200
     port: COM5
     parity: EVEN
-- id: defdec2b-e720-477b-b1c4-f5f884f31ffa
+- id: ed7bf950-fbbf-44fa-b4ee-05aadbfbbf67
   name: Modbus TCP
   type: MODBUS_TCP
   extra:
     address: 192.168.0.8
     port: 502
-- id: bbf5b795-11af-4d0e-9386-eeb28a38a776
+- id: 97c676e4-1398-43c9-a1ba-da7f7365b05c
   name: Shelly Cloud
   type: SHELLY_CLOUD
   extra:
     authKey: MTUyNjU5dWlk6D393AB193944CE2B1D84E0B573EAB1271DA6F2AF2BC54F67779F5BC27C31E90AD7C7075E0F813D8
     serverAddress: https://shelly-54-eu.shelly.cloud/
-- id: 4a8c0042-ced3-40f3-9527-895dafa09055
+- id: b92ac81c-4341-4b6f-b5a2-3c4603871656
   name: Shelly Local
   type: SHELLY_LOCAL
   extra: null
 sensors:
-- id: 45e8e22d-7586-43b7-88f9-c5af55a625e2
+- id: 079a6795-f0bd-4508-bc11-17fe2bbe6fd7
   name: Zaehler Nummer 1
   manufacturer: ABB
   model: ABB B23 112-100
   type: POWER_SENSOR
   isSmartGridready: true
-  smartGridreadyFileId: 7e7ac45e-22a6-4823-a47d-3aa5548fc3c6
-  communicationId: 7de29627-78c8-4702-a1b3-a89ca9ad15ce
+  smartGridreadyFileId: bb1956cc-df72-4dda-9419-26fc504780a9
+  communicationId: 66ebcb57-9483-43f0-80c1-10d22dd2bc47
   isLogging: true
   extra:
     address: '1'
     hasEnergyExport: false
     maxPower: 10
-- id: aa2c4f9a-54e8-4959-acca-9ad626f7831e
+- id: e17a8c38-4b2d-4ae1-827b-6a57b71f2b19
   name: Zaehler Nummer 2 bidirektional
   manufacturer: ABB
   model: ABB B23 312-100
   type: POWER_SENSOR
   isSmartGridready: false
   smartGridreadyFileId: null
-  communicationId: 7de29627-78c8-4702-a1b3-a89ca9ad15ce
+  communicationId: 66ebcb57-9483-43f0-80c1-10d22dd2bc47
   isLogging: true
   extra:
     address: '2'
     hasEnergyExport: true
     maxPower: 10
-- id: b11b8a85-bb44-4f21-ac7c-84a89adf37c7
+- id: b2c8b2ab-3223-42b4-a0d0-24b31592b7c4
   name: Zaehler Nummer 3 bidirektional
   manufacturer: Shelly
   model: 3EM
   type: POWER_SENSOR
   isSmartGridready: false
   smartGridreadyFileId: null
-  communicationId: 4a8c0042-ced3-40f3-9527-895dafa09055
+  communicationId: b92ac81c-4341-4b6f-b5a2-3c4603871656
   isLogging: true
   extra:
     address: 192.168.1.113
     hasEnergyExport: true
     maxPower: 10
-- id: 346aeed2-cfae-4409-bf5c-01b856648690
+- id: 4386a240-21ef-4e27-8a1f-6736597aa0d5
   name: Wohnzimmer Temperatursensor
   manufacturer: Shelly
   model: HT
   type: TEMPERATURE_SENSOR_ROOM
   isSmartGridready: false
   smartGridreadyFileId: null
-  communicationId: bbf5b795-11af-4d0e-9386-eeb28a38a776
+  communicationId: 97c676e4-1398-43c9-a1ba-da7f7365b05c
   isLogging: true
   extra:
     address: 701f93
     maxTemp: 50
     minTemp: -10
 actuators:
-- id: d97045f7-12c5-4872-95ae-96e7d2f573e8
+- id: 4503fb56-f178-4a86-b71a-41bb28256076
   name: Erstes Relais
   manufacturer: Shelly
   model: PRO_2PM
   type: RELAIS
   isSmartGridready: false
   smartGridreadyFileId: null
-  communicationId: 4a8c0042-ced3-40f3-9527-895dafa09055
+  communicationId: b92ac81c-4341-4b6f-b5a2-3c4603871656
   isLogging: true
   extra:
     address: 192.168.1.112
     nChannels: 2
-- id: cb2b05f1-5786-4041-a0d0-7fbf7e2689d8
+- id: a02efec4-6279-4fe6-80d2-e93f4d1741d1
   name: Zweites Relais
   manufacturer: Shelly
   model: PRO_4PM
   type: RELAIS
   isSmartGridready: false
   smartGridreadyFileId: null
-  communicationId: 4a8c0042-ced3-40f3-9527-895dafa09055
+  communicationId: b92ac81c-4341-4b6f-b5a2-3c4603871656
   isLogging: true
   extra:
     address: 192.168.1.114
     nChannels: 4
 devices:
-- id: 09a38cda-c96d-4e98-9a64-94923e3e1f89
+- id: 738cbc08-d559-4252-93f6-a6681e507750
   name: PV-Anlage West
   manufacturer: Musterfabrik
   model: PV Mustermodel
@@ -114,10 +114,10 @@ devices:
   communicationId: null
   isLogging: true
   extra:
-    idPowerSensor: 45e8e22d-7586-43b7-88f9-c5af55a625e2
+    idPowerSensor: 079a6795-f0bd-4508-bc11-17fe2bbe6fd7
     isSimulated: false
     maxPower: 5
-- id: 02f75951-ad0e-44b8-b534-ea056e62b2a1
+- id: dcc698c7-05e9-49a4-96af-09e1da98a7ca
   name: Hausanschluss Power Sensor
   manufacturer: null
   model: null
@@ -127,9 +127,10 @@ devices:
   communicationId: null
   isLogging: true
   extra:
-    idPowerSensor: aa2c4f9a-54e8-4959-acca-9ad626f7831e
+    idPowerSensor: e17a8c38-4b2d-4ae1-827b-6a57b71f2b19
+    isSimulated: false
     maxPower: 10
-- id: 2453e61d-0474-4da7-9e12-b0c6e8b2a2c0
+- id: 5b85399b-a134-41c9-a734-85545ad467d4
   name: Meine Waermepumpe
   manufacturer: Musterfabrik
   model: null
@@ -139,11 +140,11 @@ devices:
   communicationId: null
   isLogging: true
   extra:
-    idPowerSensor: b11b8a85-bb44-4f21-ac7c-84a89adf37c7
+    idPowerSensor: b2c8b2ab-3223-42b4-a0d0-24b31592b7c4
     nominalPower: 5
     isSimulated: false
-    idTempSensorRoom: 346aeed2-cfae-4409-bf5c-01b856648690
-    idRelais: d97045f7-12c5-4872-95ae-96e7d2f573e8
+    idTempSensorRoom: 4386a240-21ef-4e27-8a1f-6736597aa0d5
+    idRelais: 4503fb56-f178-4a86-b71a-41bb28256076
     channels:
     - 0
     - 1
@@ -152,8 +153,8 @@ devices:
     - '10'
     - '01'
     - '00'
-    idController: 3d0fc92c-89ec-40a8-b5ea-985bac8927f8
-- id: b304a40a-f53a-4d7f-b001-91eaf26418b8
+    idController: 0a0845f3-7495-41b1-8055-4d604cbcfc68
+- id: f31d9db9-fca8-49d7-a003-4e953ff4441e
   name: Meine Ladestation
   manufacturer: Musterfabrik
   model: null
@@ -163,12 +164,12 @@ devices:
   communicationId: null
   isLogging: true
   extra:
-    idPowerSensor: 45e8e22d-7586-43b7-88f9-c5af55a625e2
+    idPowerSensor: 079a6795-f0bd-4508-bc11-17fe2bbe6fd7
     nominalPower: 11
     isSimulated: false
     address: '255'
-    idController: aed28291-970c-4f3c-9692-08cb5b941811
-- id: b079fc7f-a1f4-440e-aceb-d3fd590e8cf7
+    idController: 8072bedd-2db2-40bf-9ed5-9a18020ffea5
+- id: 4ebc36de-bbfb-44c1-a6ec-f4849444d66a
   name: Meine Elektroheizung
   manufacturer: Musterfabrik
   model: null
@@ -178,41 +179,78 @@ devices:
   communicationId: null
   isLogging: true
   extra:
-    idPowerSensor: 45e8e22d-7586-43b7-88f9-c5af55a625e2
+    idPowerSensor: 079a6795-f0bd-4508-bc11-17fe2bbe6fd7
     nominalPower: 5
     isSimulated: false
     channels:
     - 0
-    idController: d8ed7d0f-0fb0-41cd-aebe-777f4145dba1
+    idController: cf7ec6fc-ccd6-4d2c-bbc0-b844471619ff
     channelConfig:
     - '0'
     - '1'
-- id: e22755a0-4f39-4504-8f1e-d0146dc1a9c7
+- id: 7c914cfc-2a2d-4166-99d0-660cf69ff415
   name: Meine Lampe
   manufacturer: IKEA
   model: null
-  type: HOUSHOLD_APPLIANCES
+  type: HOUSEHOLD_APPLIANCES
   isSmartGridready: false
   smartGridreadyFileId: null
   communicationId: null
   isLogging: true
   extra:
-    idPowerSensor: b11b8a85-bb44-4f21-ac7c-84a89adf37c7
+    idPowerSensor: b2c8b2ab-3223-42b4-a0d0-24b31592b7c4
     nominalPower: 0.01
     isSimulated: false
-    idRelais: d97045f7-12c5-4872-95ae-96e7d2f573e8
+    idRelais: 4503fb56-f178-4a86-b71a-41bb28256076
     channels:
     - 1
     channelConfig:
     - '0'
     - '1'
-    idController: 58c76ef0-1d50-41c1-a4e7-e8d78261a608
+    idController: 29864572-8520-495c-af58-8a189576cfef
+- id: 75817878-455c-45aa-86a4-c9f97452c3b1
+  name: Remaining Simulated
+  manufacturer: null
+  model: null
+  type: REMAINING_CONSUMPTION
+  isSmartGridready: false
+  smartGridreadyFileId: null
+  communicationId: null
+  isLogging: true
+  extra:
+    deviceSetting: SIMULATED
+    minPower: 1.5
+    maxPower: 1.7
+- id: 3dee5e86-4f25-48e5-830c-26d92d49493f
+  name: Remaining Measured
+  manufacturer: null
+  model: null
+  type: REMAINING_CONSUMPTION
+  isSmartGridready: false
+  smartGridreadyFileId: null
+  communicationId: null
+  isLogging: true
+  extra:
+    idPowerSensor: dcc698c7-05e9-49a4-96af-09e1da98a7ca
+    deviceSetting: MEASURED
+- id: e178afbc-b8cc-4c51-b925-b401a102bbbf
+  name: Remaining Calculated
+  manufacturer: null
+  model: null
+  type: REMAINING_CONSUMPTION
+  isSmartGridready: false
+  smartGridreadyFileId: null
+  communicationId: null
+  isLogging: true
+  extra:
+    idPowerSensor: dcc698c7-05e9-49a4-96af-09e1da98a7ca
+    deviceSetting: CALCULATED
 controllers:
-- id: 58c76ef0-1d50-41c1-a4e7-e8d78261a608
+- id: 29864572-8520-495c-af58-8a189576cfef
   type: EXCESS_CONTROLLER
   extra:
     limit: 2
-- id: 3d0fc92c-89ec-40a8-b5ea-985bac8927f8
+- id: 0a0845f3-7495-41b1-8055-4d604cbcfc68
   type: STEPWISE_EXCESS_CONTROLLER
   extra:
     limits:
@@ -220,16 +258,16 @@ controllers:
     - 1
     - 2.3
     - 5
-- id: d8ed7d0f-0fb0-41cd-aebe-777f4145dba1
+- id: cf7ec6fc-ccd6-4d2c-bbc0-b844471619ff
   type: COVERAGE_CONTROLLER
   extra:
     limit: 1.3
-- id: aed28291-970c-4f3c-9692-08cb5b941811
+- id: 8072bedd-2db2-40bf-9ed5-9a18020ffea5
   type: DYNAMIC_EXCESS_CONTROLLER
   extra:
     limitMax: 8
     limitMin: 4
-- id: 08cdf5f8-94ae-48fe-8ce6-53d01e545c72
+- id: 6b63dec8-56f6-4023-a507-248483b7b710
   type: PRICE_CONTROLLER
   extra:
     gridTarif: 60.5
