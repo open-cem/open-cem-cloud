@@ -52,7 +52,7 @@ const ParameterInput = ({ meta, value, changeFn, installationId }: { meta: Param
         );
     } else if (meta.type === "NUMBER") {
         return (
-            <NumberInputGroup id={meta.name} label={meta.label} name={meta.name} value={value} changeFn={e => changeFn(meta.name, e.target.value)} />
+            <NumberInputGroup id={meta.name} label={meta.label} name={meta.name} value={value} changeFn={e => changeFn(meta.name, e.value)} />
         );
     } else if (meta.type === "BOOL") {
         return (

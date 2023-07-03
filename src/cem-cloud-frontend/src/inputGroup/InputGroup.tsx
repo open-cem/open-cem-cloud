@@ -1,6 +1,6 @@
 import { ChangeEventHandler } from "react";
 import { InputText } from "primereact/inputtext";
-import { InputNumber, InputNumberValueChangeEvent } from 'primereact/inputnumber';
+import { InputNumber, InputNumberChangeEvent } from 'primereact/inputnumber';
 import { Image } from "primereact/image";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import "./InputGroup.css";
@@ -45,7 +45,7 @@ export const InputGroup = ({ label, id, changeFn, name, value, isReadOnly }: { l
  * @param value The value of the input field
  * @param isReadOnly True, if the input field is read only, else false
  */
-export const NumberInputGroup = ({ label, id, changeFn, name, value, isReadOnly }: { label: string, id: string, changeFn: (event: InputNumberValueChangeEvent) => void, name?: string, value: number, isReadOnly?: boolean }) => {
+export const NumberInputGroup = ({ label, id, changeFn, name, value, isReadOnly }: { label: string, id: string, changeFn: (event: InputNumberChangeEvent) => void, name?: string, value: number, isReadOnly?: boolean }) => {
     if (!isReadOnly) {
         isReadOnly = false;
     }
@@ -56,7 +56,7 @@ export const NumberInputGroup = ({ label, id, changeFn, name, value, isReadOnly 
     return (
         <div className="input-group">
             <label htmlFor={id}>{label}</label>
-                <InputNumber id={id} value={value} name={name} onValueChange={changeFn} readOnly={isReadOnly} maxFractionDigits={2} />
+                <InputNumber id={id} value={value} name={name} onChange={changeFn} readOnly={isReadOnly} maxFractionDigits={2} />
         </div>
     )
 };
