@@ -203,7 +203,7 @@ const Component = () => {
                 }
             </div>
             <div className="button-bar">
-                <Button severity="secondary" outlined onClick={() => navigate(-1)}>Abbrechen</Button>
+                <Button severity="secondary" outlined onClick={() => navigate(`/installations/${installationId}`)}>{ hasChanges ? "Abbrechen" : "Zurück" }</Button>
                 {
                     hasChanges
                         ? <Button onClick={onSave}>Speichern</Button>
