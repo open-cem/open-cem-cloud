@@ -16,7 +16,9 @@
 .input-group .p-inputswitch,
 .input-group textarea,
 .input-group select,
-.input-group .p-image {
+.input-group .p-image,
+.input-group .p-chips,
+.input-group .p-multiselect {
     order: 2;
     flex: 1 1 auto;
 }
