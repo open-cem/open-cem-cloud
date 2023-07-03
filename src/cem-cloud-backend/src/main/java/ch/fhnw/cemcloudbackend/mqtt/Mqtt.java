@@ -13,7 +13,7 @@ public class Mqtt extends MqttConfig{
     private final Logger logger = LoggerFactory.getLogger(Mqtt.class);
 
     public Mqtt(ApplicationProperties applicationProperties) {
-        super(applicationProperties.mqttUsername(), applicationProperties.mqttPassword());
+        super(applicationProperties.mqttHost(), applicationProperties.mqttUsername(), applicationProperties.mqttPassword());
     }
 
     public void sendMessage(String topic, String content) {
@@ -36,11 +36,11 @@ public class Mqtt extends MqttConfig{
 
         final Mqtt5BlockingClient client = MqttClient.builder()
                 .useMqttVersion5()
-                .serverHost(HOST)
+                .serverHost(host)
                 .serverPort(PORT)
                 .buildBlocking();
 
-        // connect to MQTT HOST with username/pw
+        // connect to MQTT host with username/pw
         client.connectWith()
                 .simpleAuth()
                 .username(userName)
