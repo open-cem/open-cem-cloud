@@ -29,7 +29,7 @@ class ConfigurationControllerTest {
 
         // Call getConfiguration() method
         ConfigurationController controller = new ConfigurationController(installations);
-        String actual = controller.getConfiguration("123", "abc");
+        String actual = controller.getConfiguration("123");
 
         // Compare expected and actual
         assertEquals(ignoreDynamicFields(expected), ignoreDynamicFields(actual));

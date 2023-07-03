@@ -6,14 +6,13 @@ import requests
 
 ## Installation Seriennummer
 installation = "123456789"
-username = "pseudo-installation"
 password = "testing321"
-
-backendurl = "http://localhost:8080/api"
+token = ""
+backendurl = "https://cem-cloud-p5.ch/api"
 
 
 # Environment variables
-broker = "localhost"
+broker = "cem-cloud-p5.ch"
 port = 1883
 
 def getConfig(hash):
@@ -59,9 +58,11 @@ def connect():
     # enable TLS for secure connection => for local development disable
     # client.tls_set(tls_version=mqtt.client.ssl.PROTOCOL_TLS)
     # set username and password
-    client.username_pw_set(username, password)
+    client.username_pw_set(installation, password)
     
+    # Connect read only
     client.connect(broker, port)
+    
 
     # setting callbacks, use separate functions like above for better visibility
     client.on_subscribe = on_subscribe

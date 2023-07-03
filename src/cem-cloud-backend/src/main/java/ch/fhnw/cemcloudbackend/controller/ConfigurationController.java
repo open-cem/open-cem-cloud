@@ -25,8 +25,7 @@ public class ConfigurationController {
     }
 
     @GetMapping("/installations/{installationNr}/configuration")
-    public String getConfiguration(@PathVariable String installationNr,
-                                   @RequestParam("hash") String hash) {
+    public String getConfiguration(@PathVariable String installationNr) {
         Optional<Installation> installation = installations.findBySerialNumber(installationNr);
 
         if (installation.isPresent()) {
@@ -35,8 +34,7 @@ public class ConfigurationController {
         }
 
         System.out.println("getConfiguration()");
-        System.out.println("installationnr:" + installationNr);
-        System.out.println("hash:" + hash);
+        System.out.println("installationNr:" + installationNr);
         // returns hardcoded configuration for now.
         final String installationName = "EFH Test";
         final int version = 1;
@@ -275,6 +273,7 @@ public class ConfigurationController {
 
         centralPower.getExtra().put("idPowerSensor", powerSensor2.getId().toString());
         centralPower.getExtra().put("maxPower", 10);
+        centralPower.getExtra().put("isSimulated", false);
 
         devices.add(centralPower);
 
@@ -355,7 +354,7 @@ public class ConfigurationController {
                 "Meine Lampe",
                 "IKEA",
                 null,
-                "HOUSHOLD_APPLIANCES",
+                "HOUSEHOLD_APPLIANCES",
                 false,
                 null,
                 null,
@@ -372,6 +371,65 @@ public class ConfigurationController {
         lamp.getExtra().put("idController", excessController.getId().toString());
 
         devices.add(lamp);
+
+        HardwareComponent remainingSimulated = new HardwareComponent(
+                UUID.randomUUID(),
+                "Remaining Simulated",
+                null,
+                null,
+                "REMAINING_CONSUMPTION",
+                false,
+                null,
+                null,
+                true
+        );
+
+        remainingSimulated.setExtra(new HashMap<>());
+        remainingSimulated.getExtra().put("minPower", 1.5);
+        remainingSimulated.getExtra().put("maxPower", 1.7);
+        remainingSimulated.getExtra().put("deviceSetting", "SIMULATED");
+
+        devices.add(remainingSimulated);
+
+
+
+        HardwareComponent remainingMeasured = new HardwareComponent(
+                UUID.randomUUID(),
+                "Remaining Measured",
+                null,
+                null,
+                "REMAINING_CONSUMPTION",
+                false,
+                null,
+                null,
+                true
+        );
+
+        remainingMeasured.setExtra(new HashMap<>());
+        remainingMeasured.getExtra().put("idPowerSensor", centralPower.getId().toString());
+        remainingMeasured.getExtra().put("deviceSetting", "MEASURED");
+
+        devices.add(remainingMeasured);
+
+
+        HardwareComponent remainingCalculated = new HardwareComponent(
+                UUID.randomUUID(),
+                "Remaining Calculated",
+                null,
+                null,
+                "REMAINING_CONSUMPTION",
+                false,
+                null,
+                null,
+                true
+        );
+
+        remainingCalculated.setExtra(new HashMap<>());
+        remainingCalculated.getExtra().put("idPowerSensor", centralPower.getId().toString());
+        remainingCalculated.getExtra().put("deviceSetting", "CALCULATED");
+
+        devices.add(remainingCalculated);
+
 
 
         Configuration configuration = new Configuration(

@@ -13,11 +13,11 @@ services:
       - db-data:/var/lib/mysql
 
   mqtt:
-    image: eclipse-mosquitto
+    image: iegomez/mosquitto-go-auth
     ports:
       - 1883:1883
     volumes:
-      - ./src/mqtt-broker/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./src/mqtt-broker:/etc/mosquitto
 
   auth:
     image: quay.io/keycloak/keycloak:latest

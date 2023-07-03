@@ -11,6 +11,9 @@ sourceCompatibility = '17'
 repositories {
     mavenCentral()
 }
+apply plugin: 'application'
+
+mainClassName = 'ch.fhnw.cemcloudbackend.CemCloudBackendApplication'
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-configuration-processor'
@@ -28,4 +31,9 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+jar {
+    archiveBaseName = 'cem-cloud-backend'
+    archiveVersion =  '0.1.0'
 }

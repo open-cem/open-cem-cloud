@@ -4,6 +4,7 @@ import ch.fhnw.cemcloudbackend.dto.InstallationCreateRequest;
 import ch.fhnw.cemcloudbackend.dto.InstallationListItem;
 import ch.fhnw.cemcloudbackend.dto.InstallationUpdateRequest;
 import ch.fhnw.cemcloudbackend.entity.Installation;
+import ch.fhnw.cemcloudbackend.mqtt.Mqtt;
 import ch.fhnw.cemcloudbackend.repository.InstallationImageRepository;
 import ch.fhnw.cemcloudbackend.repository.InstallationRepository;
 import jakarta.validation.Valid;
@@ -25,10 +26,12 @@ public class InstallationController {
 
     private final InstallationRepository installations;
     private final InstallationImageRepository images;
+    private final Mqtt mqtt;
 
-    public InstallationController(InstallationRepository installations, InstallationImageRepository images) {
+    public InstallationController(InstallationRepository installations, InstallationImageRepository images, Mqtt mqtt) {
         this.installations = installations;
         this.images = images;
+        this.mqtt = mqtt;
     }
 
     @GetMapping
