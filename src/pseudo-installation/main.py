@@ -8,16 +8,16 @@ import requests
 installation = "123456789"
 password = "testing321"
 token = ""
-backendurl = "https://cem-cloud-p5.ch/api"
+backendurl = "http://localhost:8080/api"
 
 
 # Environment variables
-broker = "cem-cloud-p5.ch"
+broker = "localhost"
 port = 1883
 
-def getConfig(hash):
+def getConfig():
     print("Getting configuration from backend")
-    r = requests.get(backendurl + "/installations/" + installation + "/configuration?hash=" + hash)
+    r = requests.get(backendurl + "/installations/" + installation + "/configuration")
     if r.status_code == 200:
         return r.text
     else:
@@ -42,7 +42,7 @@ def on_message(client, userdata, msg):
     eventMsg = json.loads(msg.payload)
     if eventMsg["event"] == "newConfiguration":
         print("Should update configuration")
-        config = getConfig(eventMsg["hash"])
+        config = getConfig()
         if config is not None:
             print("Got configuration from backend")
             print(config)
