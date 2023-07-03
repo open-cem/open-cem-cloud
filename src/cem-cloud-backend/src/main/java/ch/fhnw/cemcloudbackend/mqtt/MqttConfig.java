@@ -2,10 +2,14 @@ package ch.fhnw.cemcloudbackend.mqtt;
 
 public abstract class MqttConfig {
 
-    protected final String broker = "localhost";
-    protected final int qos = 0;
-    protected Integer port = 1883;
-    protected String userName = null;
-    protected String password = null;
+    protected final static String HOST = "localhost";
+    protected static final int QOS = 0;
+    protected static final int PORT = 1883;
+    protected final String userName;
+    protected final String password;
 
+    public MqttConfig(String userName, String password) {
+        this.userName = userName;
+        this.password = password;
+    }
 }
