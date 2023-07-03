@@ -20,6 +20,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.StreamSupport;
 
+import static java.lang.String.format;
+
 @RestController
 @RequestMapping("/installations")
 public class InstallationController {
@@ -85,7 +87,7 @@ public class InstallationController {
         installation.setOutOfSync(true);
 
         installation = installations.save(installation);
-        URI uri = new URI(String.format("/%s", installation.getId()));
+        URI uri = new URI(format("/%s", installation.getId()));
 
         return ResponseEntity.created(uri).build();
     }
@@ -98,7 +100,7 @@ public class InstallationController {
             return ResponseEntity.notFound().build();
         }
 
-        //TODO: execute MQTT sync
+        sendNewConfigurationEvent(installation.get().getSerialNumber());
 
         return ResponseEntity.noContent().build();
     }
@@ -132,6 +134,10 @@ public class InstallationController {
     }
 
     private static String getInstallationImageUrl(Installation installation) {
-        return String.format("%s/image", installation.getId());
+        return format("%s/image", installation.getId());
+    }
+
+    private void sendNewConfigurationEvent(String serialNumber) {
+        mqtt.sendMessage(format("installations/%s", serialNumber), "{ \"event\": \"newConfiguration\" }");
     }
 }
