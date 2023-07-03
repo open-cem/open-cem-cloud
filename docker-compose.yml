@@ -44,6 +44,7 @@ services:
       - ./mqtt-broker:/etc/mosquitto
     depends_on:
       - db
+    restart: always
   backend:
     image: ghcr.io/stuni907/backend-image:latest
     depends_on:
