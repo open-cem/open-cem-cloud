@@ -152,10 +152,15 @@ public class InstallationController {
         } else {
             serialNumber = requestedSerialNumber.get();
         }
+
+        Optional<InstallationCredentials> bySerialNumber = installationCredentials.findBySerialNumber(serialNumber);
+        if (bySerialNumber.isPresent()) {
+            return ResponseEntity.badRequest().build();
+        }
+
         ch.fhnw.cemcloudbackend.dto.InstallationCredential credential = new ch.fhnw.cemcloudbackend.dto.InstallationCredential(
                 serialNumber, generatePassword(60), generatePassword(60)
         );
-
 
         InstallationCredentials installationCredential = new InstallationCredentials();
 

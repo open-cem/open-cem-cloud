@@ -27,7 +27,16 @@ public class HardwareComponent {
         this.isLogging = isLogging;
     }
 
-    public HardwareComponent(UUID id, String name, String manufacturer, String model, String type, Boolean isSmartGridready, UUID smartGridreadyFileId, UUID communicationId, Boolean isLogging, Map<String, Object> extra) {
+    public HardwareComponent(UUID id,
+                             String name,
+                             String manufacturer,
+                             String model,
+                             String type,
+                             Boolean isSmartGridready,
+                             UUID smartGridreadyFileId,
+                             UUID communicationId,
+                             Boolean isLogging,
+                             Map<String, Object> extra) {
         this(id, name, manufacturer, model, type, isSmartGridready, smartGridreadyFileId, communicationId, isLogging);
         this.extra = extra;
     }
