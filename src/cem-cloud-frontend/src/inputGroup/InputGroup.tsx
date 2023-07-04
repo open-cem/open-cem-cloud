@@ -9,7 +9,7 @@ import { Installation } from "../installation/InstallationsService";
 import { SelectItemOptionsType } from "primereact/selectitem";
 import { InputSwitch, InputSwitchChangeEvent } from "primereact/inputswitch";
 import { Chips, ChipsChangeEvent } from 'primereact/chips';
-import { MultiSelect } from 'primereact/multiselect';
+import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect';
 
 /**
  * Shows a label and an input field.
@@ -161,7 +161,7 @@ export const MultiValueInput = ({ label, id, changeFn, name, value, isReadOnly, 
  * @param options The multiselect values available for selection
  * @param optionLabel The property name of the object to select as label
  */
-export const MultiSelectInputGroup = ({ label, id, value, onChangeFn, options, optionLabel }: { label: string, id: string, value: any, onChangeFn: (event: DropdownChangeEvent) => void, options: SelectItemOptionsType, optionLabel: string }) => {
+export const MultiSelectInputGroup = ({ label, id, value, onChangeFn, options, optionLabel }: { label: string, id: string, value: any, onChangeFn: (event: MultiSelectChangeEvent) => void, options: SelectItemOptionsType, optionLabel: string }) => {
     return (
         <div className="input-group">
             <label htmlFor={id}>{label}</label>

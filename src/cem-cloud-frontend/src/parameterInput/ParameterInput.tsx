@@ -28,7 +28,8 @@ interface ParameterOption {
 const ParameterInput = ({ meta, value, changeFn, installationId }: { meta: ParameterMeta, value: any, changeFn: (prop: string, value: any) => void, installationId: string }) => {
     const auth = useAuth();
     const [options, setOptions] = useState<ParameterOption[]>([]);
-    const [selectedOption, setSelectedOptions] = useState<ParameterOption | undefined>();
+    const [selectedOption, setSelectedOption] = useState<ParameterOption | undefined>();
+    const [selectedOptions, setSelectedOptions] = useState<ParameterOption[] | undefined>();
 
     useEffect(() => {
         if ((meta.type === "REFERENCE" || meta.listTyp === "REFERENCE") && meta.referenceFamilyId && auth.user) {
@@ -36,14 +37,23 @@ const ParameterInput = ({ meta, value, changeFn, installationId }: { meta: Param
                 .loadComponentsByFamily(installationId, meta.referenceFamilyId, auth.user.access_token)
                 .then(cs => {
                     setOptions(_.orderBy(cs, c => c.name));
-                    setSelectedOptions(_.find(cs, c => c.id === value));
+                    if (meta.listTyp === "REFERENCE") {
+                        setSelectedOptions(_.filter(cs, c => (value as string[])?.includes(c.id)));
+                    } else {
+                        setSelectedOption(_.find(cs, c => c.id === value));
+                    }
                 });
         }
     }, [auth.user, meta, value, installationId]);
 
     const selectOption = (option: ParameterOption) => {
-        setSelectedOptions(option);
+        setSelectedOption(option);
         changeFn(meta.name, option.id);
+    };
+
+    const selectOptions = (options: ParameterOption[]) => {
+        setSelectedOptions(options);
+        changeFn(meta.name, options.map(o => o.id));
     };
 
     if (meta.type === "TEXT") {
@@ -73,7 +83,7 @@ const ParameterInput = ({ meta, value, changeFn, installationId }: { meta: Param
             );
         } else if (meta.listTyp === "REFERENCE") {
             return (
-                <MultiSelectInputGroup id={meta.name} label={meta.label} value={value} onChangeFn={e => changeFn(meta.name, e.value)} options={options} optionLabel="name" /> //TODO selectedOptions is not working
+                <MultiSelectInputGroup id={meta.name} label={meta.label} value={selectedOptions} onChangeFn={e => selectOptions(e.value)} options={options} optionLabel="name" />
             );
         } else {
                 throw new Error(`The type '${meta.type}' is out of range.`)
