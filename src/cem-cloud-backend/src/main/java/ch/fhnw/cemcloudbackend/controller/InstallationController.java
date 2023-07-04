@@ -1,23 +1,30 @@
 package ch.fhnw.cemcloudbackend.controller;
 
 import ch.fhnw.cemcloudbackend.dto.InstallationCreateRequest;
+import ch.fhnw.cemcloudbackend.entity.InstallationCredentials;
 import ch.fhnw.cemcloudbackend.dto.InstallationListItem;
 import ch.fhnw.cemcloudbackend.dto.InstallationUpdateRequest;
 import ch.fhnw.cemcloudbackend.entity.Installation;
+import ch.fhnw.cemcloudbackend.entity.MqttAccessControl;
 import ch.fhnw.cemcloudbackend.mqtt.Mqtt;
+import ch.fhnw.cemcloudbackend.repository.InstallationCredentialsRepository;
 import ch.fhnw.cemcloudbackend.repository.InstallationImageRepository;
 import ch.fhnw.cemcloudbackend.repository.InstallationRepository;
+import ch.fhnw.cemcloudbackend.repository.MqttAccessControlRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.SecureRandom;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
 import static java.lang.String.format;
@@ -27,12 +34,16 @@ import static java.lang.String.format;
 public class InstallationController {
 
     private final InstallationRepository installations;
+    private final InstallationCredentialsRepository installationCredentials;
     private final InstallationImageRepository images;
+    private final MqttAccessControlRepository mqttAccessControlRepository;
     private final Mqtt mqtt;
 
-    public InstallationController(InstallationRepository installations, InstallationImageRepository images, Mqtt mqtt) {
+    public InstallationController(InstallationRepository installations, InstallationCredentialsRepository installationCredentials, InstallationImageRepository images, MqttAccessControlRepository mqttAccessControlRepository, Mqtt mqtt) {
         this.installations = installations;
+        this.installationCredentials = installationCredentials;
         this.images = images;
+        this.mqttAccessControlRepository = mqttAccessControlRepository;
         this.mqtt = mqtt;
     }
 
@@ -131,6 +142,59 @@ public class InstallationController {
         installations.save(installation);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("prepare")
+    public ResponseEntity<ch.fhnw.cemcloudbackend.dto.InstallationCredential> prepare(@RequestParam Optional<String> requestedSerialNumber) {
+        String serialNumber;
+        if (requestedSerialNumber.isEmpty()) {
+            serialNumber = UUID.randomUUID().toString();
+        } else {
+            serialNumber = requestedSerialNumber.get();
+        }
+
+        Optional<InstallationCredentials> bySerialNumber = installationCredentials.findBySerialNumber(serialNumber);
+        if (bySerialNumber.isPresent()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        ch.fhnw.cemcloudbackend.dto.InstallationCredential credential = new ch.fhnw.cemcloudbackend.dto.InstallationCredential(
+                serialNumber, generatePassword(60), generatePassword(60)
+        );
+
+        InstallationCredentials installationCredential = new InstallationCredentials();
+
+        installationCredential.setSerialNumber(credential.serialNumber());
+        installationCredential.setBackendToken(BCrypt.hashpw(credential.backendToken(), BCrypt.gensalt()));
+        installationCredential.setMqttPassword(BCrypt.hashpw(credential.mqttPassword(), BCrypt.gensalt()));
+
+        installationCredentials.save(installationCredential);
+
+        // Create access control for installation
+
+        MqttAccessControl subscribeAccess = new MqttAccessControl();
+        subscribeAccess.setInstallationCredential(installationCredential);
+        subscribeAccess.setAccessLevel(MqttAccessControl.AccessLevel.SUBSCRIBE);
+        subscribeAccess.setTopic(format("installations/%s", serialNumber));
+
+        mqttAccessControlRepository.save(subscribeAccess);
+
+        MqttAccessControl readAccess = new MqttAccessControl();
+        readAccess.setInstallationCredential(installationCredential);
+        readAccess.setAccessLevel(MqttAccessControl.AccessLevel.READ);
+        readAccess.setTopic(format("installations/%s", serialNumber));
+
+        mqttAccessControlRepository.save(readAccess);
+
+        return ResponseEntity.ok(credential);
+    }
+
+    private String generatePassword(int length) {
+        String chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@!#$*";
+        SecureRandom random = new SecureRandom();
+        return IntStream.range(0, length)
+                .mapToObj(i -> String.valueOf(chars.charAt(random.nextInt(chars.length()))))
+                .reduce("", String::concat);
     }
 
     private static String getInstallationImageUrl(Installation installation) {

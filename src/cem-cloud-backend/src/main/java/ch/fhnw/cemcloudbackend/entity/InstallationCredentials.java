@@ -17,6 +17,7 @@ public class InstallationCredentials {
     private UUID id;
 
     @NotEmpty
+    @Column(unique = true)
     private String serialNumber;
 
     private String mqttPassword;

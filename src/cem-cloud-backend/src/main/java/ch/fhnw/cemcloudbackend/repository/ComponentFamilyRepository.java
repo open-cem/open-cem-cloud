@@ -6,4 +6,5 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.UUID;
 
 public interface ComponentFamilyRepository extends CrudRepository<ComponentFamily, UUID> {
+    public ComponentFamily findByName(String name);
 }

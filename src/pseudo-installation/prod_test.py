@@ -8,11 +8,11 @@ import requests
 installation = "123456789"
 password = "testing321"
 token = ""
-backendurl = "http://localhost:8080/api"
+backendurl = "https://cem-cloud-p5.ch/api"
 
 
 # Environment variables
-broker = "localhost"
+broker = "cem-cloud-p5.ch"
 port = 1883
 
 def getConfig():

@@ -21,8 +21,57 @@ public class MqttAccessControl {
     @ManyToOne
     private InstallationCredentials installationCredential;
 
-    @Enumerated(EnumType.STRING)
-    private AccessLevel accessLevel;
+    @Basic
+    private int accessLevel;
+
+    @Transient
+    private AccessLevel accessLevelEnum;
+
+    @PostLoad
+    void fillTransient() {
+        if (accessLevel > 0) {
+            this.accessLevelEnum = AccessLevel.fromValue(accessLevel);
+        }
+    }
+
+    @PrePersist
+    void fillPersistent() {
+        if (accessLevelEnum != null) {
+            this.accessLevel = accessLevelEnum.getValue();
+        }
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
+
+    public InstallationCredentials getInstallationCredential() {
+        return installationCredential;
+    }
+
+    public void setInstallationCredential(InstallationCredentials installationCredential) {
+        this.installationCredential = installationCredential;
+    }
+
+    public AccessLevel getAccessLevel() {
+        return accessLevelEnum;
+    }
+
+    public void setAccessLevel(AccessLevel accessLevelEnum) {
+        this.accessLevelEnum = accessLevelEnum;
+    }
 
     public enum AccessLevel {
         READ(1),
@@ -37,6 +86,15 @@ public class MqttAccessControl {
 
         public int getValue() {
             return value;
+        }
+
+        public static AccessLevel fromValue(int value) {
+            for (AccessLevel accessLevel : AccessLevel.values()) {
+                if (accessLevel.value == value) {
+                    return accessLevel;
+                }
+            }
+            throw new IllegalArgumentException("Invalid access level value: " + value);
         }
     }
 }

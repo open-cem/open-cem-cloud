@@ -28,8 +28,8 @@ class ConfigurationControllerTest {
         String expected = Files.readString(Paths.get("src/test/resources/example.yaml"));
 
         // Call getConfiguration() method
-        ConfigurationController controller = new ConfigurationController(installations);
-        String actual = controller.getConfiguration("123");
+        ConfigurationController controller = new ConfigurationController(installations, null, null);
+        String actual = controller.getConfiguration("123456789", null).getBody();
 
         // Compare expected and actual
         assertEquals(ignoreDynamicFields(expected), ignoreDynamicFields(actual));
