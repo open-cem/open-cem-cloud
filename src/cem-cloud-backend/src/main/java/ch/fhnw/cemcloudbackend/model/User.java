@@ -1,16 +1,14 @@
 package ch.fhnw.cemcloudbackend.model;
 
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class User {
 
     private static final String EMAIL_CLAIM_NAME = "email";
+    private static final String REALM_ACCESS_CLAIM_NAME = "realm_access";
+    private static final String ROLE_ATTRIBUTE_NAME = "roles";
 
     private final JwtAuthenticationToken auth;
 
@@ -33,10 +31,17 @@ public class User {
         return roles.contains(role);
     }
 
-    public Collection<String> getRoles() {
+    public boolean isInAnyRole(String... roles) {
+        Collection<String> userRoles = getRoles();
+
+        return Arrays.stream(roles)
+                     .anyMatch(userRoles::contains);
+    }
+
+    private Collection<String> getRoles() {
         var attributes = auth.getTokenAttributes();
-        Map<String, Object> access = (Map<String, Object>) attributes.get("realm_access");
-        List<String> roles = (List<String>) access.get("roles");
+        Map<String, Object> access = (Map<String, Object>) attributes.get(REALM_ACCESS_CLAIM_NAME);
+        List<String> roles = (List<String>) access.get(ROLE_ATTRIBUTE_NAME);
 
         return roles;
     }

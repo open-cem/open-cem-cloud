@@ -16,6 +16,7 @@ import ch.fhnw.cemcloudbackend.repository.InstallationImageRepository;
 import ch.fhnw.cemcloudbackend.repository.InstallationRepository;
 import ch.fhnw.cemcloudbackend.repository.MqttAccessControlRepository;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -111,6 +112,10 @@ public class InstallationController extends BaseController {
     public ResponseEntity<Void> post(@Valid @RequestBody InstallationCreateRequest request, JwtAuthenticationToken auth)
             throws URISyntaxException {
         User user = getUser(auth);
+
+        if (!user.isInAnyRole(Role.INSTALLATEUR, Role.ADMINISTRATOR)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
 
         Installation installation = new Installation();
         installation.setId(UUID.randomUUID());
@@ -208,7 +213,7 @@ public class InstallationController extends BaseController {
         User user = getUser(auth);
 
         if (!user.isInRole(Role.ADMINISTRATOR)) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         String serialNumber;

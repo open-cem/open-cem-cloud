@@ -16,13 +16,13 @@ public interface InstallationRepository extends CrudRepository<Installation, UUI
     Iterable<Installation> findAllByInstallationAccessesUserId(UUID userId);
 
     default Optional<Installation> getInstallation(UUID id, User user) {
-        return user.isInRole(Role.ADMINISTRATOR)
+        return user.isInAnyRole(Role.ADMINISTRATOR, Role.INSTALLATEUR)
                 ? findById(id)
                 : findByInstallationAccessesUserIdAndId(user.getId(), id);
     }
 
     default Iterable<Installation> getInstallations(User user) {
-        return user.isInRole(Role.ADMINISTRATOR)
+        return user.isInAnyRole(Role.ADMINISTRATOR, Role.INSTALLATEUR)
                 ? findAll()
                 : findAllByInstallationAccessesUserId(user.getId());
     }
