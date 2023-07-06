@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface InstallationRepository extends CrudRepository<Installation, UUID> {
-    Optional<Installation> findByInstallationAccessesUserId(UUID userId);
+    Optional<Installation> findByInstallationAccessesUserIdAndId(UUID userId, UUID installationId);
 
     Optional<Installation> findBySerialNumber(String serialNumber);
 
@@ -18,7 +18,7 @@ public interface InstallationRepository extends CrudRepository<Installation, UUI
     default Optional<Installation> getInstallation(UUID id, User user) {
         return user.isInRole(Role.ADMINISTRATOR)
                 ? findById(id)
-                : findByInstallationAccessesUserId(user.getId());
+                : findByInstallationAccessesUserIdAndId(user.getId(), id);
     }
 
     default Iterable<Installation> getInstallations(User user) {

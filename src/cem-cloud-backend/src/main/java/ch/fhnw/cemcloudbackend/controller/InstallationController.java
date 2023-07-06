@@ -6,6 +6,7 @@ import ch.fhnw.cemcloudbackend.dto.InstallationListItem;
 import ch.fhnw.cemcloudbackend.dto.InstallationUpdateRequest;
 import ch.fhnw.cemcloudbackend.entity.Installation;
 import ch.fhnw.cemcloudbackend.entity.MqttAccessControl;
+import ch.fhnw.cemcloudbackend.model.Role;
 import ch.fhnw.cemcloudbackend.mqtt.Mqtt;
 import ch.fhnw.cemcloudbackend.repository.InstallationCredentialsRepository;
 import ch.fhnw.cemcloudbackend.entity.InstallationAccess;
@@ -154,8 +155,9 @@ public class InstallationController extends BaseController {
     }
 
     @PostMapping("{id}/sync")
-    public ResponseEntity<Void> sync(@PathVariable UUID id) {
-        Optional<Installation> installation = installations.findById(id);
+    public ResponseEntity<Void> sync(@PathVariable UUID id, JwtAuthenticationToken auth) {
+        User user = getUser(auth);
+        Optional<Installation> installation = installations.getInstallation(id, user);
 
         if (installation.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -200,7 +202,15 @@ public class InstallationController extends BaseController {
     }
 
     @PostMapping("prepare")
-    public ResponseEntity<ch.fhnw.cemcloudbackend.dto.InstallationCredential> prepare(@RequestParam Optional<String> requestedSerialNumber) {
+    public ResponseEntity<ch.fhnw.cemcloudbackend.dto.InstallationCredential> prepare(
+            @RequestParam Optional<String> requestedSerialNumber,
+            JwtAuthenticationToken auth) {
+        User user = getUser(auth);
+
+        if (!user.isInRole(Role.ADMINISTRATOR)) {
+            return ResponseEntity.badRequest().build();
+        }
+
         String serialNumber;
         if (requestedSerialNumber.isEmpty()) {
             serialNumber = UUID.randomUUID().toString();
