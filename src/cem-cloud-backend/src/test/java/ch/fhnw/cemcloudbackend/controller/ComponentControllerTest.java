@@ -7,7 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -17,6 +19,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class ComponentControllerTest {
+
+    final UUID userId = UUID.randomUUID();
+    final String userEmail = "someone@example.com";
 
     private ComponentController controller;
 
@@ -43,8 +48,9 @@ public class ComponentControllerTest {
     public void getComponentShouldBeEqual() {
         HardwareComponent component = mockComponent();
         doReturn(Optional.of(component)).when(components).findById(any());
+        JwtAuthenticationToken auth = mockAuth();
 
-        var dto = controller.get(UUID.randomUUID());
+        var dto = controller.get(UUID.randomUUID(), auth);
 
         assertThat(dto.getBody().manufacturerId()).isEqualTo(component.getManufacturer().getId());
         assertThat(dto.getBody().modelId()).isEqualTo(component.getModel().getId());
@@ -54,8 +60,9 @@ public class ComponentControllerTest {
         HardwareComponent component = mockComponent();
         component.setModel(null);
         doReturn(Optional.of(component)).when(components).findById(any());
+        JwtAuthenticationToken auth = mockAuth();
 
-        var dto = controller.get(UUID.randomUUID());
+        var dto = controller.get(UUID.randomUUID(), auth);
 
         assertThat(dto.getBody().manufacturerId()).isEqualTo(component.getManufacturer().getId());
         assertThat(dto.getBody().modelId()).isNull();
@@ -67,8 +74,9 @@ public class ComponentControllerTest {
         component.setModel(null);
         component.setManufacturer(null);
         doReturn(Optional.of(component)).when(components).findById(any());
+        JwtAuthenticationToken auth = mockAuth();
 
-        var dto = controller.get(UUID.randomUUID());
+        var dto = controller.get(UUID.randomUUID(), auth);
 
         assertThat(dto.getBody().manufacturerId()).isNull();
         assertThat(dto.getBody().modelId()).isNull();
@@ -84,9 +92,11 @@ public class ComponentControllerTest {
         component.setManufacturer(manufacturer);
         doReturn(Optional.of(component)).when(components).findById(any());
         doReturn(Optional.of(manufacturer)).when(manufacturers).findById(any());
+        JwtAuthenticationToken auth = mockAuth();
 
         controller.put(component.getId(), new ComponentUpdateRequest(component.getName(),
-                component.getManufacturer().getId(), component.getModel().getId(), null, null, null));
+                component.getManufacturer().getId(), component.getModel().getId(), null, null, null),
+                auth);
 
         verify(components, times(1)).save(any());
     }
@@ -99,9 +109,11 @@ public class ComponentControllerTest {
         component.setManufacturer(manufacturer);
         doReturn(Optional.of(component)).when(components).findById(any());
         doReturn(Optional.of(manufacturer)).when(manufacturers).findById(any());
+        JwtAuthenticationToken auth = mockAuth();
 
         controller.put(component.getId(), new ComponentUpdateRequest(component.getName(),
-                component.getManufacturer().getId(), null, null, null, null));
+                component.getManufacturer().getId(), null, null, null, null),
+                auth);
 
         verify(components, times(1)).save(any());
     }
@@ -116,9 +128,11 @@ public class ComponentControllerTest {
         component.setManufacturer(manufacturer);
         doReturn(Optional.of(component)).when(components).findById(any());
         doReturn(Optional.of(manufacturer)).when(manufacturers).findById(any());
+        JwtAuthenticationToken auth = mockAuth();
 
         controller.put(component.getId(), new ComponentUpdateRequest(component.getName(),
-                component.getManufacturer().getId(), model.getId(), null, null, null));
+                component.getManufacturer().getId(), model.getId(), null, null, null),
+                auth);
 
         verify(components, times(1)).save(any());
     }
@@ -131,8 +145,9 @@ public class ComponentControllerTest {
         component.setManufacturer(manufacturer);
         doReturn(Optional.of(component)).when(components).findById(any());
         doReturn(Optional.of(manufacturer)).when(manufacturers).findById(any());
+        JwtAuthenticationToken auth = mockAuth();
 
-        controller.put(component.getId(), new ComponentUpdateRequest(component.getName(),null, null, null, null, null));
+        controller.put(component.getId(), new ComponentUpdateRequest(component.getName(),null, null, null, null, null), auth);
 
         verify(components, times(1)).save(any());
     }
@@ -147,9 +162,11 @@ public class ComponentControllerTest {
         component.setManufacturer(null);
         doReturn(Optional.of(component)).when(components).findById(any());
         doReturn(Optional.of(manufacturer)).when(manufacturers).findById(any());
+        JwtAuthenticationToken auth = mockAuth();
 
         controller.put(component.getId(), new ComponentUpdateRequest(component.getName(),
-                manufacturer.getId(), model.getId(), null, null, null));
+                manufacturer.getId(), model.getId(), null, null, null),
+                auth);
 
         verify(components, times(1)).save(any());
     }
@@ -201,7 +218,27 @@ public class ComponentControllerTest {
     private Installation mockInstallation() {
         Installation installation = new Installation();
         installation.setOutOfSync(false);
+        installation.setInstallationAccesses(Set.of(mockInstallationAccess(installation)));
 
         return installation;
+    }
+
+    private InstallationAccess mockInstallationAccess(Installation installation) {
+        InstallationAccess access = new InstallationAccess();
+        access.setId(UUID.randomUUID());
+        access.setInstallation(installation);
+        access.setUserId(userId);
+        access.setUserEmail(userEmail);
+
+        return  access;
+    }
+
+    private JwtAuthenticationToken mockAuth() {
+        JwtAuthenticationToken auth = mock(JwtAuthenticationToken.class);
+        when(auth.getName()).thenReturn(userId.toString());
+        Map<String, Object> userAttributes = Map.of("email", userEmail);
+        when(auth.getTokenAttributes()).thenReturn(userAttributes);
+
+        return auth;
     }
 }
