@@ -1,21 +1,24 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "react-oidc-context";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
-import { presentError } from "../app/NotificationPresenter";
+import { Button } from "primereact/button";
+import { Messages } from 'primereact/messages';
+import { presentError, presentSuccess } from "../app/NotificationPresenter";
 import { ActuatorFamily, ComponentListItem, ComponentType, ComponentsService, ControllerFamily, DeviceFamily, SensorFamily } from "../component/ComponentsService";
 import ComponentListHeader from "../componentListHeader/ComponentListHeader";
 import ComponentListEntry from "../componentListEntry/ComponentListEntry";
 import _ from "lodash";
-import { Button } from "primereact/button";
+import { InstallationService } from "./InstallationsService";
 
 const Installation = () => {
     const params = useParams<string>();
     const auth = useAuth();
     const navigate = useNavigate();
     const toast = useRef<Toast>(null);
+    const messages = useRef<Messages>(null);
 
     const [activeIndex, setActiveIndex] = useState<number | undefined>(undefined);
     const [components, setComponents] = useState<ComponentListItem[]>([]);
@@ -29,6 +32,8 @@ const Installation = () => {
             return;
         }
 
+        messages.current?.clear();
+
         const service = new ComponentsService();
         service.loadComponents(installationId, auth.user.access_token)
             .then(setComponents)
@@ -38,6 +43,37 @@ const Installation = () => {
         service.loadComponentTypes(auth.user.access_token)
             .then(setTypes)
             .catch(e => presentError('Komponenten-Typen konnnte nicht geladen werden, versuchen Sie es später erneut.', undefined, e, toast.current));
+
+
+        const sync = () => {
+            if (auth.user) {
+                new InstallationService().syncInstallation(installationId, auth.user.access_token)
+                    .then(_ => {
+                        if (toast.current) {
+                            messages.current?.clear();
+                            presentSuccess(toast.current, 'Synchronisation wurde ausgelöst. Es kann einige Minuten dauern, bis die Einstellungen von der Installation übernommen wurden.');
+                        }
+                    })
+                    .catch(e => presentError('Synchronisation ist fehlgeschlagen, versuchen Sie es später erneut.', undefined, e, toast.current));
+            }
+        };
+
+        new InstallationService().loadInstallation(installationId, auth.user.access_token)
+            .then(i => {
+                if (i.isOutOfSync) {
+                    messages.current?.replace({
+                        sticky: true, 
+                        severity: 'warn', 
+                        summary: 'Die Änderungen sind noch nicht aktiv. Wollen Sie die Änderungen jetzt an die lokale Installation senden?', 
+                        detail: (
+                            <React.Fragment>
+                                <Button label="Änderungen senden" onClick={sync} />
+                            </React.Fragment>
+                        ), 
+                        closable: false
+                    });
+                }
+            });
     }, [auth.user, params.installationId]);
 
     const addComponent = (typeId: string) => {
@@ -93,6 +129,7 @@ const Installation = () => {
                     }
                 </div>
             </Dialog>
+            <Messages ref={messages} />
             <Accordion multiple activeIndex={activeIndex}>
                 {createComponentGroup("Geräte", DeviceFamily, components)}
                 {createComponentGroup("Sensoren", SensorFamily, components)}

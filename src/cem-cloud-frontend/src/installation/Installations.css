@@ -71,6 +71,15 @@ a i.pi:active {
     -webkit-box-orient: vertical;
 }
 
+.p-message .p-message-summary {
+    margin-left: 1rem;
+}
+
+.p-message .p-message-icon.p-icon {
+    width: 5rem;
+    height: 5rem;
+}
+
 @media only screen and (min-width: 768px) {
     .card-container {
         --columns: 4;
@@ -78,6 +87,11 @@ a i.pi:active {
 
     .p-card .p-card-title {
         font-size: larger;
+    }
+
+    .p-message .p-message-icon.p-icon {
+        width: unset;
+        height: unset;
     }
 }
 

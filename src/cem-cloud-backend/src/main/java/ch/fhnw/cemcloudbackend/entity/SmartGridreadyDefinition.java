@@ -13,7 +13,7 @@ public class SmartGridreadyDefinition {
     @Column(columnDefinition = "VARCHAR(36)")
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID id;
-    private String filePath;
+    private String fileName;
 
     public UUID getId() {
         return id;
@@ -23,11 +23,11 @@ public class SmartGridreadyDefinition {
         this.id = id;
     }
 
-    public String getFilePath() {
-        return filePath;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
+    public void setFileName(String filePath) {
+        this.fileName = filePath;
     }
 }

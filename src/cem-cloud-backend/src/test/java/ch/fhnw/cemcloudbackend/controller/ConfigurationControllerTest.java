@@ -1,6 +1,10 @@
 package ch.fhnw.cemcloudbackend.controller;
 
+import ch.fhnw.cemcloudbackend.repository.InstallationRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,14 +14,22 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ConfigurationControllerTest {
 
+    @Mock
+    private InstallationRepository installations;
+
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+
     @Test
     void getConfiguration() throws IOException {
         // Load file from ressources folder "example.yaml"
         String expected = Files.readString(Paths.get("src/test/resources/example.yaml"));
 
         // Call getConfiguration() method
-        ConfigurationController controller = new ConfigurationController();
-        String actual = controller.getConfiguration("123", "abc");
+        ConfigurationController controller = new ConfigurationController(installations, null, null);
+        String actual = controller.getConfiguration("123456789", null).getBody();
 
         // Compare expected and actual
         assertEquals(ignoreDynamicFields(expected), ignoreDynamicFields(actual));

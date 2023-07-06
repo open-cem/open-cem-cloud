@@ -30,6 +30,8 @@ public class Installation {
     @OneToMany(mappedBy = "installation")
     private Set<Component> components;
 
+    private boolean isOutOfSync;
+
     @OneToMany(mappedBy = "installation")
     private Set<InstallationAccess> installationAccesses;
 
@@ -79,6 +81,14 @@ public class Installation {
 
     public void setComponents(Set<Component> components) {
         this.components = components;
+    }
+
+    public boolean isOutOfSync() {
+        return isOutOfSync;
+    }
+
+    public void setOutOfSync(boolean outOfSync) {
+        isOutOfSync = outOfSync;
     }
 
     public Set<InstallationAccess> getInstallationAccesses() {

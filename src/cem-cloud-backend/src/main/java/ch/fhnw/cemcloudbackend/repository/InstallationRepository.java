@@ -10,6 +10,9 @@ import java.util.UUID;
 
 public interface InstallationRepository extends CrudRepository<Installation, UUID> {
     Optional<Installation> findByInstallationAccessesUserId(UUID userId);
+
+    Optional<Installation> findBySerialNumber(String serialNumber);
+
     Iterable<Installation> findAllByInstallationAccessesUserId(UUID userId);
 
     default Optional<Installation> getInstallation(UUID id, User user) {

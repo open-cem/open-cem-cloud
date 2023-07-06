@@ -1,32 +1,76 @@
 version: '3.1'
 
 services:
-  frontend:
-    build: ./src/cem-cloud-frontend
-    depends_on:
-      - backend
-    ports:
-      - 80:80
-  backend:
-    build: ./src/cem-cloud-backend
-    depends_on:
-      - db
-    environment:
-      MYSQL_HOST: db
-    ports:
-      - 8080:8080
   db:
+    container_name: db
     image: mysql
     command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_DATABASE: cemcloud
-      MYSQL_USER: cemcloud
-      MYSQL_PASSWORD: rx9gfJWU$5aLe-tq
-      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     ports:
       - 3306:3306
+    restart: always
     volumes:
       - db-data:/var/lib/mysql
+  auth:
+    image: quay.io/keycloak/keycloak:latest
+    depends_on:
+      - db
+    ports:
+      - 2000:8443
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USERNAME}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_DB: mysql
+      KC_DB_URL: jdbc:mysql://db:3306/keycloak
+      KC_DB_USERNAME: ${KEY_CLOAK_DB_USERNAME}
+      KC_DB_PASSWORD: ${KEY_CLOAK_DB_PASSWORD}
+      KC_HOSTNAME: ${HOSTNAME}
+      KC_HTTPS_CERTIFICATE_FILE: /etc/x509/https/tls.crt
+      KC_HTTPS_CERTIFICATE_KEY_FILE: /etc/x509/https/tls.key
+    command: start --hostname-port=2000
+      
+    volumes:
+      - ./certs/fullchain.pem:/etc/x509/https/tls.crt
+      - ./certs/privkey.pem:/etc/x509/https/tls.key
+  mqtt:
+    container_name: mqtt
+    image: iegomez/mosquitto-go-auth
+    ports:
+      - 1883:1883
+    volumes:
+      - ./mqtt-broker:/etc/mosquitto
+    depends_on:
+      - db
+    restart: always
+  backend:
+    image: ghcr.io/stuni907/backend-image:latest
+    depends_on:
+      - auth
+    environment:
+      MYSQLHOST:  ${MYSQLHOST}
+      DBUSERNAME: ${DB_USERNAME}
+      DBPASSWORD: ${DB_PASSWORD}
+      HOST: ${HOST}
+    ports:
+      - 8080:8080
+    restart: always
+    volumes:
+      - ./uploads:/uploads
+  frontend:
+    image: ghcr.io/stuni907/frontend-image:latest
+    depends_on:
+      - backend
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx/:/etc/nginx/conf.d/:ro
+      - ./certs/fullchain.pem:/etc/nginx/ssl/fullchain.pem
+      - ./certs/privkey.pem:/etc/nginx/ssl/privkey.pem
 
+    restart: always
 volumes:
   db-data:

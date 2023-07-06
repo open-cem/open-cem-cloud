@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "react-oidc-context";
-import { DropdownInputGroup, InputGroup } from "../inputGroup/InputGroup";
+import { DropdownInputGroup, InputGroup, SwitchInputGroup } from "../inputGroup/InputGroup";
 import { Toast } from "primereact/toast";
 import { Button } from "primereact/button";
 import { Component as ComponentModel, ComponentsService, NullComponent } from "./ComponentsService";
@@ -10,6 +10,7 @@ import { Manufacturer, ManufacturersService, Model } from "./ManufacturersServic
 import _ from "lodash";
 import { CommunicationChannelListItem, CommunicationChannelService } from "../installation/CommunicationChannelsService";
 import { ParameterInput, ParameterMeta } from "../parameterInput/ParameterInput";
+import { SmartGridreadyFile, SmartGridreadyService } from "./SmartGridreadyService";
 
 const Component = () => {
     const params = useParams();
@@ -26,6 +27,9 @@ const Component = () => {
     const [channels, setChannels] = useState<CommunicationChannelListItem[]>([]);
     const [selectedChannel, setSelectedChannel] = useState<CommunicationChannelListItem | undefined>(undefined);
     const [parameters, setParameters] = useState<ParameterMeta[]>([]);
+    const [isSmartGridready, setIsSmartGridready] = useState<boolean>(false);
+    const [smartGridReadyFiles, setSmartGridReadyFiles] = useState<SmartGridreadyFile[]>([]);
+    const [selectedSmartGridreadyFile, setSelectedSmartGridreadyFile] = useState<SmartGridreadyFile | undefined>(undefined);
 
     const installationId: string = params.installationId ?? "";
 
@@ -56,20 +60,24 @@ const Component = () => {
         };
 
         const service = new ComponentsService();
-        const components = service.loadComponent(componentId, auth.user?.access_token);
-        const manufacturers = new ManufacturersService().loadManufacturers(auth.user?.access_token);
+        const components = service.loadComponent(componentId, auth.user.access_token);
+        const manufacturers = new ManufacturersService().loadManufacturers(auth.user.access_token);
         const channels = new CommunicationChannelService().loadCommunicationChannelsByComponentId(componentId, auth.user.access_token);
         const parameterMeta = service.loadComponentParameterMeta(componentId, auth.user.access_token);
+        const files = new SmartGridreadyService().loadFiles(auth.user.access_token);
 
-        Promise.all([components, manufacturers, channels, parameterMeta])
-            .then(([c, ms, cs, ps]) => {
+        Promise.all([components, manufacturers, channels, parameterMeta, files])
+            .then(([c, ms, cs, ps, fs]) => {
                 setComponent(c);
                 setManufacturers(_.orderBy(ms, m => m.name));
                 setChannels(_.orderBy(cs, c => c.name));
                 setParameters(_.orderBy(ps, p => p.label));
+                setSmartGridReadyFiles(fs);
                 if (isHardwareComponent(c)) {
                     selectManufacturer(c, ms);
-                    setSelectedChannel(_.find(cs, x => x.id === c.channelId))
+                    setSelectedChannel(_.find(cs, x => x.id === c.channelId));
+                    setIsSmartGridready(c.smartGridreadyDefinitionId !== null);
+                    setSelectedSmartGridreadyFile(_.find(fs, f => f.id === c.smartGridreadyDefinitionId));
                 }
             })
             .catch(e => presentError('Komponente konnnte nicht geladen werden, versuchen Sie es später erneut.', undefined, e, toast.current));
@@ -110,10 +118,19 @@ const Component = () => {
         }
     };
 
+    const onSelectedSmartGridreadyFileChanged = (file: SmartGridreadyFile | undefined, component: ComponentModel) => {
+        setSelectedSmartGridreadyFile(file);
+        if (file) {
+            onChange([{ propertyName: 'smartGridreadyDefinitionId', value: file.id}], component);
+        } else {
+            onChange([{ propertyName: 'smartGridreadyDefinitionId', value: undefined}], component);
+        }
+    };
+
     const onSelectedChannelChanged = (channel: CommunicationChannelListItem | undefined, component: ComponentModel) => {
         setSelectedChannel(channel);
         onChange([{propertyName: 'channelId', value: channel?.id}], component);
-    }
+    };
 
     const onChange = (properties: {propertyName: string, value: any}[], component: ComponentModel) => {
         const i = { ...component } as ComponentModel;
@@ -129,6 +146,16 @@ const Component = () => {
         (c.parameter as any)[parameterName] = value;
         setComponent(c);
         setHasChanges(true);
+    };
+
+    const onIsSmartGridreadyChanged = (isSmartGridready: boolean, component: ComponentModel) => {
+        setIsSmartGridready(isSmartGridready);
+        component.manufacturerId = undefined;
+        component.modelId = undefined;
+        component.smartGridreadyDefinitionId = undefined
+        onSelectedSmartGridreadyFileChanged(undefined, component);
+        setSelectedManufacturer(undefined);
+        setSelectedModel(undefined);
     };
 
     const onSave = () => {
@@ -156,8 +183,15 @@ const Component = () => {
                     isHardwareComponent(component)
                         ?
                         <>
-                            <DropdownInputGroup id="formManufacturer" label="Hersteller" value={selectedManufacturer} options={manufacturers} optionLabel="name" onChangeFn={(e) => onSelectedManufacturerChanged(e.value, component)} />
-                            <DropdownInputGroup id="formModel" label="Modell" value={selectedModel} options={models} optionLabel="name" onChangeFn={(e) => onSelectedModelChanged(e.value, component)} disabled={!selectedManufacturer} />
+                            <SwitchInputGroup id="formIsSmartGridReady" label="SmartGridready?" value={isSmartGridready} onChangeFn={(e) => onIsSmartGridreadyChanged(e.target.value ?? false, component)} />
+                            {
+                                isSmartGridready
+                                ? <DropdownInputGroup id="formSmartGridreadyDefinition" label="XML Datei" value={selectedSmartGridreadyFile} options={smartGridReadyFiles} optionLabel="name" onChangeFn={(e) => onSelectedSmartGridreadyFileChanged(e.value, component)} />
+                                : <>
+                                    <DropdownInputGroup id="formManufacturer" label="Hersteller" value={selectedManufacturer} options={manufacturers} optionLabel="name" onChangeFn={(e) => onSelectedManufacturerChanged(e.value, component)} />
+                                    <DropdownInputGroup id="formModel" label="Modell" value={selectedModel} options={models} optionLabel="name" onChangeFn={(e) => onSelectedModelChanged(e.value, component)} disabled={!selectedManufacturer} />
+                                </>
+                            }
                             <DropdownInputGroup id="formChannel" label="Kommunikationskanal" value={selectedChannel} options={channels} optionLabel="name" onChangeFn={(e) => onSelectedChannelChanged(e.target.value, component)} />
                         </>
                         : <></>
@@ -169,7 +203,7 @@ const Component = () => {
                 }
             </div>
             <div className="button-bar">
-                <Button severity="secondary" outlined onClick={() => navigate(-1)}>Abbrechen</Button>
+                <Button severity="secondary" outlined onClick={() => navigate(`/installations/${installationId}`)}>{ hasChanges ? "Abbrechen" : "Zurück" }</Button>
                 {
                     hasChanges
                         ? <Button onClick={onSave}>Speichern</Button>

@@ -27,7 +27,7 @@ const presentSuccess = (toast: Toast, description: string, title?: string) => {
         severity:'success', 
         summary: title, 
         detail: description,
-        life: 3_000
+        life: 5_000
     });
 }
 
