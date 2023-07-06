@@ -30,6 +30,9 @@ public class Installation {
     @OneToMany(mappedBy = "installation")
     private Set<Component> components;
 
+    @OneToMany(mappedBy = "installation")
+    private Set<InstallationAccess> installationAccesses;
+
     public UUID getId() {
         return id;
     }
@@ -76,5 +79,13 @@ public class Installation {
 
     public void setComponents(Set<Component> components) {
         this.components = components;
+    }
+
+    public Set<InstallationAccess> getInstallationAccesses() {
+        return installationAccesses;
+    }
+
+    public void setInstallationAccesses(Set<InstallationAccess> installationAccesses) {
+        this.installationAccesses = installationAccesses;
     }
 }
