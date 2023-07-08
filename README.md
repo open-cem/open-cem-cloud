@@ -43,3 +43,11 @@ Der Keycloak Server ist im Browser erreichbar und kann mit dem User `admin` und 
 	    - Credentials:
 		    - Password ***
 		    - Temporary: Off
+4. Rollen erstellen:
+	- Realm Rolle: Administrator
+	- Realm Rolle: Installateur
+	- Client Scopes
+		- roles
+			- Mappers
+				- realm roles
+					- Add to ID token: on
