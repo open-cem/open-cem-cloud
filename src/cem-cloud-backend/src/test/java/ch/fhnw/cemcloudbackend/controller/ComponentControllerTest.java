@@ -9,10 +9,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -236,7 +233,8 @@ public class ComponentControllerTest {
     private JwtAuthenticationToken mockAuth() {
         JwtAuthenticationToken auth = mock(JwtAuthenticationToken.class);
         when(auth.getName()).thenReturn(userId.toString());
-        Map<String, Object> userAttributes = Map.of("email", userEmail);
+        Map<String, Object> userAttributes = Map.of("email", userEmail,
+                                                    "realm_access", Map.of("roles", List.of()));
         when(auth.getTokenAttributes()).thenReturn(userAttributes);
 
         return auth;
