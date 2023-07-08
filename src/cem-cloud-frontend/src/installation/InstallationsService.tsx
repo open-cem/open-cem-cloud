@@ -1,5 +1,10 @@
 import { ApiService } from "../app/ApiService";
 
+interface InstallationUser {
+    email: string;
+    isPendingInvite: boolean;
+}
+
 class Installation {
     id: string;
     name: string;
@@ -86,6 +91,32 @@ class InstallationService extends ApiService {
             .post()
             .fetch();
     }
+
+    public loadAuthorizedUsers = (installationId: string, accessToken: string) => {
+        return this.apiBuilder<InstallationUser[]>()
+            .withUri(`${this.endpoint}/${installationId}/authorizedUsers`)
+            .withAuthorization(accessToken)
+            .fetchBody();
+    }
+
+    public inviteUser = (installationId: string, email: string, accessToken: string) => {
+        return this.apiBuilder()
+            .withUri(`${this.endpoint}/${installationId}/invite`)
+            .withAuthorization(accessToken)
+            .withParameter("email", email)
+            .post()
+            .fetch();
+    }
+
+    public excludeUser = (installationId: string, email: string, accessToken: string) => {
+        return this.apiBuilder()
+            .withUri(`${this.endpoint}/${installationId}/exclude`)
+            .withAuthorization(accessToken)
+            .withParameter("email", email)
+            .post()
+            .fetch();
+    }
 }
 
 export { Installation, NullInstallation, InstallationService };
+export type { InstallationUser };

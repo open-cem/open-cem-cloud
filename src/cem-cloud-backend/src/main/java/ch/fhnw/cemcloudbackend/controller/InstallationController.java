@@ -1,6 +1,7 @@
 package ch.fhnw.cemcloudbackend.controller;
 
 import ch.fhnw.cemcloudbackend.dto.InstallationCreateRequest;
+import ch.fhnw.cemcloudbackend.dto.InstallationUser;
 import ch.fhnw.cemcloudbackend.entity.InstallationCredentials;
 import ch.fhnw.cemcloudbackend.dto.InstallationListItem;
 import ch.fhnw.cemcloudbackend.dto.InstallationUpdateRequest;
@@ -92,6 +93,25 @@ public class InstallationController extends BaseController {
                 getInstallationImageUrl(installation.get()), installation.get().isOutOfSync()));
     }
 
+    @GetMapping("{id}/authorizedUsers")
+    public ResponseEntity<Iterable<InstallationUser>> getAuthorizedUsers(@PathVariable UUID id, JwtAuthenticationToken auth) {
+        User user = getUser(auth);
+
+        Optional<Installation> installation = installations.getInstallation(id, user);
+
+        if (installation.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Iterable<InstallationUser> users = installation.get()
+                .getInstallationAccesses()
+                .stream()
+                .map(a -> new InstallationUser(a.getUserEmail(), a.getUserId() == null))
+                .toList();
+
+        return ResponseEntity.ok(users);
+    }
+
     @GetMapping(value = "{id}/image", produces = MediaType.IMAGE_JPEG_VALUE + ";" + MediaType.IMAGE_PNG_VALUE)
     public ResponseEntity<byte[]> getImage(@PathVariable UUID id, JwtAuthenticationToken auth) throws IOException {
         User user = getUser(auth);
@@ -137,9 +157,16 @@ public class InstallationController extends BaseController {
     }
 
     @PostMapping("{id}/invite")
-    public ResponseEntity<Void> invite(@PathVariable UUID id, @RequestParam("email") String email) {
+    public ResponseEntity<Void> invite(@PathVariable UUID id,
+                                       @RequestParam("email") String email,
+                                       JwtAuthenticationToken auth) {
         if (email.isBlank()) {
             return ResponseEntity.badRequest().build();
+        }
+
+        User user = getUser(auth);
+        if (!user.isInAnyRole(Role.ADMINISTRATOR, Role.INSTALLATEUR)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         Optional<Installation> installation = installations.findById(id);
@@ -155,6 +182,34 @@ public class InstallationController extends BaseController {
         access.setInstallation(installation.get());
         access.setUserEmail(email);
         accesses.save(access);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("{id}/exclude")
+    public ResponseEntity<Void> exclude(@PathVariable UUID id,
+                                        @RequestParam("email") String email,
+                                        JwtAuthenticationToken auth) {
+        if (email.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        User user = getUser(auth);
+        if (!user.isInAnyRole(Role.ADMINISTRATOR, Role.INSTALLATEUR)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        Optional<Installation> installation = installations.findById(id);
+        if (installation.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Optional<InstallationAccess> access = accesses.findByInstallationIdAndUserEmail(id, email);
+        if (access.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        accesses.delete(access.get());
 
         return ResponseEntity.ok().build();
     }
