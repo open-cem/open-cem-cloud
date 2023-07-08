@@ -8,8 +8,8 @@ interface AppUser {
 }
 
 class KeycloakAppUser implements AppUser {
-    private readonly realmAccessClaimName = "realm_access";
-    private readonly rolesClaimName = "roles";
+    public static readonly realmAccessClaimName = "realm_access";
+    public static readonly rolesClaimName = "roles";
     private readonly administratorRole = "Administrator";
     private readonly installatuerRole = "Installateur";
     private readonly user: User;
@@ -30,8 +30,8 @@ class KeycloakAppUser implements AppUser {
     }
     
     private getRoles(): string[] {
-        const realmAccess = this.user.profile[this.realmAccessClaimName] as any;
-        return realmAccess[this.rolesClaimName] as string[];
+        const realmAccess = this.user.profile[KeycloakAppUser.realmAccessClaimName] as any;
+        return realmAccess[KeycloakAppUser.rolesClaimName] as string[];
     }
 }
 
