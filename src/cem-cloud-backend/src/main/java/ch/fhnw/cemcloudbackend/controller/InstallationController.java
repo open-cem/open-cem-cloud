@@ -1,20 +1,27 @@
 package ch.fhnw.cemcloudbackend.controller;
 
 import ch.fhnw.cemcloudbackend.dto.InstallationCreateRequest;
+import ch.fhnw.cemcloudbackend.dto.InstallationUser;
 import ch.fhnw.cemcloudbackend.entity.InstallationCredentials;
 import ch.fhnw.cemcloudbackend.dto.InstallationListItem;
 import ch.fhnw.cemcloudbackend.dto.InstallationUpdateRequest;
 import ch.fhnw.cemcloudbackend.entity.Installation;
 import ch.fhnw.cemcloudbackend.entity.MqttAccessControl;
+import ch.fhnw.cemcloudbackend.model.Role;
 import ch.fhnw.cemcloudbackend.mqtt.Mqtt;
 import ch.fhnw.cemcloudbackend.repository.InstallationCredentialsRepository;
+import ch.fhnw.cemcloudbackend.entity.InstallationAccess;
+import ch.fhnw.cemcloudbackend.model.User;
+import ch.fhnw.cemcloudbackend.repository.InstallationAccessRepository;
 import ch.fhnw.cemcloudbackend.repository.InstallationImageRepository;
 import ch.fhnw.cemcloudbackend.repository.InstallationRepository;
 import ch.fhnw.cemcloudbackend.repository.MqttAccessControlRepository;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,25 +38,36 @@ import static java.lang.String.format;
 
 @RestController
 @RequestMapping("/installations")
-public class InstallationController {
+public class InstallationController extends BaseController {
 
     private final InstallationRepository installations;
     private final InstallationCredentialsRepository installationCredentials;
     private final InstallationImageRepository images;
     private final MqttAccessControlRepository mqttAccessControlRepository;
     private final Mqtt mqtt;
+    private final InstallationAccessRepository accesses;
 
-    public InstallationController(InstallationRepository installations, InstallationCredentialsRepository installationCredentials, InstallationImageRepository images, MqttAccessControlRepository mqttAccessControlRepository, Mqtt mqtt) {
+    public InstallationController(InstallationRepository installations,
+                                  InstallationCredentialsRepository installationCredentials,
+                                  InstallationImageRepository images,
+                                  MqttAccessControlRepository mqttAccessControlRepository,
+                                  Mqtt mqtt,
+                                  InstallationAccessRepository accesses) {
         this.installations = installations;
         this.installationCredentials = installationCredentials;
         this.images = images;
         this.mqttAccessControlRepository = mqttAccessControlRepository;
         this.mqtt = mqtt;
+        this.accesses = accesses;
     }
 
     @GetMapping
-    public ResponseEntity<Iterable<InstallationListItem>> getAll() {
-        Iterable<Installation> all = installations.findAll();
+    public ResponseEntity<Iterable<InstallationListItem>> getAll(JwtAuthenticationToken auth) {
+        User user = getUser(auth);
+
+        acceptPendingInvites(user);
+
+        Iterable<Installation> all = installations.getInstallations(user);
 
         Iterable<InstallationListItem> result = StreamSupport.stream(all.spliterator(), false)
                 .map(installation -> new InstallationListItem(installation.getId(),
@@ -61,9 +79,10 @@ public class InstallationController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<ch.fhnw.cemcloudbackend.dto.Installation> get(@PathVariable UUID id) {
+    public ResponseEntity<ch.fhnw.cemcloudbackend.dto.Installation> get(@PathVariable UUID id, JwtAuthenticationToken auth) {
+        User user = getUser(auth);
 
-        Optional<Installation> installation = installations.findById(id);
+        Optional<Installation> installation = installations.getInstallation(id, user);
 
         if (installation.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -74,10 +93,31 @@ public class InstallationController {
                 getInstallationImageUrl(installation.get()), installation.get().isOutOfSync()));
     }
 
-    @GetMapping(value = "{id}/image", produces = MediaType.IMAGE_JPEG_VALUE + ";" + MediaType.IMAGE_PNG_VALUE)
-    public ResponseEntity<byte[]> getImage(@PathVariable UUID id) throws IOException {
+    @GetMapping("{id}/authorizedUsers")
+    public ResponseEntity<Iterable<InstallationUser>> getAuthorizedUsers(@PathVariable UUID id, JwtAuthenticationToken auth) {
+        User user = getUser(auth);
 
-        Optional<Installation> optionalInstallation = installations.findById(id);
+        Optional<Installation> installation = installations.getInstallation(id, user);
+
+        if (installation.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Iterable<InstallationUser> users = installation.get()
+                .getInstallationAccesses()
+                .stream()
+                .map(a -> new InstallationUser(a.getUserEmail(), a.getUserId() == null))
+                .toList();
+
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping(value = "{id}/image", produces = MediaType.IMAGE_JPEG_VALUE + ";" + MediaType.IMAGE_PNG_VALUE)
+    public ResponseEntity<byte[]> getImage(@PathVariable UUID id, JwtAuthenticationToken auth) throws IOException {
+        User user = getUser(auth);
+
+        Optional<Installation> optionalInstallation = installations.getInstallation(id, user);
+
         if (optionalInstallation.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -89,7 +129,13 @@ public class InstallationController {
 
     @PostMapping
     @CrossOrigin(exposedHeaders = "Location")
-    public ResponseEntity<Void> post(@Valid @RequestBody InstallationCreateRequest request) throws URISyntaxException {
+    public ResponseEntity<Void> post(@Valid @RequestBody InstallationCreateRequest request, JwtAuthenticationToken auth)
+            throws URISyntaxException {
+        User user = getUser(auth);
+
+        if (!user.isInAnyRole(Role.INSTALLATEUR, Role.ADMINISTRATOR)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
 
         Installation installation = new Installation();
         installation.setId(UUID.randomUUID());
@@ -98,14 +144,80 @@ public class InstallationController {
         installation.setOutOfSync(true);
 
         installation = installations.save(installation);
+
+        InstallationAccess access = new InstallationAccess();
+        access.setInstallation(installation);
+        access.setUserId(user.getId());
+        access.setUserEmail(user.getEmail());
+        accesses.save(access);
+
         URI uri = new URI(format("/%s", installation.getId()));
 
         return ResponseEntity.created(uri).build();
     }
 
-    @PostMapping("{id}/sync")
-    public ResponseEntity<Void> sync(@PathVariable UUID id) {
+    @PostMapping("{id}/invite")
+    public ResponseEntity<Void> invite(@PathVariable UUID id,
+                                       @RequestParam("email") String email,
+                                       JwtAuthenticationToken auth) {
+        if (email.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        User user = getUser(auth);
+        if (!user.isInAnyRole(Role.ADMINISTRATOR, Role.INSTALLATEUR)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         Optional<Installation> installation = installations.findById(id);
+        if (installation.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (accesses.findByInstallationIdAndUserEmail(id, email).isPresent()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        InstallationAccess access = new InstallationAccess();
+        access.setInstallation(installation.get());
+        access.setUserEmail(email);
+        accesses.save(access);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("{id}/exclude")
+    public ResponseEntity<Void> exclude(@PathVariable UUID id,
+                                        @RequestParam("email") String email,
+                                        JwtAuthenticationToken auth) {
+        if (email.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        User user = getUser(auth);
+        if (!user.isInAnyRole(Role.ADMINISTRATOR, Role.INSTALLATEUR)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        Optional<Installation> installation = installations.findById(id);
+        if (installation.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Optional<InstallationAccess> access = accesses.findByInstallationIdAndUserEmail(id, email);
+        if (access.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        accesses.delete(access.get());
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("{id}/sync")
+    public ResponseEntity<Void> sync(@PathVariable UUID id, JwtAuthenticationToken auth) {
+        User user = getUser(auth);
+        Optional<Installation> installation = installations.getInstallation(id, user);
 
         if (installation.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -117,9 +229,14 @@ public class InstallationController {
     }
 
     @PutMapping(value = "{id}", consumes = { "multipart/form-data" })
-    public ResponseEntity<Void> put(@PathVariable UUID id, @Valid @RequestPart("installation") InstallationUpdateRequest request,
-                                    @RequestPart(value = "image", required = false) MultipartFile image) throws IOException {
-        Optional<Installation> optionalInstallation = installations.findById(id);
+    public ResponseEntity<Void> put(@PathVariable UUID id,
+                                    @Valid @RequestPart("installation") InstallationUpdateRequest request,
+                                    @RequestPart(value = "image", required = false) MultipartFile image,
+                                    JwtAuthenticationToken auth) throws IOException {
+        User user = getUser(auth);
+
+        Optional<Installation> optionalInstallation = installations.getInstallation(id, user);
+
         if (optionalInstallation.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -145,7 +262,15 @@ public class InstallationController {
     }
 
     @PostMapping("prepare")
-    public ResponseEntity<ch.fhnw.cemcloudbackend.dto.InstallationCredential> prepare(@RequestParam Optional<String> requestedSerialNumber) {
+    public ResponseEntity<ch.fhnw.cemcloudbackend.dto.InstallationCredential> prepare(
+            @RequestParam Optional<String> requestedSerialNumber,
+            JwtAuthenticationToken auth) {
+        User user = getUser(auth);
+
+        if (!user.isInRole(Role.ADMINISTRATOR)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         String serialNumber;
         if (requestedSerialNumber.isEmpty()) {
             serialNumber = UUID.randomUUID().toString();
@@ -195,6 +320,14 @@ public class InstallationController {
         return IntStream.range(0, length)
                 .mapToObj(i -> String.valueOf(chars.charAt(random.nextInt(chars.length()))))
                 .reduce("", String::concat);
+    }
+
+    private void acceptPendingInvites(User user) {
+        Iterable<InstallationAccess> invites = accesses.findAllByUserEmailAndUserIdIsNull(user.getEmail());
+        for (InstallationAccess invite : invites) {
+            invite.setUserId(user.getId());
+            accesses.save(invite);
+        }
     }
 
     private static String getInstallationImageUrl(Installation installation) {

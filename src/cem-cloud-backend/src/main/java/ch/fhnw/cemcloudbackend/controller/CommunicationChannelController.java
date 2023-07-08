@@ -2,12 +2,14 @@ package ch.fhnw.cemcloudbackend.controller;
 
 import ch.fhnw.cemcloudbackend.dto.*;
 import ch.fhnw.cemcloudbackend.entity.Installation;
+import ch.fhnw.cemcloudbackend.model.User;
 import ch.fhnw.cemcloudbackend.repository.CommunicationChannelParameterMetaRepository;
 import ch.fhnw.cemcloudbackend.repository.CommunicationChannelRepository;
 import ch.fhnw.cemcloudbackend.repository.CommunicationChannelTypeRepository;
 import ch.fhnw.cemcloudbackend.repository.InstallationRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -17,7 +19,7 @@ import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/communicationChannels")
-public class CommunicationChannelController {
+public class CommunicationChannelController extends BaseController {
 
     private final CommunicationChannelRepository channels;
     private final CommunicationChannelTypeRepository types;
@@ -35,13 +37,15 @@ public class CommunicationChannelController {
     }
 
     @GetMapping()
-    public ResponseEntity<Iterable<CommunicationChannelListItem>> getAll(@RequestParam Optional<UUID> installationId) {
-        Iterable<ch.fhnw.cemcloudbackend.entity.CommunicationChannel> channels;
-        if (installationId.isEmpty()) {
-            channels = this.channels.findAll();
-        } else {
-            channels = this.channels.findAllByInstallationId(installationId.get());
+    public ResponseEntity<Iterable<CommunicationChannelListItem>> getAll(@RequestParam UUID installationId,
+                                                                         JwtAuthenticationToken auth) {
+        User user = getUser(auth);
+        var installation = installations.getInstallation(installationId, user);
+        if (installation.isEmpty()) {
+            return ResponseEntity.notFound().build();
         }
+
+        Iterable<ch.fhnw.cemcloudbackend.entity.CommunicationChannel> channels = installation.get().getCommunicationChannels();
 
         return ResponseEntity.ok(StreamSupport
                 .stream(channels.spliterator(), false)
@@ -50,8 +54,9 @@ public class CommunicationChannelController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<CommunicationChannel> get(@PathVariable UUID id) {
-        Optional<ch.fhnw.cemcloudbackend.entity.CommunicationChannel> channel = channels.findById(id);
+    public ResponseEntity<CommunicationChannel> get(@PathVariable UUID id, JwtAuthenticationToken aut) {
+        User user = getUser(aut);
+        Optional<ch.fhnw.cemcloudbackend.entity.CommunicationChannel> channel = channels.getChannel(id, user);
 
         if (channel.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -64,8 +69,9 @@ public class CommunicationChannelController {
     }
 
     @GetMapping("{id}/meta")
-    public ResponseEntity<Iterable<ParameterMeta>> getMeta(@PathVariable UUID id) {
-        Optional<ch.fhnw.cemcloudbackend.entity.CommunicationChannel> channel = channels.findById(id);
+    public ResponseEntity<Iterable<ParameterMeta>> getMeta(@PathVariable UUID id, JwtAuthenticationToken auth) {
+        User user = getUser(auth);
+        Optional<ch.fhnw.cemcloudbackend.entity.CommunicationChannel> channel = channels.getChannel(id, user);
         if (channel.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -92,13 +98,15 @@ public class CommunicationChannelController {
 
     @PostMapping()
     @CrossOrigin(exposedHeaders = "Location")
-    public ResponseEntity<Void> post(@Valid @RequestBody CommunicationChannelTypCreationRequest request) throws URISyntaxException {
+    public ResponseEntity<Void> post(@Valid @RequestBody CommunicationChannelTypCreationRequest request,
+                                     JwtAuthenticationToken auth) throws URISyntaxException {
+        User user = getUser(auth);
         Optional<ch.fhnw.cemcloudbackend.entity.CommunicationChannelType> type = types.findById(request.typeId());
         if (type.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        Optional<Installation> installation = installations.findById(request.installationId());
+        Optional<Installation> installation = installations.getInstallation(request.installationId(), user);
         if (installation.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -116,8 +124,11 @@ public class CommunicationChannelController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Void> put(@PathVariable UUID id, @Valid @RequestBody CommunicationChannelUpdateRequest request) {
-        Optional<ch.fhnw.cemcloudbackend.entity.CommunicationChannel> optionalChannel = channels.findById(id);
+    public ResponseEntity<Void> put(@PathVariable UUID id,
+                                    @Valid @RequestBody CommunicationChannelUpdateRequest request,
+                                    JwtAuthenticationToken auth) {
+        User user = getUser(auth);
+        Optional<ch.fhnw.cemcloudbackend.entity.CommunicationChannel> optionalChannel = channels.getChannel(id, user);
 
         if (optionalChannel.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -133,8 +144,9 @@ public class CommunicationChannelController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
-        Optional<ch.fhnw.cemcloudbackend.entity.CommunicationChannel> channel = channels.findById(id);
+    public ResponseEntity<Void> delete(@PathVariable UUID id, JwtAuthenticationToken auth) {
+        User user = getUser(auth);
+        Optional<ch.fhnw.cemcloudbackend.entity.CommunicationChannel> channel = channels.getChannel(id, user);
 
         if (channel.isEmpty()) {
             return ResponseEntity.notFound().build();
