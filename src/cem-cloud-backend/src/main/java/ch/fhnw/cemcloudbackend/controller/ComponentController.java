@@ -67,9 +67,7 @@ public class ComponentController extends BaseController {
         User user = getUser(auth);
         Optional<ch.fhnw.cemcloudbackend.entity.Component> optionalComponent = components.findById(id);
 
-        if (optionalComponent.isEmpty() ||
-            !userHasAccessToComponent(user, optionalComponent.get()) &&
-            !user.isInAnyRole(Role.ADMINISTRATOR, Role.INSTALLATEUR)) {
+        if (optionalComponent.isEmpty() || !userHasAccessToComponent(user, optionalComponent.get())) {
             return ResponseEntity.notFound().build();
         }
 
@@ -271,10 +269,10 @@ public class ComponentController extends BaseController {
     }
 
     private static boolean userHasAccessToComponent(User user, ch.fhnw.cemcloudbackend.entity.Component component) {
-        return component
-                .getInstallation()
-                .getInstallationAccesses()
-                .stream()
-                .anyMatch(a -> a.getUserId().equals(user.getId()));
+        return user.isInAnyRole(Role.ADMINISTRATOR, Role.INSTALLATEUR) ||
+               component.getInstallation()
+                        .getInstallationAccesses()
+                        .stream()
+                        .anyMatch(a -> a.getUserId().equals(user.getId()));
     }
 }
