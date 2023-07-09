@@ -32,6 +32,9 @@ public class Installation {
 
     private boolean isOutOfSync;
 
+    @OneToMany(mappedBy = "installation")
+    private Set<InstallationAccess> installationAccesses;
+
     public UUID getId() {
         return id;
     }
@@ -86,5 +89,13 @@ public class Installation {
 
     public void setOutOfSync(boolean outOfSync) {
         isOutOfSync = outOfSync;
+    }
+
+    public Set<InstallationAccess> getInstallationAccesses() {
+        return installationAccesses;
+    }
+
+    public void setInstallationAccesses(Set<InstallationAccess> installationAccesses) {
+        this.installationAccesses = installationAccesses;
     }
 }

@@ -10,5 +10,5 @@
 .component-list-header .tools {
     display: flex;
     flex-direction: row-reverse;
-    width: 100%;
+    flex-grow: 1;
 }

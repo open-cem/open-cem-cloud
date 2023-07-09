@@ -13,17 +13,22 @@ import { Toast } from 'primereact/toast'
 import { presentError } from '../app/NotificationPresenter';
 import _ from 'lodash';
 import AuthorizedImage from '../authorizedImage/authorizedImage';
+import { AppUser, EmptyAppUser, KeycloakAppUser } from '../app/AppUser';
         
 
 function Installations() {
     const auth = useAuth();
     const navigate = useNavigate();
     const toast = useRef<Toast>(null);
+
+    const [appUser, setAppUser] = useState<AppUser>(new EmptyAppUser());
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [installations, setInstallations] = useState<Installation[]>([]);
 
     useEffect(() => {
         if (auth.user) {
+            setAppUser(new KeycloakAppUser(auth.user));
+
             new InstallationService()
                 .loadInstallations(auth.user.access_token)
                 .then(i => _.filter(i, i => i.name.toLowerCase().includes(searchTerm.toLowerCase())))
@@ -65,7 +70,11 @@ function Installations() {
 
     const endContent = (
         <Fragment>
-            <Button icon={PrimeIcons.PLUS} className="mr-2" onClick={createNewInstallation} />
+            {
+                appUser.isAdministrator || appUser.isInstallateur
+                ? <Button icon={PrimeIcons.PLUS} className="mr-2" onClick={createNewInstallation} />
+                : <></>
+            }
         </Fragment>
     );
 

@@ -1,9 +1,12 @@
 package ch.fhnw.cemcloudbackend.controller;
 
 import ch.fhnw.cemcloudbackend.dto.*;
+import ch.fhnw.cemcloudbackend.model.Role;
+import ch.fhnw.cemcloudbackend.model.User;
 import ch.fhnw.cemcloudbackend.repository.*;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -16,7 +19,7 @@ import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("components")
-public class ComponentController {
+public class ComponentController extends BaseController {
 
     private final ComponentRepository components;
     private final InstallationRepository installations;
@@ -40,22 +43,19 @@ public class ComponentController {
     }
 
     @GetMapping()
-    public ResponseEntity<Iterable<ComponentListItem>> getAll(@RequestParam Optional<UUID> installationId,
-                                                              @RequestParam Optional<UUID> typeFamilyId) {
-        Iterable<ch.fhnw.cemcloudbackend.entity.Component> components;
-        if (installationId.isPresent() && typeFamilyId.isPresent()) {
-            components = this.components.findAllByTypeComponentFamilyIdAndInstallationId(typeFamilyId.get(), installationId.get());
-        } else if (installationId.isPresent()) {
-            var optionalInstallation = installations.findById(installationId.get());
+    public ResponseEntity<Iterable<ComponentListItem>> getAll(@RequestParam UUID installationId,
+                                                              @RequestParam Optional<UUID> typeFamilyId,
+                                                              JwtAuthenticationToken auth) {
+        User user = getUser(auth);
 
-            if (optionalInstallation.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
-
-            components = optionalInstallation.get().getComponents();
-        } else {
-            components = this.components.findAll();
+        var installation = installations.getInstallation(installationId, user);
+        if (installation.isEmpty()) {
+            return ResponseEntity.notFound().build();
         }
+
+        Iterable<ch.fhnw.cemcloudbackend.entity.Component> components = typeFamilyId.isPresent()
+                ? this.components.findAllByTypeComponentFamilyIdAndInstallationId(typeFamilyId.get(), installationId)
+                : installation.get().getComponents();
 
         return ResponseEntity.ok(StreamSupport.stream(components.spliterator(), false)
                 .map(c -> new ComponentListItem(c.getId(), c.getName(), c.getType().getComponentType().getName()))
@@ -63,10 +63,11 @@ public class ComponentController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Component> get(@PathVariable UUID id) {
+    public ResponseEntity<Component> get(@PathVariable UUID id, JwtAuthenticationToken auth) {
+        User user = getUser(auth);
         Optional<ch.fhnw.cemcloudbackend.entity.Component> optionalComponent = components.findById(id);
 
-        if (optionalComponent.isEmpty()) {
+        if (optionalComponent.isEmpty() || !userHasAccessToComponent(user, optionalComponent.get())) {
             return ResponseEntity.notFound().build();
         }
 
@@ -110,9 +111,11 @@ public class ComponentController {
     }
 
     @GetMapping("{id}/communicationChannels")
-    public ResponseEntity<Iterable<CommunicationChannelListItem>> getCommunicationChannels(@PathVariable UUID id) {
+    public ResponseEntity<Iterable<CommunicationChannelListItem>> getCommunicationChannels(@PathVariable UUID id,
+                                                                                           JwtAuthenticationToken auth) {
+        User user = getUser(auth);
         Optional<ch.fhnw.cemcloudbackend.entity.Component> component = components.findById(id);
-        if (component.isEmpty()) {
+        if (component.isEmpty() || !userHasAccessToComponent(user, component.get())) {
             return ResponseEntity.notFound().build();
         }
 
@@ -122,9 +125,10 @@ public class ComponentController {
     }
 
     @GetMapping("{id}/meta")
-    public ResponseEntity<Iterable<ParameterMeta>> getMeta(@PathVariable UUID id) {
+    public ResponseEntity<Iterable<ParameterMeta>> getMeta(@PathVariable UUID id, JwtAuthenticationToken auth) {
+        User user = getUser(auth);
         Optional<ch.fhnw.cemcloudbackend.entity.Component> component = components.findById(id);
-        if (component.isEmpty()) {
+        if (component.isEmpty() || !userHasAccessToComponent(user, component.get())) {
             return ResponseEntity.notFound().build();
         }
 
@@ -141,8 +145,10 @@ public class ComponentController {
 
     @PostMapping()
     @CrossOrigin(exposedHeaders = "Location")
-    public ResponseEntity<Void> post(@Valid @RequestBody ComponentCreationRequest request) throws URISyntaxException {
-        Optional<ch.fhnw.cemcloudbackend.entity.Installation> installation = installations.findById(request.installationId());
+    public ResponseEntity<Void> post(@Valid @RequestBody ComponentCreationRequest request,
+                                     JwtAuthenticationToken auth) throws URISyntaxException {
+        User user = getUser(auth);
+        Optional<ch.fhnw.cemcloudbackend.entity.Installation> installation = installations.getInstallation(request.installationId(), user);
         if (installation.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -171,10 +177,13 @@ public class ComponentController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Void> put(@PathVariable UUID id, @RequestBody @Valid ComponentUpdateRequest request) {
+    public ResponseEntity<Void> put(@PathVariable UUID id,
+                                    @RequestBody @Valid ComponentUpdateRequest request,
+                                    JwtAuthenticationToken auth) {
+        User user = getUser(auth);
         Optional<ch.fhnw.cemcloudbackend.entity.Component> optionalComponent = components.findById(id);
 
-        if (optionalComponent.isEmpty()) {
+        if (optionalComponent.isEmpty() || !userHasAccessToComponent(user, optionalComponent.get())) {
             return ResponseEntity.notFound().build();
         }
 
@@ -242,9 +251,11 @@ public class ComponentController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+    public ResponseEntity<Void> delete(@PathVariable UUID id,
+                                       JwtAuthenticationToken auth) {
+        User user = getUser(auth);
         Optional<ch.fhnw.cemcloudbackend.entity.Component> component = components.findById(id);
-        if (component.isEmpty()) {
+        if (component.isEmpty() || !userHasAccessToComponent(user, component.get())) {
             return ResponseEntity.notFound().build();
         }
 
@@ -255,5 +266,13 @@ public class ComponentController {
         components.delete(component.get());
 
         return ResponseEntity.noContent().build();
+    }
+
+    private static boolean userHasAccessToComponent(User user, ch.fhnw.cemcloudbackend.entity.Component component) {
+        return user.isInAnyRole(Role.ADMINISTRATOR, Role.INSTALLATEUR) ||
+               component.getInstallation()
+                        .getInstallationAccesses()
+                        .stream()
+                        .anyMatch(a -> a.getUserId().equals(user.getId()));
     }
 }

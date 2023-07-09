@@ -6,10 +6,15 @@
 .component-list-entry.container > button:nth-child(1) {
     width: 100%;
     justify-content: center;
+    word-wrap: break-word;
 }
 
 .p-accordion-content:has( > .component-list-entry.container) {
     display: flex;
     flex-direction: column;
     gap: .5rem;
+}
+
+.component-list-entry.container.active > button:nth-child(1) {
+    opacity: unset;
 }

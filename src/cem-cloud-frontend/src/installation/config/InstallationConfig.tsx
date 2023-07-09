@@ -1,6 +1,6 @@
 import { useAuth } from "react-oidc-context";
 import { useNavigate, useParams } from "react-router-dom";
-import { InstallationService, Installation, NullInstallation } from "../InstallationsService";
+import { InstallationService, Installation, NullInstallation, InstallationUser } from "../InstallationsService";
 import { useEffect, useRef, useState } from "react";
 import { InputGroup, PictureInputGroup } from "../../inputGroup/InputGroup";
 import { Button } from "primereact/button";
@@ -13,6 +13,8 @@ import { CommunicationChannel, CommunicationChannelService, CommunicationChannel
 import ComponentListEntry from "../../componentListEntry/ComponentListEntry";
 import ComponentListHeader from "../../componentListHeader/ComponentListHeader";
 import _ from "lodash";
+import { AppUser, EmptyAppUser, KeycloakAppUser } from "../../app/AppUser";
+import { InputText } from "primereact/inputtext";
 
 const InstallationConfig = () => {
     const params = useParams<string>();
@@ -20,6 +22,7 @@ const InstallationConfig = () => {
     const auth = useAuth();
     const toast = useRef<Toast>(null);
 
+    const [appUser, setAppUser] = useState<AppUser>(new EmptyAppUser());
     const [installation, setInstallation] = useState<Installation>(new NullInstallation());
     const [image, setImage] = useState<File>();
     const [hasChanges, setHasChanges] = useState<boolean>(false);
@@ -27,6 +30,9 @@ const InstallationConfig = () => {
     const [activeIndex, setActiveIndex] = useState<number|undefined>(undefined);
     const [typesVisible, setTypesVisible] = useState<boolean>(false);
     const [channelTypes, setChannelTypes] = useState<CommunicationChannelType[]>([]);
+    const [authorizedUsers, setAuthorizedUsers] = useState<InstallationUser[]>([]);
+    const [userDialogVisible, setUserDialogVisible] = useState<boolean>(false);
+    const [inviteEmail, setInviteEmail] = useState<string>("");
 
     useEffect(() => {
         const installationId = params.installationId;
@@ -34,9 +40,15 @@ const InstallationConfig = () => {
             return;
         }
 
-        new InstallationService().loadInstallation(installationId, auth.user.access_token)
+        setAppUser(new KeycloakAppUser(auth.user));
+
+        const installations = new InstallationService();
+        installations.loadInstallation(installationId, auth.user.access_token)
             .then(setInstallation)
             .catch(e => presentError('Installation konnnte nicht geladen werden, versuchen Sie es später erneut.', undefined, e, toast.current));
+        installations.loadAuthorizedUsers(installationId, auth.user.access_token)
+            .then(setAuthorizedUsers)
+            .catch(e => presentError('Installationsfreigaben konnnte nicht geladen werden, versuchen Sie es später erneut.', undefined, e, toast.current));
 
         const channels = new CommunicationChannelService()
         channels.loadCommunicationChannels(installationId, auth.user.access_token)
@@ -98,8 +110,36 @@ const InstallationConfig = () => {
         if (auth.user) {
             new CommunicationChannelService()
                 .deleteCommunicationChannel(channelId, auth.user.access_token)
-                .then((v) => setCommunicationChannels(_.reject(communicationChannels, c => c.id === channelId)))
+                .then(() => setCommunicationChannels(_.reject(communicationChannels, c => c.id === channelId)))
                 .catch(e => presentError('Der Kommunikationskanal konnte nicht gelöscht werden, versuchen Sie es später erneut.', undefined, e, toast.current));
+        }
+    };
+
+    const users = (users: InstallationUser[]) => {
+        return _.orderBy(users, u => u.email)
+                .map(user =>
+                    <ComponentListEntry key={user.email} label={user.isPendingInvite ? `${user.email} (Einladung versendet)` : user.email} deleteAction={() => removeUserAccess(user)} className={user.isPendingInvite ? "" : "active"}/>
+                );
+    };
+
+    const removeUserAccess = (user: InstallationUser) => {
+        if (auth.user) {
+            new InstallationService().excludeUser(installation.id, user.email, auth.user.access_token)
+                .then(() => setAuthorizedUsers(_.reject(authorizedUsers, u => u.email === user.email)))
+                .catch(e => presentError('Der Benutzer konnte nicht eingeladen werden, versuchen Sie es später erneut.', undefined, e, toast.current));
+        }
+    };
+
+    const inviteUser = (email: string) => {
+        if (auth.user) {
+            new InstallationService().inviteUser(installation.id, email, auth.user.access_token)
+                .then(() => {
+                    const users = [...authorizedUsers];
+                    users.push({email: email, isPendingInvite: true} as InstallationUser);
+                    setAuthorizedUsers(users);
+                    setUserDialogVisible(false);
+                })
+                .catch(e => presentError('Der Benutzer konnte nicht eingeladen werden, versuchen Sie es später erneut.', undefined, e, toast.current));
         }
     };
 
@@ -111,6 +151,12 @@ const InstallationConfig = () => {
                     {
                         channelTypes.map(type => <Button key={type.id} onClick={() => addChannel(type.id)}>{type.name}</Button>)
                     }
+                </div>
+            </Dialog>
+            <Dialog header="Benutzer via E-Mail einladen" visible={userDialogVisible} onHide={() => setUserDialogVisible(false)}>
+                <div className="types-container">
+                    <InputText placeholder="E-Mail-Adresse" value={inviteEmail} onChange={e => setInviteEmail(e.target.value)} />
+                    <Button onClick={() => inviteUser(inviteEmail)}>Hinzufügen</Button>
                 </div>
             </Dialog>
             <div className="form">
@@ -136,7 +182,20 @@ const InstallationConfig = () => {
                         : <p>Erstellen Sie neue Kommunikationskanäle mit dem +.</p>
                     }
                 </AccordionTab>
-            </Accordion> 
+            </Accordion>
+            {
+                appUser.isAdministrator || appUser.isInstallateur
+                ? <Accordion>
+                    <AccordionTab header={<ComponentListHeader label="Autorisierte Benutzer" addAction={() => setUserDialogVisible(true)} />}>
+                        {
+                            authorizedUsers.length
+                            ? users(authorizedUsers)
+                            : <p>Laden Sie mit dem + neue Benutzer ein.</p>
+                        }
+                    </AccordionTab>
+                </Accordion>
+                : <></>
+            }
             <div className="button-bar">
                 <Button severity="secondary" outlined onClick={() => navigate("/")}>{ hasChanges ? "Abbrechen" : "Zurück" }</Button>
                 {
