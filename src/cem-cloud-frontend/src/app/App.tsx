@@ -23,7 +23,14 @@ function App(props: any) {
   useEffect(() => {
     if (!hasAuthParams() &&
       !auth.isAuthenticated && !auth.activeNavigator && !auth.isLoading) {
-      auth.signinRedirect();
+        localStorage.setItem("path", window.location.pathname);
+        auth.signinRedirect();
+    }else if(auth.isAuthenticated && localStorage.getItem("path") !== null) {
+          const path = localStorage.getItem("path") as string;
+          localStorage.removeItem("path");
+          if (path !== window.location.pathname) {
+            window.location.href = path;
+          }
     }
   }, [auth, auth.isAuthenticated, auth.activeNavigator, auth.isLoading, auth.signinRedirect]);
 
