@@ -5,9 +5,9 @@ import requests
 
 
 ## Installation Seriennummer
-installation = "123456789"
-password = "testing321"
-token = ""
+installation = "7b4359c1-2d9a-4394-8b7a-a78ad9386a13"
+password = "VR3E3hgtIUARKLZ4lG@ICzuCibsg9gje8Ah5erFZAA0f1ZUfCoGawdx1J4Pr"
+token = "EYA%23Ynl85KWbVXeo4XTF2hE4a9cKkg6qQH2%40D%23WqA%2AaAsgSTOjdTmOWaxoV5"
 backendurl = "https://cem-cloud-p5.ch/api"
 
 
@@ -17,7 +17,7 @@ port = 1883
 
 def getConfig():
     print("Getting configuration from backend")
-    r = requests.get(backendurl + "/installations/" + installation + "/configuration")
+    r = requests.get(backendurl + "/installations/" + installation + "/configuration?token=" + token)
     if r.status_code == 200:
         return r.text
     else:

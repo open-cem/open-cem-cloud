@@ -54,6 +54,9 @@ services:
       DBUSERNAME: ${DB_USERNAME}
       DBPASSWORD: ${DB_PASSWORD}
       HOST: ${HOST}
+      MQTTHOST: ${MQTTHOST}
+      MQTTUSERNAME: ${MQTTUSERNAME}
+      MQTTPASSWORD: ${MQTTPASSWORD}
     ports:
       - 8080:8080
     restart: always
