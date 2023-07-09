@@ -30,8 +30,19 @@ class KeycloakAppUser implements AppUser {
     }
     
     private getRoles(): string[] {
+        let roles: string[] = [];
         const realmAccess = this.user.profile[KeycloakAppUser.realmAccessClaimName] as any;
-        return realmAccess[KeycloakAppUser.rolesClaimName] as string[];
+        if (realmAccess) {
+            roles = realmAccess[KeycloakAppUser.rolesClaimName] as string[];
+            if (!roles) {
+                roles = [];
+                console.warn(`${KeycloakAppUser.realmAccessClaimName}.${KeycloakAppUser.rolesClaimName} claim not present in Id token. Therefore, the roles cannot be determined. Some functionality may be restricted.`);
+            }
+        } else {
+            console.warn(`${KeycloakAppUser.realmAccessClaimName} claim not present in Id token. Therefore, the roles cannot be determined. Some functionality may be restricted.`);
+        }
+
+        return roles;
     }
 }
 
