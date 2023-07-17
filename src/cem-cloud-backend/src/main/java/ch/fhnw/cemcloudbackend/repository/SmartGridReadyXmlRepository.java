@@ -13,7 +13,20 @@ public class SmartGridReadyXmlRepository {
     private final Path uploadDirPath;
 
     public SmartGridReadyXmlRepository(ApplicationProperties applicationProperties) {
-        uploadDirPath = Paths.get(applicationProperties.uploadDirectory()).toAbsolutePath().normalize().resolve("smartgridready");
+        uploadDirPath = Paths.get(applicationProperties.uploadDirectory())
+                .toAbsolutePath()
+                .normalize()
+                .resolve("smartgridready");
+    }
+
+    public void delete(String filename) throws IOException {
+        if (filename == null) {
+            throw new IllegalArgumentException("filename can not be null");
+        }
+
+        Path xmlFile = uploadDirPath.resolve(filename);
+
+        Files.deleteIfExists(xmlFile);
     }
 
     public Optional<byte[]> load(UUID id) throws IOException {

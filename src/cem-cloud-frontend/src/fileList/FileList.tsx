@@ -47,7 +47,7 @@ const FileList = ({ title, initFiles, deleteFn }: { title: string, initFiles: Fi
             {
                 files.length
                     ? files.map(file =>
-                        <ComponentListEntry key={file} label={file} deleteAction={() => { }} />
+                        <ComponentListEntry key={file} label={file} deleteAction={() => deleteFn(file)} />
                     )
                     : <p>Keine {title} vorhanden.</p>
             }
