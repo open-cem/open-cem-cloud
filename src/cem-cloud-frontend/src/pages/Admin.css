@@ -1,0 +1,31 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.files-container {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.files-container > * {
+    flex: 1 1 28vw;
+}
+
+.p-panel.invalid .p-panel-header,
+.p-panel.invalid .p-panel-content {
+    border-color: #e24c4c;
+}
+
+.p-panel.invalid .p-panel-title {
+    color: #e24c4c;
+}
+
+@media only screen and (min-width: 768px) {
+    .files-container {
+        flex-direction: row;
+    }
+}
