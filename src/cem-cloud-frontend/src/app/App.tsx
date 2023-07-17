@@ -47,7 +47,7 @@ function App(props: any) {
   }
 
   if (auth.error) {
-    return <div>Oops... {auth.error.message}</div>;
+    auth.signinRedirect();
   }
 
   if (auth.isAuthenticated) {
