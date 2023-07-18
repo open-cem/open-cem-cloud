@@ -10,8 +10,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.StreamSupport;
@@ -43,6 +45,36 @@ public class SmartGridReadyController extends BaseController {
         Optional<byte[]> image = smartGridReadyXmlRepository.load(id);
 
         return image.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
+    }
+
+    @PostMapping(consumes = { "multipart/form-data" })
+    public ResponseEntity<Void> post(@RequestParam(name = "file") List<MultipartFile> files,
+                                     JwtAuthenticationToken auth) throws IOException {
+        User user = getUser(auth);
+
+        if (!user.isInRole(Role.ADMINISTRATOR)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        for (MultipartFile file : files) {
+            if (file != null && !file.isEmpty()) {
+                String filename = file.getOriginalFilename();
+                UUID id = UUID.randomUUID();
+                if (filename == null || filename.isBlank()) {
+                    filename = id.toString();
+                }
+
+                if (smartGridreadyRepository.findByFileName(filename).isEmpty()) {
+                    smartGridReadyXmlRepository.save(filename, file.getInputStream());
+                    var smartGridreadyDefinition = new ch.fhnw.cemcloudbackend.entity.SmartGridreadyDefinition();
+                    smartGridreadyDefinition.setId(id);
+                    smartGridreadyDefinition.setFileName(filename);
+                    smartGridreadyRepository.save(smartGridreadyDefinition);
+                }
+            }
+        }
+
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("{id}")

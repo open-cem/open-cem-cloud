@@ -3,6 +3,7 @@ package ch.fhnw.cemcloudbackend.repository;
 import ch.fhnw.cemcloudbackend.configuration.ApplicationProperties;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -87,6 +88,25 @@ public class WizardSetRepository {
         Files.createDirectories(images);
 
         return find(imageFilename, images);
+    }
+
+    public void save(String setFilename, InputStream fileStream) throws IOException {
+        if (setFilename == null) {
+            throw new IllegalArgumentException("setFilename can not be null");
+        }
+
+        Files.createDirectories(uploadDirPath);
+        Files.copy(fileStream, uploadDirPath.resolve(setFilename));
+    }
+
+    public void saveImage(String imageFilename, InputStream fileStream) throws IOException {
+        if (imageFilename == null) {
+            throw new IllegalArgumentException("imageFilename can not be null");
+        }
+
+        Path images = uploadDirPath.resolve(IMAGES_FOLDER_NAME);
+        Files.createDirectories(images);
+        Files.copy(fileStream, images.resolve(imageFilename));
     }
 
     private boolean fileIsImage(Path file) {
