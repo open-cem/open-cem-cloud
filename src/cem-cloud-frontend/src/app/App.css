@@ -7,13 +7,11 @@ body {
   flex-direction: column;
   align-items: flex-start;
   gap: 1rem;
-  padding: 1rem;
 }
 
 .button-bar {
   display: flex;
-  gap: 1rem;
-  margin: 1rem;
+  gap: .5rem;
 }
 
 .button-bar button {

@@ -1,0 +1,12 @@
+.p-panel-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.p-panel-content {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}

@@ -79,6 +79,13 @@ class ApiBuilder<ResultType> {
                 method: this.method,
                 headers: this.headers,
                 body: this.body ?? this.formData,
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response;
+                } else {
+                    throw Error(`${response.status} - ${response.statusText}`);
+                }
             });
     }
 
