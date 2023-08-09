@@ -574,7 +574,7 @@ public class ConfigurationController {
                         component.getSmartGridreadyDefinition() != null,
                         component.getSmartGridreadyDefinition() != null ? component.getSmartGridreadyDefinition().getId() : null,
                         component.getCommunicationChannel() != null ? component.getCommunicationChannel().getId() : null,
-                        true,
+                        component.getLogging(),
                         component.getParameter()
                 )).toList();
     }
