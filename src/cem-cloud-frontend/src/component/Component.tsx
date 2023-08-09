@@ -30,6 +30,7 @@ const Component = () => {
     const [isSmartGridready, setIsSmartGridready] = useState<boolean>(false);
     const [smartGridReadyFiles, setSmartGridReadyFiles] = useState<SmartGridreadyFile[]>([]);
     const [selectedSmartGridreadyFile, setSelectedSmartGridreadyFile] = useState<SmartGridreadyFile | undefined>(undefined);
+    const [isLogging, setIstLogging] = useState<boolean | undefined>(false);
 
     const installationId: string = params.installationId ?? "";
 
@@ -78,6 +79,7 @@ const Component = () => {
                     setSelectedChannel(_.find(cs, x => x.id === c.channelId));
                     setIsSmartGridready(c.smartGridreadyDefinitionId !== null);
                     setSelectedSmartGridreadyFile(_.find(fs, f => f.id === c.smartGridreadyDefinitionId));
+                    setIstLogging(c.isLogging);
                 }
             })
             .catch(e => presentError('Komponente konnnte nicht geladen werden, versuchen Sie es später erneut.', undefined, e, toast.current));
@@ -193,6 +195,7 @@ const Component = () => {
                                 </>
                             }
                             <DropdownInputGroup id="formChannel" label="Kommunikationskanal" value={selectedChannel} options={channels} optionLabel="name" onChangeFn={(e) => onSelectedChannelChanged(e.target.value, component)} />
+                            <SwitchInputGroup id="formIsLogging" label="Loggen?" value={isLogging} onChangeFn={(e) => onChange([{propertyName: 'isLogging', value: e.target.value ?? false}], component)} />
                         </>
                         : <></>
                 }
