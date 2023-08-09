@@ -30,6 +30,7 @@ const Component = () => {
     const [isSmartGridready, setIsSmartGridready] = useState<boolean>(false);
     const [smartGridReadyFiles, setSmartGridReadyFiles] = useState<SmartGridreadyFile[]>([]);
     const [selectedSmartGridreadyFile, setSelectedSmartGridreadyFile] = useState<SmartGridreadyFile | undefined>(undefined);
+    const [isLogging, setIsLogging] = useState<boolean | undefined>(false);
 
     const installationId: string = params.installationId ?? "";
 
@@ -78,6 +79,7 @@ const Component = () => {
                     setSelectedChannel(_.find(cs, x => x.id === c.channelId));
                     setIsSmartGridready(c.smartGridreadyDefinitionId !== null);
                     setSelectedSmartGridreadyFile(_.find(fs, f => f.id === c.smartGridreadyDefinitionId));
+                    setIsLogging(c.isLogging);
                 }
             })
             .catch(e => presentError('Komponente konnnte nicht geladen werden, versuchen Sie es später erneut.', undefined, e, toast.current));
@@ -158,6 +160,11 @@ const Component = () => {
         setSelectedModel(undefined);
     };
 
+    const onIsLoggingChanged = (isLogging: boolean) => {
+        setIsLogging(isLogging);
+        onChange([{propertyName: 'isLogging', value: isLogging}], component);
+    };
+
     const onSave = () => {
         if (auth.user && !(component instanceof NullComponent)) {
             new ComponentsService()
@@ -193,6 +200,7 @@ const Component = () => {
                                 </>
                             }
                             <DropdownInputGroup id="formChannel" label="Kommunikationskanal" value={selectedChannel} options={channels} optionLabel="name" onChangeFn={(e) => onSelectedChannelChanged(e.target.value, component)} />
+                            <SwitchInputGroup id="formIsLogging" label="Loggen?" value={isLogging} onChangeFn={(e) => onIsLoggingChanged(e.target.value ?? false)} />
                         </>
                         : <></>
                 }

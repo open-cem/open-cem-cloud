@@ -1,6 +1,9 @@
 package ch.fhnw.cemcloudbackend.entity;
 
+import org.hibernate.annotations.ColumnDefault;
+
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class HardwareComponent extends Component {
@@ -13,6 +16,10 @@ public class HardwareComponent extends Component {
     private SmartGridreadyDefinition smartGridreadyDefinition;
     @ManyToOne
     private CommunicationChannel communicationChannel;
+    @NotNull
+    @ColumnDefault("true")
+    boolean isLogging;
+
     public Manufacturer getManufacturer() {
         return manufacturer;
     }
@@ -43,5 +50,13 @@ public class HardwareComponent extends Component {
 
     public void setCommunicationChannel(CommunicationChannel communicationChannel) {
         this.communicationChannel = communicationChannel;
+    }
+
+    public boolean getLogging() {
+        return isLogging;
+    }
+
+    public void setLogging(boolean isLogging) {
+        this.isLogging = isLogging;
     }
 }
