@@ -31,13 +31,12 @@ public class SmartGridReadyXmlRepository {
         Files.deleteIfExists(xmlFile);
     }
 
-    public Optional<byte[]> load(UUID id) throws IOException {
-        if (id == null) {
-            throw new IllegalArgumentException("id can not be null");
+    public Optional<byte[]> load(String filename) throws IOException {
+        if (filename == null || filename.isBlank()) {
+            throw new IllegalArgumentException("filename can not be null or empty.");
         }
 
-        String todoFilename = "SGr_HeatPump_Test.xml";
-        Path xmlFile = uploadDirPath.resolve(todoFilename);
+        Path xmlFile = uploadDirPath.resolve(filename);
         if (Files.exists(xmlFile)) {
             return Optional.of(Files.readAllBytes(xmlFile));
         }

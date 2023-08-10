@@ -42,7 +42,13 @@ public class SmartGridReadyController extends BaseController {
     @GetMapping(value = "{id}", produces = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<byte[]> getImage(@PathVariable UUID id) throws IOException {
 
-        Optional<byte[]> image = smartGridReadyXmlRepository.load(id);
+        Optional<ch.fhnw.cemcloudbackend.entity.SmartGridreadyDefinition> definition = smartGridreadyRepository.findById(id);
+
+        if (definition.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Optional<byte[]> image = smartGridReadyXmlRepository.load(definition.get().getFileName());
 
         return image.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
     }
