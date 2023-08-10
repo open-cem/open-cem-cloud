@@ -8,14 +8,13 @@ import ComponentListHeader from "../componentListHeader/ComponentListHeader";
 import { DataView } from "primereact/dataview";
 import AuthorizedImage from "../authorizedImage/authorizedImage";
 import "./Sets.css";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Sets = () => {
     
     const auth = useAuth();
     const toast = useRef<Toast>(null);
     const navigate = useNavigate();
-    const params = useParams<string>();
 
     const [sets, setSets] = useState<PredefinedSet[]>([]);
 
