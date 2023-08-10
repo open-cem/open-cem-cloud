@@ -31,6 +31,7 @@ const Component = ({inputConfig, uiLoaded} : {inputConfig? : ComponentWizardConf
     const [isSmartGridready, setIsSmartGridready] = useState<boolean>(false);
     const [smartGridReadyFiles, setSmartGridReadyFiles] = useState<SmartGridreadyFile[]>([]);
     const [selectedSmartGridreadyFile, setSelectedSmartGridreadyFile] = useState<SmartGridreadyFile | undefined>(undefined);
+    const [isLogging, setIsLogging] = useState<boolean | undefined>(false);
 
     const installationId: string = inputConfig?.installationId ?? params.installationId ?? "";
 
@@ -79,6 +80,7 @@ const Component = ({inputConfig, uiLoaded} : {inputConfig? : ComponentWizardConf
                     setSelectedChannel(_.find(cs, x => x.id === c.channelId));
                     setIsSmartGridready(c.smartGridreadyDefinitionId !== null);
                     setSelectedSmartGridreadyFile(_.find(fs, f => f.id === c.smartGridreadyDefinitionId));
+                    setIsLogging(c.isLogging);
                 }
                 if (uiLoaded) {
                     uiLoaded();
@@ -162,6 +164,11 @@ const Component = ({inputConfig, uiLoaded} : {inputConfig? : ComponentWizardConf
         setSelectedModel(undefined);
     };
 
+    const onIsLoggingChanged = (isLogging: boolean) => {
+        setIsLogging(isLogging);
+        onChange([{propertyName: 'isLogging', value: isLogging}], component);
+    };
+
     const onSave = () => {
         if (auth.user && !(component instanceof NullComponent)) {
             new ComponentsService()
@@ -210,6 +217,7 @@ const Component = ({inputConfig, uiLoaded} : {inputConfig? : ComponentWizardConf
                                 </>
                             }
                             <DropdownInputGroup {...getInputConfig("communicationChannel")} id="formChannel" label="Kommunikationskanal" value={selectedChannel} options={channels} optionLabel="name" onChangeFn={(e) => onSelectedChannelChanged(e.target.value, component)} />
+                            <SwitchInputGroup {...getInputConfig("isLogging")} id="formIsLogging" label="Loggen?" value={isLogging} onChangeFn={(e) => onIsLoggingChanged(e.target.value ?? false)} />
                         </>
                         : <></>
                 }

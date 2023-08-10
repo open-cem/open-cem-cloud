@@ -92,7 +92,7 @@ public class ComponentController extends BaseController {
                 : null;
 
             dto = new Component(component.getId(), component.getName(), component.getType().getComponentType().getName(),
-                    channel, manufacturer, model, smartGridreadyDefinition, parameter);
+                    channel, manufacturer, model, smartGridreadyDefinition, parameter, hardwareComponent.getLogging());
         } else {
             dto = new Component(component.getId(), component.getName(), component.getType().getComponentType().getName(),
                     parameter);
@@ -242,6 +242,10 @@ public class ComponentController extends BaseController {
                     return ResponseEntity.badRequest().build();
                 }
                 hardwareComponent.setCommunicationChannel(channel.get());
+            }
+
+            if (request.isLogging() != null) {
+                hardwareComponent.setLogging(request.isLogging());
             }
         }
 

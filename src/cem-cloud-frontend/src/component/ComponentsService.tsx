@@ -15,6 +15,7 @@ interface Component {
     channelId?: string;
     smartGridreadyDefinitionId?: string;
     parameter: Map<string, Object>;
+    isLogging?: boolean;
 }
 
 class NullComponent implements Component {

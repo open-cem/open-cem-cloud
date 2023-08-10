@@ -92,7 +92,7 @@ public class ComponentControllerTest {
         JwtAuthenticationToken auth = mockAuth();
 
         controller.put(component.getId(), new ComponentUpdateRequest(component.getName(),
-                component.getManufacturer().getId(), component.getModel().getId(), null, null, null),
+                component.getManufacturer().getId(), component.getModel().getId(), null, null, null, null),
                 auth);
 
         verify(components, times(1)).save(any());
@@ -109,7 +109,7 @@ public class ComponentControllerTest {
         JwtAuthenticationToken auth = mockAuth();
 
         controller.put(component.getId(), new ComponentUpdateRequest(component.getName(),
-                component.getManufacturer().getId(), null, null, null, null),
+                component.getManufacturer().getId(), null, null, null, null, null),
                 auth);
 
         verify(components, times(1)).save(any());
@@ -128,7 +128,7 @@ public class ComponentControllerTest {
         JwtAuthenticationToken auth = mockAuth();
 
         controller.put(component.getId(), new ComponentUpdateRequest(component.getName(),
-                component.getManufacturer().getId(), model.getId(), null, null, null),
+                component.getManufacturer().getId(), model.getId(), null, null, null, null),
                 auth);
 
         verify(components, times(1)).save(any());
@@ -144,7 +144,7 @@ public class ComponentControllerTest {
         doReturn(Optional.of(manufacturer)).when(manufacturers).findById(any());
         JwtAuthenticationToken auth = mockAuth();
 
-        controller.put(component.getId(), new ComponentUpdateRequest(component.getName(),null, null, null, null, null), auth);
+        controller.put(component.getId(), new ComponentUpdateRequest(component.getName(),null, null, null, null, null, null), auth);
 
         verify(components, times(1)).save(any());
     }
@@ -162,7 +162,7 @@ public class ComponentControllerTest {
         JwtAuthenticationToken auth = mockAuth();
 
         controller.put(component.getId(), new ComponentUpdateRequest(component.getName(),
-                manufacturer.getId(), model.getId(), null, null, null),
+                manufacturer.getId(), model.getId(), null, null, null, null),
                 auth);
 
         verify(components, times(1)).save(any());
