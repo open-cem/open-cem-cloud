@@ -11,8 +11,9 @@ import _ from "lodash";
 import { CommunicationChannelListItem, CommunicationChannelService } from "../installation/CommunicationChannelsService";
 import { ParameterInput, ParameterMeta } from "../parameterInput/ParameterInput";
 import { SmartGridreadyFile, SmartGridreadyService } from "./SmartGridreadyService";
+import { ComponentWizardConfiguration } from "../app/WizardSetsService";
 
-const Component = () => {
+const Component = ({inputConfig, uiLoaded} : {inputConfig? : ComponentWizardConfiguration, uiLoaded?: Function}) => {
     const params = useParams();
     const auth = useAuth();
     const navigate = useNavigate();
@@ -32,7 +33,7 @@ const Component = () => {
     const [selectedSmartGridreadyFile, setSelectedSmartGridreadyFile] = useState<SmartGridreadyFile | undefined>(undefined);
     const [isLogging, setIsLogging] = useState<boolean | undefined>(false);
 
-    const installationId: string = params.installationId ?? "";
+    const installationId: string = inputConfig?.installationId ?? params.installationId ?? "";
 
     const loadModels = useCallback((manufacturer: Manufacturer, component: ComponentModel) => {
         if (auth.user) {
@@ -47,7 +48,7 @@ const Component = () => {
     }, [auth.user]);
 
     useEffect(() => {
-        const componentId = params.componentId;
+        const componentId = inputConfig?.componentId ?? params.componentId;
         if (!auth.user || !componentId) {
             return;
         }
@@ -81,9 +82,12 @@ const Component = () => {
                     setSelectedSmartGridreadyFile(_.find(fs, f => f.id === c.smartGridreadyDefinitionId));
                     setIsLogging(c.isLogging);
                 }
+                if (uiLoaded) {
+                    uiLoaded();
+                }
             })
             .catch(e => presentError('Komponente konnnte nicht geladen werden, versuchen Sie es später erneut.', undefined, e, toast.current));
-    }, [auth.user, params.componentId, loadModels]);
+    }, [auth.user, params.componentId, loadModels, inputConfig, uiLoaded]);
 
     const selectModel = (component: ComponentModel, models: Model[]) => {
         const model = _.find(models, m => m.id === component.modelId);
@@ -181,43 +185,60 @@ const Component = () => {
 
     const isHardwareComponent = (component: ComponentModel) => component.family && component.family !== 'CONTROLLERS';
 
+    const getInputConfig = (field: string) => {
+        if (!inputConfig) {
+            return {};
+        }
+        const additionalProps = {isReadOnly: false, disabled: false};
+        if (inputConfig.isFieldReadonly(field)) {
+            additionalProps["isReadOnly"] = true;
+            additionalProps["disabled"] = true;
+        }
+        return additionalProps;
+    }
+
     return (
         <>
             <Toast ref={toast} />
             <div className="form">
-                <InputGroup id="formName" label="Name" value={component?.name} changeFn={(e) => onChange([{propertyName: 'name', value: e.target.value}], component)} />
+                <InputGroup id="formName" label="Name" {...getInputConfig("name")} value={component?.name} isReadOnly={inputConfig?.isFieldReadonly("name")} changeFn={(e) => onChange([{propertyName: 'name', value: e.target.value}], component)} />
+                {inputConfig?.descriptionPanel}
                 {
                     isHardwareComponent(component)
                         ?
                         <>
-                            <SwitchInputGroup id="formIsSmartGridReady" label="SmartGridready?" value={isSmartGridready} onChangeFn={(e) => onIsSmartGridreadyChanged(e.target.value ?? false, component)} />
+                            <SwitchInputGroup {...getInputConfig("smartgridready")} id="formIsSmartGridReady" label="SmartGridready?" value={isSmartGridready} onChangeFn={(e) => onIsSmartGridreadyChanged(e.target.value ?? false, component)} />
                             {
                                 isSmartGridready
-                                ? <DropdownInputGroup id="formSmartGridreadyDefinition" label="XML Datei" value={selectedSmartGridreadyFile} options={smartGridReadyFiles} optionLabel="name" onChangeFn={(e) => onSelectedSmartGridreadyFileChanged(e.value, component)} />
+                                ? <DropdownInputGroup {...getInputConfig("smartgridready")} id="formSmartGridreadyDefinition" label="XML Datei" value={selectedSmartGridreadyFile} options={smartGridReadyFiles} optionLabel="name" onChangeFn={(e) => onSelectedSmartGridreadyFileChanged(e.value, component)} />
                                 : <>
-                                    <DropdownInputGroup id="formManufacturer" label="Hersteller" value={selectedManufacturer} options={manufacturers} optionLabel="name" onChangeFn={(e) => onSelectedManufacturerChanged(e.value, component)} />
-                                    <DropdownInputGroup id="formModel" label="Modell" value={selectedModel} options={models} optionLabel="name" onChangeFn={(e) => onSelectedModelChanged(e.value, component)} disabled={!selectedManufacturer} />
+                                    <DropdownInputGroup {...getInputConfig("manufacturer")} id="formManufacturer" label="Hersteller" value={selectedManufacturer} options={manufacturers} optionLabel="name" onChangeFn={(e) => onSelectedManufacturerChanged(e.value, component)} />
+                                    <DropdownInputGroup id="formModel" label="Modell" value={selectedModel} options={models} optionLabel="name" onChangeFn={(e) => onSelectedModelChanged(e.value, component)} disabled={!selectedManufacturer || inputConfig?.isFieldReadonly("model")} />
                                 </>
                             }
-                            <DropdownInputGroup id="formChannel" label="Kommunikationskanal" value={selectedChannel} options={channels} optionLabel="name" onChangeFn={(e) => onSelectedChannelChanged(e.target.value, component)} />
-                            <SwitchInputGroup id="formIsLogging" label="Loggen?" value={isLogging} onChangeFn={(e) => onIsLoggingChanged(e.target.value ?? false)} />
+                            <DropdownInputGroup {...getInputConfig("communicationChannel")} id="formChannel" label="Kommunikationskanal" value={selectedChannel} options={channels} optionLabel="name" onChangeFn={(e) => onSelectedChannelChanged(e.target.value, component)} />
+                            <SwitchInputGroup {...getInputConfig("isLogging")} id="formIsLogging" label="Loggen?" value={isLogging} onChangeFn={(e) => onIsLoggingChanged(e.target.value ?? false)} />
                         </>
                         : <></>
                 }
                 {
                     parameters.length === 0 && component instanceof NullComponent
                     ? <></>
-                    : parameters.map(p => <ParameterInput key={p.name} meta={p} value={(component.parameter as any)[p.name]} changeFn={onParameterChange} installationId={installationId} />)
+                    : parameters.map(p => <ParameterInput key={p.name} meta={p} value={(component.parameter as any)[p.name]} changeFn={onParameterChange} installationId={installationId} inputConfig={inputConfig}/>)
                 }
             </div>
-            <div className="button-bar">
-                <Button severity="secondary" outlined onClick={() => navigate(`/installations/${installationId}`)}>{ hasChanges ? "Abbrechen" : "Zurück" }</Button>
-                {
-                    hasChanges
-                        ? <Button onClick={onSave}>Speichern</Button>
-                        : <></>
-                }
-            </div>
+            {
+                inputConfig !== undefined
+                ? <></>
+                :<div className="button-bar">
+                    <Button severity="secondary" outlined onClick={() => navigate(`/installations/${installationId}`)}>{ hasChanges ? "Abbrechen" : "Zurück" }</Button>
+                    {
+                        hasChanges
+                            ? <Button onClick={onSave}>Speichern</Button>
+                            : <></>
+                    }
+                </div>
+            }
         </>
     )
 };

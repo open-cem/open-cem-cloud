@@ -16,6 +16,7 @@ import { setApiUri } from "./AppSettings";
 import CommunicationChannel from "../communicationChannel/communicationChannel";
 import Component from "../component/Component";
 import Admin from "../pages/Admin";
+import Wizard from "../setWizard/Wizard";
 
 function App(props: any) {
   setApiUri(props.apiUri);
@@ -62,6 +63,7 @@ function App(props: any) {
             <Route path="installations/:installationId/config" element={<InstallationConfig />} />
             <Route path="installations/:installationId/communicationChannels/:channelId" element={<CommunicationChannel />} />
             <Route path="installations/:installationId/components/:componentId" element={<Component />} />
+            <Route path="installations/:installationId/sets/:setName" element={<Wizard />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

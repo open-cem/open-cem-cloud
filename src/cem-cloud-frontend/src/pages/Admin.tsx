@@ -22,6 +22,9 @@ const Admin = () => {
     const [sets, setSets] = useState<File[]>([]);
     const [images, setImages] = useState<File[]>([]);
     const [sgrDefinitions, setSgrDefinitions] = useState<SmartGridreadyFile[]>([]);
+    const [missingFiles, setMissingFiles] = useState<string[]>([]);
+
+    const [setErrors, setSetErrors] = useState<string[]>([]);
 
     const loadSGrDefinitions = useCallback(() => {
         if (auth.user) {
@@ -47,16 +50,26 @@ const Admin = () => {
         }
     }, [auth.user]);
 
+    const loadMissingFiles = useCallback(() => {
+        if (auth.user) {
+            new WizardSetsService().loadMissingFiles(auth.user.access_token)
+                .then(setMissingFiles)
+                .catch(e => presentError('Fehlende Dateien konnten nicht geladen werden, versuchen Sie es später erneut.', undefined, e, toast.current));
+        }
+    }, [auth.user]);
+
     useEffect(() => {
         loadSGrDefinitions();
         loadSets();
         loadSetImages();
-    }, [loadSGrDefinitions, loadSets, loadSetImages]);
+        loadMissingFiles();
+    }, [loadSGrDefinitions, loadSets, loadSetImages, loadMissingFiles]);
 
     const deleteSet = (name: string) => {
         if (auth.user && name) {
             new WizardSetsService().deleteSet(name, auth.user.access_token)
                 .then(() => setSets(_.reject(sets, s => s === name)))
+                .then(() => loadMissingFiles())
                 .catch(e => presentError('Set konnte nicht gelöscht werden. Stellen Sie sicher, dass das Set nicht mehr verwendet wird oder versuchen Sie es später erneut.',
                     undefined, e, toast.current));
         }
@@ -66,6 +79,7 @@ const Admin = () => {
         if (auth.user && name) {
             new WizardSetsService().deleteImage(name, auth.user.access_token)
                 .then(() => setImages(_.reject(images, i => i === name)))
+                .then(() => loadMissingFiles())
                 .catch(e => presentError('Bild konnte nicht gelöscht werden. Stellen Sie sicher, dass das Bild nicht mehr verwendet wird oder versuchen Sie es später erneut.',
                     undefined, e, toast.current));
         }
@@ -76,6 +90,7 @@ const Admin = () => {
         if (auth.user && sgrDefinition) {
             new SmartGridreadyService().deleteFile(sgrDefinition.id, auth.user.access_token)
                 .then(() => setSgrDefinitions(_.reject(sgrDefinitions, d => d.id === sgrDefinition.id)))
+                .then(() => loadMissingFiles())
                 .catch(e => presentError('SmartGridread Definition konnte nicht gelöscht werden. Stellen Sie sicher, dass die Defintion nicht mehr verwendet wird oder versuchen Sie es später erneut.',
                     undefined, e, toast.current));
         }
@@ -84,6 +99,37 @@ const Admin = () => {
     const chooseOptions = { icon: PrimeIcons.PLUS, iconOnly: true, className: 'custom-choose-btn' };
     const uploadOptions = { icon: PrimeIcons.CLOUD_UPLOAD, iconOnly: true, className: 'custom-upload-btn' };
     const cancelOptions = { icon: PrimeIcons.TIMES, iconOnly: true, className: 'custom-cancel-btn' };
+
+    const errors = () => {
+        if (setErrors.length > 0) {
+        return (<Panel header="Fehler in Set(s)" className='invalid'>
+                    <ul>
+                        {setErrors.map((error) => {
+                            return <li key={error}>{error}</li>})
+                        }
+                    </ul>
+                </Panel>
+            ) 
+        } else {
+            return <></>;
+        }
+    };
+
+    const missingFilesPanel = () => {
+        if (missingFiles.length > 0) {
+            return (<Panel header="Fehlende Dateien" className='invalid'>
+                        <ul>
+                            {missingFiles.map((file) => {
+                                return <li key={file}>{file}</li>}
+                            )}
+                        </ul>
+                    </Panel>
+                )
+        } else {
+            return <></>;
+        }
+    };
+
 
     const uploader = async (event: FileUploadHandlerEvent) => {
         if (!auth.user) {
@@ -102,7 +148,7 @@ const Admin = () => {
         let setsUploadTask = Promise.resolve(false);
         if (sets.length) {
             try {
-                setsUploadTask = new WizardSetsService().addSets(sets, auth.user.access_token).then(() => true);
+                setsUploadTask = new WizardSetsService().addSets(sets, auth.user.access_token).then(setSetErrors).then(() => true);
             } catch (error) {
                 presentError('Sets konnten nicht hochgeladen werden, versuchen Sie es später erneut.', undefined, error, toast.current);
             }
@@ -145,7 +191,8 @@ const Admin = () => {
                 }
 
                 updateUploadList(files);
-            });
+            })
+            .then(() => loadMissingFiles());
     };
 
     return (
@@ -161,12 +208,9 @@ const Admin = () => {
                         chooseOptions={chooseOptions} uploadOptions={uploadOptions} cancelOptions={cancelOptions}
                         customUpload uploadHandler={uploader} />
                 </div>
-                {/* TODO only visbile if there are missing files */}
-                <Panel header="Fehlende Dateien" className='invalid'>
-                    <p>
-                        Küche.png, ABB_X356M.png, SGr_04_00016_xyz_ABB_meterV0.0.2.xml
-                    </p>
-                </Panel>
+                
+                {errors()}
+                {missingFilesPanel()}
                 <div className='files-container'>
                     <FileList title={"Sets"} initFiles={sets} deleteFn={deleteSet} />
                     <FileList title={"Bilder"} initFiles={images} deleteFn={deleteImage} />

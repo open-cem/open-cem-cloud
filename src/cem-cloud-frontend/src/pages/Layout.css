@@ -19,6 +19,7 @@ menu {
     display: flex;
     list-style: none;
     flex-direction: row-reverse;
+    gap: 2rem;
 }
 
 main {

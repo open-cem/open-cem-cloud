@@ -12,6 +12,7 @@ import ComponentListHeader from "../componentListHeader/ComponentListHeader";
 import ComponentListEntry from "../componentListEntry/ComponentListEntry";
 import _ from "lodash";
 import { InstallationService } from "./InstallationsService";
+import Sets from "../setWizard/Sets";
 
 const Installation = () => {
     const params = useParams<string>();
@@ -25,6 +26,7 @@ const Installation = () => {
     const [types, setTypes] = useState<ComponentType[]>([]);
     const [familyTypes, setFamilyTypes] = useState<ComponentType[]>([]);
     const [typeDialogVisible, setTypeDialogVisible] = useState<boolean>(false);
+    const [skipSets, setSkipSets] = useState<boolean>(false);
 
     useEffect(() => {
         const installationId = params.installationId;
@@ -119,23 +121,50 @@ const Installation = () => {
         </AccordionTab>
     };
 
+    const createModeButton = () => {
+        if (components.length > 0) {
+            return <></>
+        } else {        
+            if (skipSets) {
+                return <Button label="Vordefinierte Sets verwenden" onClick={() => setSkipSets(!skipSets)} />;
+            } else {
+                return <Button label="Vordefinierte Sets überspringen" onClick={() => setSkipSets(!skipSets)} />;
+            }
+        }
+    };
+
+    const createSetView = () => {
+        return <Sets/>;
+    };
+
+    const createInstallationView = () => {
+        return (
+            <>
+                <Toast ref={toast} />
+                <Dialog header="Typ auswählen" visible={typeDialogVisible} onHide={() => setTypeDialogVisible(false)}>
+                    <div className="types-container">
+                        {
+                            familyTypes.map(type => <Button key={type.id} onClick={() => addComponent(type.id)}>{type.name}</Button>)
+                        }
+                    </div>
+                </Dialog>
+                <Messages ref={messages} />
+                <Accordion multiple activeIndex={activeIndex}>
+                    {createComponentGroup("Geräte", DeviceFamily, components)}
+                    {createComponentGroup("Sensoren", SensorFamily, components)}
+                    {createComponentGroup("Aktuatoren", ActuatorFamily, components)}
+                    {createComponentGroup("Kontroller", ControllerFamily, components)}
+                </Accordion>
+            </>
+        )
+    };
+
+
+
     return (
         <>
-            <Toast ref={toast} />
-            <Dialog header="Typ auswählen" visible={typeDialogVisible} onHide={() => setTypeDialogVisible(false)}>
-                <div className="types-container">
-                    {
-                        familyTypes.map(type => <Button key={type.id} onClick={() => addComponent(type.id)}>{type.name}</Button>)
-                    }
-                </div>
-            </Dialog>
-            <Messages ref={messages} />
-            <Accordion multiple activeIndex={activeIndex}>
-                {createComponentGroup("Geräte", DeviceFamily, components)}
-                {createComponentGroup("Sensoren", SensorFamily, components)}
-                {createComponentGroup("Aktuatoren", ActuatorFamily, components)}
-                {createComponentGroup("Kontroller", ControllerFamily, components)}
-            </Accordion>
+            {components.length > 0 || skipSets ? createInstallationView() : createSetView()}
+            {createModeButton()}
         </>
     );
 };
