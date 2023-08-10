@@ -10,8 +10,6 @@ public class Step {
     private String description;
     private List<DataItem> data;
 
-    private boolean hide_step;
-
     public int getNumber() {
         return number;
     }
@@ -58,14 +56,5 @@ public class Step {
 
     public void setData(List<DataItem> data) {
         this.data = data;
-    }
-
-
-    public boolean isHide_step() {
-        return hide_step;
-    }
-
-    public void setHide_step(boolean hide_step) {
-        this.hide_step = hide_step;
     }
 }

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAuth } from "react-oidc-context";
-import WizardSetsService, { PredefinedSet, Step } from "../app/WizardSetsService";
+import WizardSetsService, { DataItem, PredefinedSet, Step } from "../app/WizardSetsService";
 import { presentError } from "../app/NotificationPresenter";
 import { Toast } from "primereact/toast";
 import "./Sets.css";
@@ -31,6 +31,35 @@ const Wizard = () => {
 
     const installationId = params.installationId ?? "";
 
+    const createParameterMap = (dataItems: DataItem[]) => {
+      if (dataItems.length === 0) {
+        return new Map<string, Object>();
+      }
+      return Object.fromEntries(
+        new Map(
+          dataItems.map((item) => {
+            if (item.value_is_reference && item.value instanceof Array) {
+              return [
+                item.name,
+                (item.value as Array<number>).map(i => comps.get(i))
+              ];
+            } else if (item.value_is_reference && item.value instanceof Number) {
+              return [
+                item.name,
+                comps.get(item.value as number)
+              ];
+            } else {
+              return [
+                item.name,
+                item.value,
+              ];
+            }
+          })
+        )
+      ) as Map <string, Object>;
+
+    }
+
     const runStep = (steps: Step[], token: string, index = 0): Promise<any> => {
         if (index >= steps.length) {
           return Promise.resolve();
@@ -49,7 +78,7 @@ const Wizard = () => {
                   new CommunicationChannel(
                     id,
                     step.name,
-                    Object.fromEntries( new Map(step.data.map((item) => [item.name, item.value]))) as Map<string, Object>
+                    createParameterMap(step.data)
                   ),
                   token
                 ).then(() => {
@@ -73,7 +102,7 @@ const Wizard = () => {
                     modelId: step.data.find(data => data.name === "model")?.id as string,
                     channelId: comps.get(step.data.find(data => data.name === "communicationChannel")?.value) as string,
                     smartGridreadyDefinitionId: step.data.find(data => data.name === "smartgridready")?.id as string,
-                    parameter: Object.fromEntries( new Map(step.data.map((item) => [item.name, item.value]))) as Map<string, Object>,
+                    parameter: createParameterMap(step.data)
                   },
                   token
                 ).then(() => {

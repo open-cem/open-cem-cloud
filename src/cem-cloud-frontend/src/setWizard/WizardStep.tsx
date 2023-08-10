@@ -19,7 +19,7 @@ const WizardStep = ({step, comps, installationId, uiLoaded}: {step: Step, comps:
         return new ComponentWizardConfiguration(
             installationId,
             comps.get(step.number) as string,
-            new Map(step.data.map((item) => [item.name, item.value])),
+            new Map(step.data.map((item) => [item.name, item])),
             descriptionPanel()
         )
     }

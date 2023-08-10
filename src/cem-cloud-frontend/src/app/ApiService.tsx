@@ -30,9 +30,7 @@ class ApiBuilder<ResultType> {
     }
 
     public withBody(body: object) {
-        console.log(body);
         this.body = JSON.stringify(body);
-        console.log(this.body);
         if (!this.headers.find(h => h[0] === "Content-Type")) {
             this.headers.push(["Content-Type", "application/json"])
         }

@@ -112,7 +112,7 @@ public class WizardSetController extends BaseController {
 
     private List<String> getFiles(PredefinedSet predefinedSet) {
         List<String> files = new ArrayList<>();
-        List<Step> steps = predefinedSet.getSteps().stream().filter(step -> step.getImage() != null && !step.isHide_step()).toList();
+        List<Step> steps = predefinedSet.getSteps().stream().filter(step -> step.getImage() != null).toList();
         files.addAll(steps.stream().map(Step::getImage).toList());
         files.addAll(steps.stream().flatMap(step -> step.getData().stream()).filter(data -> "smartgridready".equals(data.getName())).map(dataItem -> (String)dataItem.getValue()).toList());
         return files;
@@ -359,21 +359,24 @@ public class WizardSetController extends BaseController {
         Optional<DataItem> model = getDataItem(dataItems, "model");
 
         List<DataItem> remainingItems = new ArrayList<>(dataItems);
-        // TODO only check if smartgridReady is false
-        // Check if manufacturer and model are valid
-        if (manufacturer.isEmpty() && model.isPresent()) {
-            errors.add("Step " + stepNumber + " requires 'manufacturer' data item.");
-        } else if (manufacturer.isPresent() && model.isEmpty()) {
-            errors.add("Step " + stepNumber + " requires 'model' data item.");
-        }else if (manufacturer.isPresent() && model.isPresent()) {
-            Optional<Model> byName = model.get().getValue() instanceof String ? models.findByName((String) model.get().getValue()) : Optional.empty();
-            if (byName.isEmpty()) {
-                errors.add("Step " + stepNumber + " has invalid 'model' data item.");
-            } else if (!byName.get().getManufacturer().getName().equals(manufacturer.get().getValue())) {
-                errors.add("In step " + stepNumber + " the 'model' data item does not match the 'manufacturer' data item.");
+
+        Optional<DataItem> smartgridready = getDataItem(dataItems, "smartgridready");
+        if (smartgridready.isEmpty() || smartgridready.get().getValue() == null || !"null".equals(smartgridready.get().getValue())) {
+            // Check if manufacturer and model are valid
+            if (manufacturer.isEmpty() && model.isPresent()) {
+                errors.add("Step " + stepNumber + " requires 'manufacturer' data item.");
+            } else if (manufacturer.isPresent() && model.isEmpty()) {
+                errors.add("Step " + stepNumber + " requires 'model' data item.");
+            } else if (manufacturer.isPresent() && model.isPresent()) {
+                Optional<Model> byName = model.get().getValue() instanceof String ? models.findByName((String) model.get().getValue()) : Optional.empty();
+                if (byName.isEmpty()) {
+                    errors.add("Step " + stepNumber + " has invalid 'model' data item.");
+                } else if (!byName.get().getManufacturer().getName().equals(manufacturer.get().getValue())) {
+                    errors.add("In step " + stepNumber + " the 'model' data item does not match the 'manufacturer' data item.");
+                }
+                remainingItems.remove(manufacturer.get());
+                remainingItems.remove(model.get());
             }
-            remainingItems.remove(manufacturer.get());
-            remainingItems.remove(model.get());
         }
 
         // Check if all needed data items are present
@@ -388,7 +391,6 @@ public class WizardSetController extends BaseController {
             } else {
 
                 // Check smartgridready
-                Optional<DataItem> smartgridready = getDataItem(dataItems, "smartgridready");
                 if (smartgridready.isPresent()) {
                     remainingItems.remove(smartgridready.get());
                     if (smartgridready.get().getValue() instanceof String name) {

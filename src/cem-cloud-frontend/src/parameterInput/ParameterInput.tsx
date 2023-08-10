@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "react-oidc-context";
 import { ComponentsService } from "../component/ComponentsService";
 import _ from "lodash";
+import { ComponentWizardConfiguration } from "../app/WizardSetsService";
 
 class ParameterMeta {
     name: string;
@@ -25,7 +26,7 @@ interface ParameterOption {
     name: string;
 }
 
-const ParameterInput = ({ meta, value, changeFn, installationId }: { meta: ParameterMeta, value: any, changeFn: (prop: string, value: any) => void, installationId: string }) => {
+const ParameterInput = ({ meta, value, changeFn, installationId, inputConfig }: { meta: ParameterMeta, value: any, changeFn: (prop: string, value: any) => void, installationId: string, inputConfig?: ComponentWizardConfiguration }) => {
     const auth = useAuth();
     const [options, setOptions] = useState<ParameterOption[]>([]);
     const [selectedOption, setSelectedOption] = useState<ParameterOption | undefined>();
@@ -58,32 +59,32 @@ const ParameterInput = ({ meta, value, changeFn, installationId }: { meta: Param
 
     if (meta.type === "TEXT") {
         return (
-            <InputGroup id={meta.name} label={meta.label} name={meta.name} value={value} changeFn={e => changeFn(meta.name, e.target.value)} />
+            <InputGroup id={meta.name} label={meta.label} name={meta.name} value={value} changeFn={e => changeFn(meta.name, e.target.value)} isReadOnly={inputConfig?.isFieldReadonly(meta.name)} />
         );
     } else if (meta.type === "NUMBER") {
         return (
-            <NumberInputGroup id={meta.name} label={meta.label} name={meta.name} value={value} changeFn={e => changeFn(meta.name, e.value)} />
+            <NumberInputGroup id={meta.name} label={meta.label} name={meta.name} value={value} changeFn={e => changeFn(meta.name, e.value)} isReadOnly={inputConfig?.isFieldReadonly(meta.name)} />
         );
     } else if (meta.type === "BOOL") {
         return (
-            <SwitchInputGroup id={meta.name} label={meta.label} value={value} onChangeFn={e => changeFn(meta.name, e.value)} />
+            <SwitchInputGroup id={meta.name} label={meta.label} value={value} onChangeFn={e => changeFn(meta.name, e.value)} isReadOnly={inputConfig?.isFieldReadonly(meta.name)} />
         );
     } else if (meta.type === "REFERENCE") {
         return (
-            <DropdownInputGroup id={meta.name} label={meta.label} value={selectedOption} onChangeFn={e => selectOption(e.value)} options={options} optionLabel="name" />
+            <DropdownInputGroup id={meta.name} label={meta.label} value={selectedOption} onChangeFn={e => selectOption(e.value)} options={options} optionLabel="name" disabled={inputConfig?.isFieldReadonly(meta.name)} />
         );
     } else if (meta.type === "LIST") {
         if (meta.listTyp === "TEXT") {
             return (
-                <MultiValueInput id={meta.name} label={meta.label} name={meta.name} value={value} changeFn={e => changeFn(meta.name, e.target.value)} />
+                <MultiValueInput id={meta.name} label={meta.label} name={meta.name} value={value} changeFn={e => changeFn(meta.name, e.target.value)} isReadOnly={inputConfig?.isFieldReadonly(meta.name)} />
             );
         } else if (meta.listTyp === "NUMBER") {
             return (
-                <MultiValueInput id={meta.name} label={meta.label} name={meta.name} value={value} changeFn={e => changeFn(meta.name, e.value)} isNumeric={true} />
+                <MultiValueInput id={meta.name} label={meta.label} name={meta.name} value={value} changeFn={e => changeFn(meta.name, e.value)} isNumeric={true} isReadOnly={inputConfig?.isFieldReadonly(meta.name)} />
             );
         } else if (meta.listTyp === "REFERENCE") {
             return (
-                <MultiSelectInputGroup id={meta.name} label={meta.label} value={selectedOptions} onChangeFn={e => selectOptions(e.value)} options={options} optionLabel="name" />
+                <MultiSelectInputGroup id={meta.name} label={meta.label} value={selectedOptions} onChangeFn={e => selectOptions(e.value)} options={options} optionLabel="name" isReadOnly={inputConfig?.isFieldReadonly(meta.name)} />
             );
         } else {
                 throw new Error(`The type '${meta.type}' is out of range.`)

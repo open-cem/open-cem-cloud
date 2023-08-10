@@ -7,7 +7,6 @@ steps:
   data:
   - name: type
     value: SHELLY_LOCAL
-    hide: true
     readonly: true
 - number: 1
   step_type: CommunicationChannel
@@ -17,15 +16,12 @@ steps:
   data:
   - name: type
     value: SHELLY_CLOUD
-    hide: true
     readonly: true
   - name: authKey
     value: abc
-    hide: false
-    readonly: false
+    readonly: true
   - name: serverAddress
     value: https://shelly-54-eu.shelly.cloud/
-    hide: false
     readonly: true
 - number: 2
   step_type: Component
@@ -34,36 +30,28 @@ steps:
   data:
   - name: type
     value: POWER_SENSOR
-    hide: true
     readonly: true
   - name: manufacturer
     value: Shelly
-    hide: true
     readonly: true
   - name: model
     value: PRO_2PM
-    hide: true
     readonly: true
   - name: communicationChannel
     value: 1
-    hide: false
     readonly: true
   - name: address
     value: 54
-    hide: false
-    readonly: false
+    readonly: true
   - name: maxPower
     value: 10
-    hide: false
     readonly: true
   - name: hasEnergyExport
     value: true
-    hide: false
-    readonly: false
+    readonly: true
   - name: smartgridready
     value: SGr_HeatPump_Test1.xml
-    hide: false
-    readonly: false
+    readonly: true
 - number: 3
   step_type: Component
   name: Stromzähler
@@ -71,25 +59,50 @@ steps:
   data:
   - name: type
     value: CENTRAL_POWER_METER
-    hide: true
     readonly: true
   - name: manufacturer
     value: Shelly
-    hide: true
     readonly: true
   - name: model
     value: PRO_2PM
-    hide: true
     readonly: true
   - name: communicationChannel
     value: 1
-    hide: false
     readonly: true
   - name: idPowerSensor
     value: 2
-    hide: false
-    readonly: false
+    readonly: true
   - name: maxPower
     value: 10
-    hide: false
     readonly: true
+- number: 4
+  step_type: Component
+  name: Wärmepumpe
+  image: cloud.png
+  data:
+  - name: type
+    value: HEAT_PUMP
+    readonly: true
+  - name: manufacturer
+    value: Shelly
+    readonly: true
+  - name: model
+    value: PRO_2PM
+    readonly: true
+  - name: communicationChannel
+    value: 1
+    readonly: true
+  - name: idPowerSensor
+    value: 2
+    readonly: true
+  - name: channelConfig
+    value: 
+      - 1
+      - 2
+      - 3
+    readonly: true
+  - name: channels
+    value:
+      - 2
+    readonly: true
+    value_is_reference: true

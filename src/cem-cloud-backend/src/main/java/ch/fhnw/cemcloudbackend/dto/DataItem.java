@@ -5,9 +5,8 @@ import java.util.UUID;
 public class DataItem {
     private String name;
     private Object value;
-    private boolean hide;
     private boolean readonly;
-
+    private boolean value_is_reference;
     private UUID id;
 
     public String getName() {
@@ -26,14 +25,6 @@ public class DataItem {
         this.value = value;
     }
 
-    public boolean isHide() {
-        return hide;
-    }
-
-    public void setHide(boolean hide) {
-        this.hide = hide;
-    }
-
     public boolean isReadonly() {
         return readonly;
     }
@@ -48,5 +39,13 @@ public class DataItem {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public boolean isValue_is_reference() {
+        return value_is_reference;
+    }
+
+    public void setValue_is_reference(boolean value_is_reference) {
+        this.value_is_reference = value_is_reference;
     }
 }

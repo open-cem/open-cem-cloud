@@ -82,7 +82,7 @@ const CommunicationChannel = ({inputConfig, uiLoaded}: {inputConfig?: ComponentW
                 {
                     parameters.length === 0 && channel instanceof NullCommunicationChannel
                     ? <></>
-                    : parameters.map(p => <ParameterInput key={p.name} meta={p} value={(channel.parameter as any)[p.name]} changeFn={onParameterChange} installationId={installationId} />)
+                    : parameters.map(p => <ParameterInput key={p.name} meta={p} value={(channel.parameter as any)[p.name]} changeFn={onParameterChange} installationId={installationId} inputConfig={inputConfig} />)
                 }
             </div>
             {

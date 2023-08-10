@@ -180,16 +180,14 @@ const Component = ({inputConfig, uiLoaded} : {inputConfig? : ComponentWizardConf
 
     const getInputConfig = (field: string) => {
         if (!inputConfig) {
-            return [];
+            return {};
         }
-        const additionalProps = [];
+        const additionalProps = {isReadOnly: false, disabled: false};
         if (inputConfig.isFieldReadonly(field)) {
-            additionalProps.push({isReadOnly: true});
-            additionalProps.push({disabled: true});
+            additionalProps["isReadOnly"] = true;
+            additionalProps["disabled"] = true;
         }
-        if (inputConfig.isFieldHidden(field)) {
-            additionalProps.push({hidden: true});
-        }
+        return additionalProps;
     }
 
     return (
@@ -208,7 +206,7 @@ const Component = ({inputConfig, uiLoaded} : {inputConfig? : ComponentWizardConf
                                 ? <DropdownInputGroup {...getInputConfig("smartgridready")} id="formSmartGridreadyDefinition" label="XML Datei" value={selectedSmartGridreadyFile} options={smartGridReadyFiles} optionLabel="name" onChangeFn={(e) => onSelectedSmartGridreadyFileChanged(e.value, component)} />
                                 : <>
                                     <DropdownInputGroup {...getInputConfig("manufacturer")} id="formManufacturer" label="Hersteller" value={selectedManufacturer} options={manufacturers} optionLabel="name" onChangeFn={(e) => onSelectedManufacturerChanged(e.value, component)} />
-                                    <DropdownInputGroup {...getInputConfig("model")} id="formModel" label="Modell" value={selectedModel} options={models} optionLabel="name" onChangeFn={(e) => onSelectedModelChanged(e.value, component)} disabled={!selectedManufacturer} />
+                                    <DropdownInputGroup id="formModel" label="Modell" value={selectedModel} options={models} optionLabel="name" onChangeFn={(e) => onSelectedModelChanged(e.value, component)} disabled={!selectedManufacturer || inputConfig?.isFieldReadonly("model")} />
                                 </>
                             }
                             <DropdownInputGroup {...getInputConfig("communicationChannel")} id="formChannel" label="Kommunikationskanal" value={selectedChannel} options={channels} optionLabel="name" onChangeFn={(e) => onSelectedChannelChanged(e.target.value, component)} />
@@ -218,7 +216,7 @@ const Component = ({inputConfig, uiLoaded} : {inputConfig? : ComponentWizardConf
                 {
                     parameters.length === 0 && component instanceof NullComponent
                     ? <></>
-                    : parameters.map(p => <ParameterInput key={p.name} meta={p} value={(component.parameter as any)[p.name]} changeFn={onParameterChange} installationId={installationId} />)
+                    : parameters.map(p => <ParameterInput key={p.name} meta={p} value={(component.parameter as any)[p.name]} changeFn={onParameterChange} installationId={installationId} inputConfig={inputConfig}/>)
                 }
             </div>
             {

@@ -22,9 +22,9 @@ interface Step {
 interface DataItem {
     name: string
     value: any
-    hide: boolean
     readonly: boolean
     id?: string
+    value_is_reference?: boolean
 }
 
 class ComponentWizardConfiguration {
@@ -38,10 +38,6 @@ class ComponentWizardConfiguration {
         this.componentId = componentId;
         this.config = config;
         this.descriptionPanel = descriptionPanel;
-    }
-
-    isFieldHidden(fieldName: string) {
-        return this.config.get(fieldName)?.hide ?? false;
     }
 
     isFieldReadonly(fieldName: string) {

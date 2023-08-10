@@ -104,7 +104,7 @@ export const DropdownInputGroup = ({ label, id, value, onChangeFn, options, opti
  * @param value True if the input is checked
  * @param onChangeFn The onChange function of the switch
  */
-export const SwitchInputGroup = ({label, id, value, onChangeFn}: { label: string, id: string, value?: boolean, onChangeFn: (event: InputSwitchChangeEvent) => void }) => {
+export const SwitchInputGroup = ({label, id, value, onChangeFn, isReadOnly}: { label: string, id: string, value?: boolean, onChangeFn: (event: InputSwitchChangeEvent) => void, isReadOnly?: boolean }) => {
     if (value === undefined) {
         value = false;
     }
@@ -112,7 +112,7 @@ export const SwitchInputGroup = ({label, id, value, onChangeFn}: { label: string
     return (
         <div className="input-group">
             <label htmlFor={id}>{label}</label>
-            <InputSwitch id={id} checked={value} onChange={onChangeFn} />
+            <InputSwitch id={id} checked={value} onChange={onChangeFn} disabled={isReadOnly}/>
         </div>
     )
 };
@@ -161,11 +161,11 @@ export const MultiValueInput = ({ label, id, changeFn, name, value, isReadOnly, 
  * @param options The multiselect values available for selection
  * @param optionLabel The property name of the object to select as label
  */
-export const MultiSelectInputGroup = ({ label, id, value, onChangeFn, options, optionLabel }: { label: string, id: string, value: any, onChangeFn: (event: MultiSelectChangeEvent) => void, options: SelectItemOptionsType, optionLabel: string }) => {
+export const MultiSelectInputGroup = ({ label, id, value, onChangeFn, options, optionLabel, isReadOnly}: { label: string, id: string, value: any, onChangeFn: (event: MultiSelectChangeEvent) => void, options: SelectItemOptionsType, optionLabel: string, isReadOnly?: boolean }) => {
     return (
         <div className="input-group">
             <label htmlFor={id}>{label}</label>
-            <MultiSelect id={id} placeholder={`${label} auswählen`} value={value} options={options} optionLabel={optionLabel} onChange={onChangeFn} filter display="chip" />
+            <MultiSelect id={id} placeholder={`${label} auswählen`} value={value} options={options} optionLabel={optionLabel} onChange={onChangeFn} filter display="chip" disabled={isReadOnly} />
         </div>
     )
 }
