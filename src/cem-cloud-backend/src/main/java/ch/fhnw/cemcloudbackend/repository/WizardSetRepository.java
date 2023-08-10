@@ -1,6 +1,7 @@
 package ch.fhnw.cemcloudbackend.repository;
 
 import ch.fhnw.cemcloudbackend.configuration.ApplicationProperties;
+import ch.fhnw.cemcloudbackend.entity.Installation;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -124,5 +125,22 @@ public class WizardSetRepository {
                     .map(Path::toString)
                     .findFirst();
         }
+    }
+
+    public Optional<byte[]> loadFile(String filename, boolean isImage) throws IOException {
+        if (filename == null) {
+            throw new IllegalArgumentException("filename can not be null");
+        }
+        Path dir = uploadDirPath;
+        if (isImage) {
+            dir = dir.resolve(IMAGES_FOLDER_NAME);
+        }
+
+        Path filePath = dir.resolve(filename);
+        if (Files.exists(filePath)) {
+            return Optional.of(Files.readAllBytes(filePath));
+        }
+
+        return Optional.empty();
     }
 }

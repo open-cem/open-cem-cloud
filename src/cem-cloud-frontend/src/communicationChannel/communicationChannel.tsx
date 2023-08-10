@@ -8,8 +8,9 @@ import { presentError, presentSuccess } from "../app/NotificationPresenter";
 import { Toast } from "primereact/toast";
 import { ParameterInput, ParameterMeta } from "../parameterInput/ParameterInput";
 import _ from "lodash";
+import { ComponentWizardConfiguration } from "../app/WizardSetsService";
 
-const CommunicationChannel = () => {
+const CommunicationChannel = ({inputConfig, uiLoaded}: {inputConfig?: ComponentWizardConfiguration, uiLoaded?: Function}) => {
     const auth = useAuth();
     const navigate = useNavigate();
     const params = useParams<string>();
@@ -22,21 +23,27 @@ const CommunicationChannel = () => {
     const installationId: string = params.installationId ?? "";
 
     useEffect(() => {
-        if (params.channelId && auth.user) {
+        const channelId = inputConfig?.componentId ?? params.channelId;
+        if (channelId && auth.user) {
             const service = new CommunicationChannelService();
-            service.loadCommunicationChannel(params.channelId, auth.user?.access_token)
+            service.loadCommunicationChannel(channelId, auth.user?.access_token)
                 .then(c => {
                     setChannel(c);
                     if (auth.user) {
                         service.loadCommunicationChannelParameterMeta(c.id, auth.user?.access_token)
                             .then(ps => _.orderBy(ps, p => p.label))
                             .then(setParameters)
+                            .then(() => {
+                                if (uiLoaded) {
+                                    uiLoaded();
+                                }
+                            });
                     }
                     
                 })
                 .catch(e => presentError('Der Kommunikationskanal konnnte nicht geladen werden, versuchen Sie es später erneut.', undefined, e, toast.current));
         }        
-    }, [auth.user, params.channelId]);
+    }, [auth.user, params.channelId, inputConfig, uiLoaded]);
 
     const onChange = (propertyName: string, value: any) => {
         const i = { ...channel } as CommunicationChannelModel;
@@ -71,20 +78,25 @@ const CommunicationChannel = () => {
             <Toast ref={toast} />
             <div className="form">
                 <InputGroup id="formName" label="Name" value={channel?.name} changeFn={(e) => onChange('name', e.target.value)} />
+                {inputConfig?.descriptionPanel}
                 {
                     parameters.length === 0 && channel instanceof NullCommunicationChannel
                     ? <></>
                     : parameters.map(p => <ParameterInput key={p.name} meta={p} value={(channel.parameter as any)[p.name]} changeFn={onParameterChange} installationId={installationId} />)
                 }
             </div>
-            <div className="button-bar">
-                <Button severity="secondary" outlined onClick={() => navigate(`/installations/${installationId}/config`)}>{ hasChanges ? "Abbrechen" : "Zurück" }</Button>
-                {
-                    hasChanges
-                        ? <Button onClick={onSave}>Speichern</Button>
-                        : <></>
-                }
-            </div>
+            {
+                inputConfig !== undefined
+                ? <></>
+                : <div className="button-bar">
+                    <Button severity="secondary" outlined onClick={() => navigate(`/installations/${installationId}/config`)}>{ hasChanges ? "Abbrechen" : "Zurück" }</Button>
+                    {
+                        hasChanges
+                            ? <Button onClick={onSave}>Speichern</Button>
+                            : <></>
+                    }
+                </div>
+            }
         </>
     )
 };
