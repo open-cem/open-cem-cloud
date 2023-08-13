@@ -17,6 +17,8 @@ public class JWTSecurityConfig {
                 .getServletPath().contains("configuration")).permitAll();
         http.authorizeHttpRequests().requestMatchers(request -> request
                 .getServletPath().contains("smartgridready")).permitAll();
+        http.authorizeHttpRequests().requestMatchers(request -> request
+                .getServletPath().contains("api-docs")).permitAll();
         http.authorizeHttpRequests(auth ->
                 auth.anyRequest()
                         .authenticated())
