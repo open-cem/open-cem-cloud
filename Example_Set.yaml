@@ -1,0 +1,146 @@
+headerinfo:
+  setname: Temperaturmessung mit Heizung
+steps:
+- number: 0
+  step_type: CommunicationChannel
+  name: Shelly Local
+  image: wlan.png
+  description: Dieser Kommunikationskanal wird für die lokalen Shelly-Geräte verwendet.
+  data:
+  - name: type
+    value: SHELLY_LOCAL
+    readonly: true
+- number: 1
+  step_type: Component
+  name: Temperatursensor
+  image: temp.png
+  description: Dieser Temperatursensor wird für die Temperaturmessung verwendet.
+  data:
+  - name: type
+    value: TEMPERATURE_SENSOR_ROOM
+    readonly: true
+  - name: address
+    value: 192.168.0.13
+    readonly: false
+  - name: communicationChannel
+    value: 0
+    readonly: true
+  - name: maxTemp
+    value: 50
+    readonly: true
+  - name: minTemp
+    value: -10
+    readonly: true
+  - name: manufacturer
+    value: Shelly
+    readonly: true
+  - name: model
+    value: HT
+    readonly: true
+- number: 2
+  step_type: Component
+  name: Relais 2PM (Elektroheizung)
+  image: power.png
+  description: Dieses Gerät ist ein Relais.
+  data:
+  - name: type
+    value: RELAIS
+    readonly: true
+  - name: address
+    value: 192.168.0.210
+    readonly: false
+  - name: nChannels
+    value: 2
+    readonly: true
+  - name: communicationChannel
+    value: 0
+    readonly: true
+  - name: manufacturer
+    value: Shelly
+    readonly: true
+  - name: model
+    value: PRO_2PM
+    readonly: true
+- number: 3
+  step_type: Component
+  name: Zaehler Eletroheizung
+  image: zaehler.png
+  description: Bitte füllen Sie die Adresse aus.
+  data:
+  - name: type
+    value: POWER_SENSOR
+    readonly: true
+  - name: address
+    value: 12
+    readonly: false
+  - name: hasEnergyExport
+    value: false
+    readonly: true
+  - name: maxPower
+    value: 10
+    readonly: true
+  - name: communicationChannel
+    value: 0
+    readonly: true
+  - name: manufacturer
+    value: ABB
+    readonly: true
+  - name: model
+    value: ABB B23 112-100
+    readonly: true
+- number: 4
+  step_type: Component
+  name: Preis Kontroller
+  image: controller.png
+  description: Bitte füllen Sie die Kriterien aus.
+  data:
+  - name: type
+    value: PRICE_CONTROLLER
+    readonly: true
+  - name: maxState
+    value: 25
+    readonly: false
+  - name: minState
+    value: 20
+    readonly: false
+  - name: solarTarif
+    value: 6
+    readonly: false
+  - name: gridTarif
+    value: 15
+    readonly: false
+- number: 5
+  step_type: Component
+  name: Elektroheizung
+  image: power.png
+  description: Dies ist eine Elektroheizung.
+  data:
+  - name: type
+    value: POWER_TO_HEAT
+    readonly: true
+  - name: nominalPower
+    value: 1
+    readonly: true
+  - name: idTempSensorRoom
+    value: 1
+    readonly: true
+    value_is_reference: true
+  - name: idRelais
+    value: 2
+    readonly: true
+    value_is_reference: true
+  - name: idPowerSensor
+    value: 3
+    readonly: true
+    value_is_reference: true
+  - name: idController
+    value: 4
+    readonly: true
+    value_is_reference: true
+  - name: channels
+    value:
+      - '0'
+    readonly: true
+  - name: isSimulated
+    value: false
+    readonly: true

@@ -1,0 +1,407 @@
+headerinfo:
+  setname: Set für Testaufbau
+steps:
+- number: 0
+  step_type: CommunicationChannel
+  name: Shelly Local
+  image: wlan.png
+  description: Dieser Kommunikationskanal wird für die lokalen Shelly-Geräte verwendet.
+  data:
+  - name: type
+    value: SHELLY_LOCAL
+    readonly: true
+- number: 1
+  step_type: CommunicationChannel
+  name: Shelly Cloud Service
+  image: cloud.png
+  description: Dieser Kommunikationskanal wird für die Shelly Cloud verwendet. Bitte tragen Sie ihren Authkey ein.
+  data:
+  - name: type
+    value: SHELLY_CLOUD
+    readonly: true
+  - name: authKey
+    value: MTUyNjU5dWlk6D393AB193944CE2B1D84E0B573EAB1271DA6F2AF2BC54F67779F5BC27C31E90AD7C7075E0F813D8
+    readonly: false
+  - name: serverAddress
+    value: https://shelly-54-eu.shelly.cloud/
+    readonly: true
+- number: 2
+  step_type: CommunicationChannel
+  name: Modbus RTU
+  image: rtu.png
+  description: Dieser Kommunikationskanal wird für Modbus RTU verwendet.
+  data:
+  - name: type
+    value: MODBUS_RTU
+    readonly: true
+  - name: port
+    value: /dev/ttyUSB0
+    readonly: false
+  - name: baudrate
+    value: 19200
+    readonly: true
+  - name: parity
+    value: EVEN
+    readonly: true
+- number: 3
+  step_type: CommunicationChannel
+  name: Ladebox TCP
+  image: tcp.png
+  description: Dieser Kommunikationskanal wird für Modbus TCP verwendet.
+  data:
+  - name: type
+    value: MODBUS_TCP
+    readonly: true
+  - name: address
+    value: 192.168.0.18
+    readonly: false
+  - name: port
+    value: 502
+    readonly: true
+- number: 4
+  step_type: Component
+  name: Zaehler RevPi + Relais
+  image: zaehler.png
+  description: Bitte füllen Sie die Adresse aus.
+  data:
+  - name: type
+    value: POWER_SENSOR
+    readonly: true
+  - name: address
+    value: 192.168.0.26
+    readonly: false
+  - name: hasEnergyExport
+    value: true
+    readonly: true
+  - name: maxPower
+    value: 10
+    readonly: true
+  - name: communicationChannel
+    value: 0
+    readonly: true
+  - name: manufacturer
+    value: Shelly
+    readonly: true
+  - name: model
+    value: 3EM
+    readonly: true
+- number: 5
+  step_type: Component
+  name: Zaehler Produktion
+  image: zaehler.png
+  description: Bitte füllen Sie die Adresse aus.
+  data:
+  - name: type
+    value: POWER_SENSOR
+    readonly: true
+  - name: address
+    value: 5
+    readonly: false
+  - name: hasEnergyExport
+    value: false
+    readonly: true
+  - name: maxPower
+    value: 10
+    readonly: true
+  - name: communicationChannel
+    value: 2
+    readonly: true
+  - name: smartgridready
+    value: SGr_04_0016_xxxx_ABBMeterV0.2.1_Sergio.xml
+    readonly: true
+- number: 6
+  step_type: Component
+  name: Zaehler Batterie
+  image: zaehler.png
+  description: Bitte füllen Sie die Adresse aus.
+  data:
+  - name: type
+    value: POWER_SENSOR
+    readonly: true
+  - name: address
+    value: 3
+    readonly: false
+  - name: hasEnergyExport
+    value: true
+    readonly: true
+  - name: maxPower
+    value: 10
+    readonly: true
+  - name: communicationChannel
+    value: 2
+    readonly: true
+  - name: smartgridready
+    value: SGr_04_0016_xxxx_ABBMeterV0.2.1_Sergio.xml
+    readonly: true
+- number: 7
+  step_type: Component
+  name: Zaehler Eletroheizung
+  image: zaehler.png
+  description: Bitte füllen Sie die Adresse aus.
+  data:
+  - name: type
+    value: POWER_SENSOR
+    readonly: true
+  - name: address
+    value: 12
+    readonly: false
+  - name: hasEnergyExport
+    value: false
+    readonly: true
+  - name: maxPower
+    value: 10
+    readonly: true
+  - name: communicationChannel
+    value: 2
+    readonly: true
+  - name: manufacturer
+    value: ABB
+    readonly: true
+  - name: model
+    value: ABB B23 112-100
+    readonly: true
+- number: 8
+  step_type: Component
+  name: Zaehler Verbrauch Total
+  image: zaehler.png
+  description: Bitte füllen Sie die Adresse aus.
+  data:
+  - name: type
+    value: POWER_SENSOR
+    readonly: true
+  - name: address
+    value: 1
+    readonly: false
+  - name: hasEnergyExport
+    value: false
+    readonly: true
+  - name: maxPower
+    value: 10
+    readonly: true
+  - name: communicationChannel
+    value: 2
+    readonly: true
+  - name: smartgridready
+    value: SGr_04_0016_xxxx_ABBMeterV0.2.1_Sergio.xml
+    readonly: true
+- number: 9
+  step_type: Component
+  name: Temperatursensor Garage
+  image: temp.png
+  description: Bitte füllen Sie die Adresse aus.
+  data:
+  - name: type
+    value: TEMPERATURE_SENSOR_ROOM
+    readonly: true
+  - name: address
+    value: 701f93
+    readonly: false
+  - name: communicationChannel
+    value: 1
+    readonly: true
+  - name: maxTemp
+    value: 50
+    readonly: true
+  - name: minTemp
+    value: -10
+    readonly: true
+  - name: manufacturer
+    value: Shelly
+    readonly: true
+  - name: model
+    value: HT
+    readonly: true
+- number: 10
+  step_type: Component
+  name: Dynamischer Überschuss Kontroller
+  image: controller.png
+  description: Bitte füllen Sie die Limiten aus.
+  data:
+  - name: type
+    value: DYNAMIC_EXCESS_CONTROLLER
+    readonly: true
+  - name: limitMax
+    value: 4
+    readonly: false
+  - name: limitMin
+    value: 1.5
+    readonly: false
+- number: 11
+  step_type: Component
+  name: Preis Kontroller
+  image: controller.png
+  description: Bitte füllen Sie die Kriterien aus.
+  data:
+  - name: type
+    value: PRICE_CONTROLLER
+    readonly: true
+  - name: maxState
+    value: 25
+    readonly: false
+  - name: minState
+    value: 20
+    readonly: false
+  - name: solarTarif
+    value: 6
+    readonly: false
+  - name: gridTarif
+    value: 15
+    readonly: false
+- number: 12
+  step_type: Component
+  name: Ladestation
+  image: power.png
+  description: Bitte füllen Sie die Adresse aus und wählen Sie einen Kontroller.
+  data:
+  - name: type
+    value: EV_CHARGER
+    readonly: true
+  - name: address
+    value: 255
+    readonly: false
+  - name: nominalPower
+    value: 6
+    readonly: true
+  - name: phases
+    value: SINGLE_PHASE
+    readonly: true
+  - name: idController
+    value: null
+    readonly: true
+  - name: manufacturer
+    value: Compleo
+    readonly: true
+  - name: model
+    value: WALLBE_ECO_S
+    readonly: true
+  - name: communicationChannel
+    value: 3
+    readonly: true
+  - name: isSimulated
+    value: false
+    readonly: true
+- number: 13
+  step_type: Component
+  name: Hausanschluss
+  image: power.png
+  description: Dieses Gerät ist der Hausanschluss.
+  data:
+  - name: type
+    value: CENTRAL_POWER_METER
+    readonly: true
+  - name: maxPower
+    value: 10
+    readonly: true
+  - name: idPowerSensorTotalConsumption
+    value: 8
+    readonly: true
+    value_is_reference: true
+  - name: idPowerSensorProduction
+    value: 5
+    readonly: true
+    value_is_reference: true
+  - name: isBidirectional
+    value: false
+    readonly: true
+  - name: isSimulated
+    value: false
+    readonly: true
+  - name: idPowerSensor
+    value: null
+    readonly: true
+- number: 14
+  step_type: Component
+  name: Relais 2PM (Elektroheizung)
+  image: power.png
+  description: Dieses Gerät ist ein Relais.
+  data:
+  - name: type
+    value: RELAIS
+    readonly: true
+  - name: address
+    value: 192.168.0.210
+    readonly: false
+  - name: nChannels
+    value: 2
+    readonly: true
+  - name: communicationChannel
+    value: 0
+    readonly: true
+  - name: manufacturer
+    value: Shelly
+    readonly: true
+  - name: model
+    value: PRO_2PM
+    readonly: true
+- number: 15
+  step_type: Component
+  name: Elektroheizung
+  image: power.png
+  description: Dies ist eine Elektroheizung.
+  data:
+  - name: type
+    value: POWER_TO_HEAT
+    readonly: true
+  - name: nominalPower
+    value: 1
+    readonly: true
+  - name: idTempSensorRoom
+    value: 9
+    readonly: true
+    value_is_reference: true
+  - name: idRelais
+    value: 14
+    readonly: true
+    value_is_reference: true
+  - name: idPowerSensor
+    value: 7
+    readonly: true
+    value_is_reference: true
+  - name: idController
+    value: 11
+    readonly: true
+    value_is_reference: true
+  - name: channels
+    value:
+      - '0'
+    readonly: true
+  - name: isSimulated
+    value: false
+    readonly: true
+- number: 16
+  step_type: Component
+  name: Übriger Verbrauch
+  image: power.png
+  description: Dies stellt den übrigen Verbrauch fest.
+  data:
+  - name: type
+    value: REMAINING_CONSUMPTION
+    readonly: true
+  - name: deviceSetting
+    value: CALCULATED
+    readonly: true
+  - name: maxPower
+    value: null
+    readonly: true
+  - name: minPower
+    value: null
+    readonly: true
+- number: 17
+  step_type: Component
+  name: PV-Anlage Garage
+  image: power.png
+  description: Dies ist eine PV-Anlage.
+  data:
+  - name: type
+    value: PV_PLANT
+    readonly: true
+  - name: maxPower
+    value: 10
+    readonly: true
+  - name: idPowerSensor
+    value: 5
+    readonly: true
+    value_is_reference: true
+  - name: isSimulated
+    value: false
+    readonly: true

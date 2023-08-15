@@ -145,7 +145,7 @@ export const MultiValueInput = ({ label, id, changeFn, name, value, isReadOnly, 
     return (
         <div className="input-group">
             <label htmlFor={id}>{label}</label>
-            <Chips id={id} value={value} name={name} onChange={changeFn} readOnly={isReadOnly} {... additionalProps} />
+            <Chips id={id} value={value} name={name} onChange={changeFn} readOnly={isReadOnly} separator="," {... additionalProps} />
         </div>
     )
 }

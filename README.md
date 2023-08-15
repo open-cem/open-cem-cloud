@@ -16,6 +16,9 @@ docker-compose -f .\docker-compose-dev.yml up
 | Mosquitto | http://localhost:1883/ |
 | MySQL | localhost:3306 |
 
+### Mysql
+Benötigte Daten für die MySQL Datenbank sind unter src/mysql/seed zu finden. 
+Diese können der Nummerierung nach in der Datenbank importiert werden. 
 
 ### Keycloak
 Der Keycloak Server ist im Browser erreichbar und kann mit dem User `admin` und Passwort `admin` konfiguriert werden. Damit das React Frontend verwendet werden kann müssen im Keycloak folgende Einstellungen gemacht werden:

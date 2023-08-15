@@ -43,7 +43,7 @@ const Wizard = () => {
                 item.name,
                 (item.value as Array<number>).map(i => comps.get(i))
               ];
-            } else if (item.value_is_reference && item.value instanceof Number) {
+            } else if (item.value_is_reference && typeof item.value === "number") {
               return [
                 item.name,
                 comps.get(item.value as number)
