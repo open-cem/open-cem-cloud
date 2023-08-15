@@ -1,0 +1,15 @@
+INSERT INTO cemcloud.component_type (id, code, name, component_family_id) VALUES ('09339ad6-dda2-42a2-ad8c-2bcd718d5454', 'TEMPERATURE_SENSOR_ROOM', 'Zimmertemperatur Sensor', 'b53680fb-1e0c-4d83-bdca-6ac0b67827f3');
+INSERT INTO cemcloud.component_type (id, code, name, component_family_id) VALUES ('0f5e9f84-a8d8-4e66-a7f5-c1dcbea42869', 'EXCESS_CONTROLLER', 'Überschuss Kontroller', 'de47c234-b3f8-4cce-afe1-f6bdc1e04f98');
+INSERT INTO cemcloud.component_type (id, code, name, component_family_id) VALUES ('1fe812f4-53cb-4fea-abca-be2c212c4b09', 'CENTRAL_POWER_METER', 'Zentraler Stromzähler', '4a8f05ba-0a71-46b9-9a13-920b6ef13927');
+INSERT INTO cemcloud.component_type (id, code, name, component_family_id) VALUES ('26234891-7296-43a1-8ddf-32453e0e4c22', 'DYNAMIC_EXCESS_CONTROLLER', 'Dynamischer Überschuss Kontroller', 'de47c234-b3f8-4cce-afe1-f6bdc1e04f98');
+INSERT INTO cemcloud.component_type (id, code, name, component_family_id) VALUES ('492def24-c811-46a3-973b-00895517f4fd', 'POWER_SENSOR', 'Stromzähler', 'b53680fb-1e0c-4d83-bdca-6ac0b67827f3');
+INSERT INTO cemcloud.component_type (id, code, name, component_family_id) VALUES ('4ac774dc-338f-4a83-995e-3afa4be88795', 'STEPWISE_EXCESS_CONTROLLER', 'Schrittweiser Überschuss Kontroller', 'de47c234-b3f8-4cce-afe1-f6bdc1e04f98');
+INSERT INTO cemcloud.component_type (id, code, name, component_family_id) VALUES ('4b8f05ba-0a71-46b9-9a13-920b6df13927', 'REMAINING_CONSUMPTION', 'Übriger Verbrauch', '4a8f05ba-0a71-46b9-9a13-920b6ef13927');
+INSERT INTO cemcloud.component_type (id, code, name, component_family_id) VALUES ('6d68840e-885c-4810-a83e-fc90751ddd1f', 'POWER_TO_HEAT', 'Elektroheizung', '4a8f05ba-0a71-46b9-9a13-920b6ef13927');
+INSERT INTO cemcloud.component_type (id, code, name, component_family_id) VALUES ('75313532-1a59-4d58-9411-582c31a72dc1', 'PRICE_CONTROLLER', 'Preis Kontroller', 'de47c234-b3f8-4cce-afe1-f6bdc1e04f98');
+INSERT INTO cemcloud.component_type (id, code, name, component_family_id) VALUES ('7ca8d06a-b721-41f1-9b1b-4353143173d8', 'PV_PLANT', 'PV-Anlage', '4a8f05ba-0a71-46b9-9a13-920b6ef13927');
+INSERT INTO cemcloud.component_type (id, code, name, component_family_id) VALUES ('b0fadcc6-a37e-4475-916f-61c88d1194fc', 'HEAT_PUMP', 'Wärmepumpe', '4a8f05ba-0a71-46b9-9a13-920b6ef13927');
+INSERT INTO cemcloud.component_type (id, code, name, component_family_id) VALUES ('c9bc1d48-e607-4495-ab1c-4d986800c88c', 'EV_CHARGER', 'Ladestation', '4a8f05ba-0a71-46b9-9a13-920b6ef13927');
+INSERT INTO cemcloud.component_type (id, code, name, component_family_id) VALUES ('cb289649-415d-4ba4-b3f3-2f782767ae29', 'RELAIS', 'Relais', '977766a0-5772-402c-adf4-606ccff41421');
+INSERT INTO cemcloud.component_type (id, code, name, component_family_id) VALUES ('dafbcf42-8976-4d8e-a166-1dc085b45510', 'COVERAGE_CONTROLLER', 'Abdeckungs Kontroller', 'de47c234-b3f8-4cce-afe1-f6bdc1e04f98');
+INSERT INTO cemcloud.component_type (id, code, name, component_family_id) VALUES ('e8d627fb-1956-4a95-8c5c-055e0d3a0959', 'HOUSHOLD_APPLIANCES', 'Haushaltsgerät', '4a8f05ba-0a71-46b9-9a13-920b6ef13927');

@@ -1,0 +1,1 @@
+INSERT INTO cemcloud.installation_credentials (id, backend_token, is_superuser, mqtt_password, serial_number) VALUES ('462150a0-1088-4575-9f48-1f2931232512', null, false, '$2a$10$jLwCMjZhf5ePO88bsBYGw.Sa8CWsmx3LPFXSTbrnkF4jTHU.HR4F.', 'cem-cloud-backend');
