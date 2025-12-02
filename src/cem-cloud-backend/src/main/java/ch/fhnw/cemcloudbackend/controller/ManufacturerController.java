@@ -17,7 +17,7 @@ import java.util.stream.StreamSupport;
 @RequestMapping("manufacturers")
 public class ManufacturerController {
 
-    private ManufacturerRepository manufacturers;
+    private final ManufacturerRepository manufacturers;
 
     public ManufacturerController(ManufacturerRepository manufacturers) {
         this.manufacturers = manufacturers;

@@ -21,6 +21,7 @@ import java.util.stream.StreamSupport;
 @RestController
 @RequestMapping("smartgridready")
 public class SmartGridReadyController extends BaseController {
+
     private final SmartGridReadyXmlRepository smartGridReadyXmlRepository;
     private final SmartGridreadyRepository smartGridreadyRepository;
 

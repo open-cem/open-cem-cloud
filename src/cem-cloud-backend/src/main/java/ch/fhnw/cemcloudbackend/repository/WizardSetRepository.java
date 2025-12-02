@@ -1,7 +1,6 @@
 package ch.fhnw.cemcloudbackend.repository;
 
 import ch.fhnw.cemcloudbackend.configuration.ApplicationProperties;
-import ch.fhnw.cemcloudbackend.entity.Installation;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,14 +11,18 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class WizardSetRepository {
 
     private static final String IMAGES_FOLDER_NAME = "images";
     private static final String SETS_FOLDER_NAME = "sets";
+
     private final Path uploadDirPath;
 
     public WizardSetRepository(ApplicationProperties applicationProperties) {
-        uploadDirPath = Paths.get(applicationProperties.uploadDirectory())
+        this.uploadDirPath = Paths.get(applicationProperties.getUploadDirectory())
                 .toAbsolutePath()
                 .normalize()
                 .resolve(SETS_FOLDER_NAME);

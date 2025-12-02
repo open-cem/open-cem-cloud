@@ -8,12 +8,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.codec.Utf8;
 
-public class Mqtt extends MqttConfig{
+public class Mqtt extends MqttConfig {
 
     private final Logger logger = LoggerFactory.getLogger(Mqtt.class);
 
     public Mqtt(ApplicationProperties applicationProperties) {
-        super(applicationProperties.mqttHost(), applicationProperties.mqttUsername(), applicationProperties.mqttPassword());
+        super(applicationProperties.getMqttHost(), applicationProperties.getMqttUsername(), applicationProperties.getMqttPassword());
     }
 
     public void sendMessage(String topic, String content) {

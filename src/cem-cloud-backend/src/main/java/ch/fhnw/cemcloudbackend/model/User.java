@@ -38,6 +38,7 @@ public class User {
                      .anyMatch(userRoles::contains);
     }
 
+    @SuppressWarnings("unchecked")
     private Collection<String> getRoles() {
         var attributes = auth.getTokenAttributes();
         Map<String, Object> access = (Map<String, Object>) attributes.get(REALM_ACCESS_CLAIM_NAME);

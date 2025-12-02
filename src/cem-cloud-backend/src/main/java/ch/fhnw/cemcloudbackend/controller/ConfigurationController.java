@@ -14,6 +14,7 @@ import ch.fhnw.cemcloudbackend.repository.InstallationRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.introspector.Property;
 import org.yaml.snakeyaml.nodes.NodeTuple;
@@ -62,6 +63,11 @@ public class ConfigurationController {
     }
 
     public class OmitTypesRepresenter extends Representer {
+
+        public OmitTypesRepresenter() {
+            super(new DumperOptions());
+        }
+
         @Override
         protected NodeTuple representJavaBeanProperty(Object javaBean, Property property,
                                                       Object propertyValue, Tag customTag) {

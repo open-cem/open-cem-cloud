@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jdk-alpine
+FROM eclipse-temurin:21-jdk-alpine
 LABEL authors="Aaron Müller, Nils Stutz"
 ARG JAR_FILE=build/libs/*.jar
 

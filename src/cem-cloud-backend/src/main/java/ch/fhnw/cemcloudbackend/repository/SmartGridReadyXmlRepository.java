@@ -1,7 +1,6 @@
 package ch.fhnw.cemcloudbackend.repository;
 
 import ch.fhnw.cemcloudbackend.configuration.ApplicationProperties;
-import ch.fhnw.cemcloudbackend.entity.Installation;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,13 +8,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
-import java.util.UUID;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class SmartGridReadyXmlRepository {
+
     private final Path uploadDirPath;
 
     public SmartGridReadyXmlRepository(ApplicationProperties applicationProperties) {
-        uploadDirPath = Paths.get(applicationProperties.uploadDirectory())
+        this.uploadDirPath = Paths.get(applicationProperties.getUploadDirectory())
                 .toAbsolutePath()
                 .normalize()
                 .resolve("smartgridready");

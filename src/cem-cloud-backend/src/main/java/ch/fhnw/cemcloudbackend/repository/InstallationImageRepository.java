@@ -10,11 +10,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class InstallationImageRepository {
+
     private final Path uploadDirPath;
 
     public InstallationImageRepository(ApplicationProperties applicationProperties) {
-        uploadDirPath = Paths.get(applicationProperties.uploadDirectory()).toAbsolutePath().normalize();
+        this.uploadDirPath = Paths.get(applicationProperties.getUploadDirectory())
+                .toAbsolutePath()
+                .normalize();
     }
 
     public void save(Installation installation, String filename, InputStream imageStream) throws IOException {

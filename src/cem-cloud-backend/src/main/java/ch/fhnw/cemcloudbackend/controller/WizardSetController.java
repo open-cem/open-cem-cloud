@@ -24,15 +24,13 @@ import java.util.stream.Collectors;
 @RequestMapping("sets")
 public class WizardSetController extends BaseController {
 
-    private WizardSetRepository sets;
-    private ModelRepository models;
-    private CommunicationChannelTypeRepository channelTypes;
-    private ComponentTypeRepository componentTypes;
-    private ComponentParameterMetaRepository componentParameterMeta;
-    private CommunicationChannelParameterMetaRepository channelParameterMeta;
-    private SmartGridreadyRepository smartGridreadyRepository;
-
-    private final InstallationRepository installations;
+    private final WizardSetRepository sets;
+    private final ModelRepository models;
+    private final CommunicationChannelTypeRepository channelTypes;
+    private final ComponentTypeRepository componentTypes;
+    private final ComponentParameterMetaRepository componentParameterMeta;
+    private final CommunicationChannelParameterMetaRepository channelParameterMeta;
+    private final SmartGridreadyRepository smartGridreadyRepository;
 
     public WizardSetController(WizardSetRepository sets,
                                ModelRepository models,
@@ -40,8 +38,7 @@ public class WizardSetController extends BaseController {
                                ComponentTypeRepository componentTypes,
                                ComponentParameterMetaRepository componentParameterMeta,
                                CommunicationChannelParameterMetaRepository channelParameterMeta,
-                               SmartGridreadyRepository smartGridreadyRepository,
-                               InstallationRepository installations) {
+                               SmartGridreadyRepository smartGridreadyRepository) {
         this.sets = sets;
         this.models = models;
         this.channelTypes = channelTypes;
@@ -49,7 +46,6 @@ public class WizardSetController extends BaseController {
         this.componentParameterMeta = componentParameterMeta;
         this.channelParameterMeta = channelParameterMeta;
         this.smartGridreadyRepository = smartGridreadyRepository;
-        this.installations = installations;
     }
 
     @GetMapping()
