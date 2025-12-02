@@ -1,9 +1,9 @@
 {
   "oidcConfig": {
-    "authority": "https://cem-cloud-p5.ch:2000/realms/cem-cloud/",
+    "authority": "https://cem-cloud.example.org:2000/realms/cem-cloud/",
     "client_id": "react-app",
     "scope": "openid",
-    "redirect_uri": "https://cem-cloud-p5.ch"
+    "redirect_uri": "https://cem-cloud.example.org"
   },
-  "apiUri": "https://cem-cloud-p5.ch/api/"
+  "apiUri": "https://cem-cloud.example.org/api/"
 }

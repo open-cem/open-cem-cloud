@@ -29,28 +29,28 @@ Der Keycloak Server ist im Browser erreichbar und kann mit dem User `admin` und 
         - client-ID: `react-app`
     - Capability config:
         - Client authentication: off
-		- Authorization: off
-		- Standard flow: checked
-		- Direct access grants: checked
+        - Authorization: off
+        - Standard flow: checked
+        - Direct access grants: checked
     - Login settings:
         - Root URL: http://localhost:3000/
-		- Valid redirect URIs: http://localhost:3000
-		- Web origins: http://localhost:3000
+        - Valid redirect URIs: http://localhost:3000
+        - Web origins: http://localhost:3000
 3. Einen User erstellen:
     - Username: max
-    	- email: max.muster@students.fhnw.ch
-	    - Email verified: Yes
-	    - First name: Max
-	    - Last name: Muster
+        - email: max.muster@students.fhnw.ch
+        - Email verified: Yes
+        - First name: Max
+        - Last name: Muster
     - User Details:
-	    - Credentials:
-		    - Password ***
-		    - Temporary: Off
+        - Credentials:
+            - Password ***
+            - Temporary: Off
 4. Rollen erstellen:
-	- Realm Rolle: Administrator
-	- Realm Rolle: Installateur
-	- Client Scopes
-		- roles
-			- Mappers
-				- realm roles
-					- Add to ID token: on
+    - Realm Rolle: Administrator
+    - Realm Rolle: Installateur
+    - Client Scopes
+        - roles
+            - Mappers
+                - realm roles
+                    - Add to ID token: on

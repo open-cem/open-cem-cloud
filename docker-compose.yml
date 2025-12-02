@@ -1,5 +1,3 @@
-version: '3.1'
-
 services:
   db:
     container_name: db
@@ -31,7 +29,6 @@ services:
       KC_HTTPS_CERTIFICATE_FILE: /etc/x509/https/tls.crt
       KC_HTTPS_CERTIFICATE_KEY_FILE: /etc/x509/https/tls.key
     command: start --hostname-port=2000
-      
     volumes:
       - ./certs/fullchain.pem:/etc/x509/https/tls.crt
       - ./certs/privkey.pem:/etc/x509/https/tls.key
@@ -46,11 +43,11 @@ services:
       - db
     restart: always
   backend:
-    image: ghcr.io/stuni907/backend-image:latest
+    image: ghcr.io/open-cem/opencem-cloud-backend:latest
     depends_on:
       - auth
     environment:
-      MYSQLHOST:  ${MYSQLHOST}
+      MYSQLHOST: ${MYSQLHOST}
       DBUSERNAME: ${DB_USERNAME}
       DBPASSWORD: ${DB_PASSWORD}
       HOST: ${HOST}
@@ -63,7 +60,7 @@ services:
     volumes:
       - ./uploads:/uploads
   frontend:
-    image: ghcr.io/stuni907/frontend-image:latest
+    image: ghcr.io/open-cem/opencem-cloud-frontend:latest
     depends_on:
       - backend
     ports:
@@ -73,7 +70,6 @@ services:
       - ./nginx/:/etc/nginx/conf.d/:ro
       - ./certs/fullchain.pem:/etc/nginx/ssl/fullchain.pem
       - ./certs/privkey.pem:/etc/nginx/ssl/privkey.pem
-
     restart: always
 volumes:
   db-data:

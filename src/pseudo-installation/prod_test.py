@@ -8,11 +8,11 @@ import requests
 installation = "7b4359c1-2d9a-4394-8b7a-a78ad9386a13"
 password = "VR3E3hgtIUARKLZ4lG@ICzuCibsg9gje8Ah5erFZAA0f1ZUfCoGawdx1J4Pr"
 token = "EYA%23Ynl85KWbVXeo4XTF2hE4a9cKkg6qQH2%40D%23WqA%2AaAsgSTOjdTmOWaxoV5"
-backendurl = "https://cem-cloud-p5.ch/api"
+backendurl = "https://cem-cloud.example.org/api"
 
 
 # Environment variables
-broker = "cem-cloud-p5.ch"
+broker = "cem-cloud.example.org"
 port = 1883
 
 def getConfig():
@@ -23,10 +23,6 @@ def getConfig():
     else:
         print("Error while getting configuration from backend")
         return None
-
-
-
-
 
 def on_connect(client, userdata, flags, rc, properties=None):
     client.subscribe("installations/" + installation, qos=1)
@@ -47,7 +43,6 @@ def on_message(client, userdata, msg):
             print("Got configuration from backend")
             print(config)
 
-
 def connect():
     # using MQTT version 5 here, for 3.1.1: MQTTv311, 3.1: MQTTv31
     # userdata is user defined data of any type, updated by user_data_set()
@@ -63,11 +58,9 @@ def connect():
     # Connect read only
     client.connect(broker, port)
     
-
     # setting callbacks, use separate functions like above for better visibility
     client.on_subscribe = on_subscribe
     client.on_message = on_message
-
 
     client.loop_forever()
 
