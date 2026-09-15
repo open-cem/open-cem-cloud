@@ -14,25 +14,29 @@ env:
 jobs:
   build-and-test-backend:
     runs-on: ubuntu-latest
+    # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
+    permissions:
+      checks: write
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Start Docker Compose
         run: docker compose -f ./docker-compose-dev.yml up -d
 
       - name: Set up JDK
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           java-version: 21
           distribution: temurin
 
       - name: Run Gradle Tests
-        run: chmod +x ./gradlew && ./gradlew clean test
+        run: chmod +x ./gradlew && ./gradlew test
         working-directory: ./src/cem-cloud-backend
 
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v3
+        uses: mikepenz/action-junit-report@v6
         if: success() || failure() # always run even if the previous step fails
         with:
           report_paths: '**/build/test-results/test/TEST-*.xml'
@@ -45,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Set up Node.js
       uses: actions/setup-node@v6
@@ -70,10 +74,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Set up JDK
-      uses: actions/setup-java@v5
+      uses: actions/setup-java@v6
       with:
         java-version: 21
         distribution: temurin
@@ -92,7 +96,7 @@ jobs:
       run: docker build -t opencem-cloud-frontend ./src/cem-cloud-frontend
 
     - name: 'Login to GitHub Container Registry'
-      uses: docker/login-action@v3
+      uses: docker/login-action@v4
       with:
         registry: ghcr.io
         username: ${{github.actor}}
@@ -119,7 +123,7 @@ jobs:
 
     - name: SSH into server and run docker-compose
       if: false
-      uses: appleboy/ssh-action@v1.2.4
+      uses: appleboy/ssh-action@v1.2.5
       with:
         host: ${{ secrets.SERVER_IP }}
         username: ${{ secrets.SERVER_USERNAME }}

@@ -1,7 +1,7 @@
 services:
   db:
     container_name: db
-    image: mysql
+    image: mysql:8
     command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_DATABASE: cemcloud
@@ -13,7 +13,7 @@ services:
     volumes:
       - db-data:/var/lib/mysql
   auth:
-    image: quay.io/keycloak/keycloak:latest
+    image: quay.io/keycloak/keycloak:26.7
     depends_on:
       - db
     ports:
@@ -34,7 +34,7 @@ services:
       - ./certs/privkey.pem:/etc/x509/https/tls.key
   mqtt:
     container_name: mqtt
-    image: iegomez/mosquitto-go-auth
+    image: iegomez/mosquitto-go-auth:3.0.0-mosquitto_2.0.18
     ports:
       - 1883:1883
     volumes:

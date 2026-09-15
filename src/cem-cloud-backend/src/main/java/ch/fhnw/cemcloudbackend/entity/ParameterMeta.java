@@ -14,10 +14,14 @@ public abstract class ParameterMeta {
     @Column(columnDefinition = "VARCHAR(36)")
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID id;
+
     private String name;
+
     private String label;
+
     @Enumerated(EnumType.STRING)
     private ParameterType type;
+
     @Enumerated(EnumType.STRING)
     private ParameterType listType;
 

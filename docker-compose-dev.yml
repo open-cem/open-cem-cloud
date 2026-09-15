@@ -1,6 +1,6 @@
 services:
   db:
-    image: mysql
+    image: mysql:8
     command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
@@ -10,13 +10,13 @@ services:
       - ./src/mysql/dev:/docker-entrypoint-initdb.d
       - db-data:/var/lib/mysql
   mqtt:
-    image: iegomez/mosquitto-go-auth
+    image: iegomez/mosquitto-go-auth:3.0.0-mosquitto_2.0.18
     ports:
       - 1883:1883
     volumes:
       - ./src/mqtt-broker:/etc/mosquitto
   auth:
-    image: quay.io/keycloak/keycloak:latest
+    image: quay.io/keycloak/keycloak:26.7
     ports:
       - 2000:8080
     environment:

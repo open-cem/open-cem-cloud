@@ -1,6 +1,7 @@
 # CEM-Cloud
 
 ## Development
+
 Per Docker Compose kann eine Entwicklungsumgebung bestehend aus einem Keycloak Authentifizierungsserver, einem MySQL Datenbankserver und einem MQTT Broker gestartet werden. Das CEM-Cloud Backend kann als [Spring Applikation](src/cem-cloud-backend/src/main/java/ch/fhnw/cemcloudbackend/CemCloudBackendApplication.java) lokal gestartet werden. Das CEM-Cloud Backend kann als [React Applikation](src/cem-cloud-frontend/package.json) lokal gestartet werden.
 
 Mit dem folgenden Befehl kann die Docker Compose Entwicklungsumgebung gestartet werden:
@@ -16,11 +17,13 @@ docker-compose -f .\docker-compose-dev.yml up
 | Mosquitto | http://localhost:1883/ |
 | MySQL | localhost:3306 |
 
-### Mysql
+### MySQL
+
 Benötigte Daten für die MySQL Datenbank sind unter src/mysql/seed zu finden. 
 Diese können der Nummerierung nach in der Datenbank importiert werden. 
 
 ### Keycloak
+
 Der Keycloak Server ist im Browser erreichbar und kann mit dem User `admin` und Passwort `admin` konfiguriert werden. Damit das React Frontend verwendet werden kann müssen im Keycloak folgende Einstellungen gemacht werden:
 
 1. Realm mit dem Namen `cem-cloud` erstellen.

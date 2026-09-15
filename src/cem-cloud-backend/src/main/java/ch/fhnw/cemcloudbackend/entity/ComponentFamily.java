@@ -13,6 +13,7 @@ public class ComponentFamily {
     @Column(columnDefinition = "VARCHAR(36)")
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID id;
+
     private String name;
 
     private boolean isHardwareComponent;

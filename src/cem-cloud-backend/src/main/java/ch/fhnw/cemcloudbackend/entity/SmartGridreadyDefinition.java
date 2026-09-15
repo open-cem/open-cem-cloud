@@ -13,6 +13,7 @@ public class SmartGridreadyDefinition {
     @Column(columnDefinition = "VARCHAR(36)")
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID id;
+
     private String fileName;
 
     public UUID getId() {

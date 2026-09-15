@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -31,6 +32,7 @@ public class WizardSetController extends BaseController {
     private final ComponentParameterMetaRepository componentParameterMeta;
     private final CommunicationChannelParameterMetaRepository channelParameterMeta;
     private final SmartGridreadyRepository smartGridreadyRepository;
+    private final Constructor predefinedSetConstructor;
 
     public WizardSetController(WizardSetRepository sets,
                                ModelRepository models,
@@ -46,6 +48,7 @@ public class WizardSetController extends BaseController {
         this.componentParameterMeta = componentParameterMeta;
         this.channelParameterMeta = channelParameterMeta;
         this.smartGridreadyRepository = smartGridreadyRepository;
+        this.predefinedSetConstructor = new Constructor(PredefinedSet.class, new LoaderOptions());
     }
 
     @GetMapping()
@@ -84,7 +87,7 @@ public class WizardSetController extends BaseController {
             try {
                 Optional<byte[]> data = sets.loadFile(set, false);
                 if (data.isPresent()) {
-                    Yaml yaml = new Yaml(new Constructor(PredefinedSet.class));
+                    Yaml yaml = new Yaml(predefinedSetConstructor);
                     PredefinedSet predefinedSet = yaml.load(new String(data.get()));
 
                     neededFiles.addAll(getFiles(predefinedSet));
@@ -136,7 +139,7 @@ public class WizardSetController extends BaseController {
 
                 if (filename.endsWith(".yaml") || filename.endsWith(".yml")) {
                     try {
-                        Yaml yaml = new Yaml(new Constructor(PredefinedSet.class));
+                        Yaml yaml = new Yaml(predefinedSetConstructor);
                         PredefinedSet set = yaml.load(file.getInputStream());
 
                         errors.addAll(validateSet(set).stream().map(err -> filename + ": " + err).toList());
@@ -192,7 +195,7 @@ public class WizardSetController extends BaseController {
             try {
                 Optional<byte[]> data = sets.loadFile(set, false);
                 if (data.isPresent()) {
-                    Yaml yaml = new Yaml(new Constructor(PredefinedSet.class));
+                    Yaml yaml = new Yaml(predefinedSetConstructor);
                     PredefinedSet predefinedSet = yaml.load(new String(data.get()));
 
                     enrichPredefinedSet(predefinedSet);

@@ -17,7 +17,6 @@ public class InstallationAccess {
     @ManyToOne
     private Installation installation;
 
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(columnDefinition = "VARCHAR(36)")
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID userId;

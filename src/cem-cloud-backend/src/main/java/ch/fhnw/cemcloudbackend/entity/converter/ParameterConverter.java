@@ -6,13 +6,20 @@ import org.yaml.snakeyaml.Yaml;
 import java.util.Map;
 
 public class ParameterConverter implements AttributeConverter<Map<String, Object>, String> {
+
+    private final Yaml yaml;
+
+    public ParameterConverter() {
+        this.yaml = new Yaml();
+    }
+
     @Override
     public String convertToDatabaseColumn(Map<String, Object> attribute) {
         if (attribute == null) {
             return null;
         }
 
-        return new Yaml().dumpAsMap(attribute);
+        return yaml.dumpAsMap(attribute);
     }
 
     @Override
@@ -21,6 +28,6 @@ public class ParameterConverter implements AttributeConverter<Map<String, Object
             return null;
         }
 
-        return new Yaml().load(dbData);
+        return yaml.load(dbData);
     }
 }

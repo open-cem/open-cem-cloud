@@ -55,8 +55,7 @@ public class ConfigurationController {
 
         Configuration configuration = buildConfiguration(installation.get());
 
-
-        Yaml yaml = new Yaml(new OmitTypesRepresenter());
+        Yaml yaml = new Yaml(new OmitTypesRepresenter(), new DumperOptions());
         String result = yaml.dumpAsMap(configuration);
 
         return ResponseEntity.ok(result);
@@ -85,10 +84,9 @@ public class ConfigurationController {
             Set<Property> propertySet;
             if (typeDefinitions.containsKey(type)) {
                 propertySet = typeDefinitions.get(type).getProperties();
-            }else{
+            } else {
                 propertySet =  getPropertyUtils().getProperties(type);
             }
-
 
             List<Property> propsList = new ArrayList<>(propertySet);
             propsList.sort(new BeanPropertyComparator());
@@ -178,6 +176,4 @@ public class ConfigurationController {
                 communicationChannel.getParameter()
         )).toList();
     }
-
-
 }

@@ -13,8 +13,11 @@ public class ComponentType {
     @Column(columnDefinition = "VARCHAR(36)")
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID id;
+
     private String name;
+
     private String code;
+
     @ManyToOne
     private ComponentFamily componentFamily;
 

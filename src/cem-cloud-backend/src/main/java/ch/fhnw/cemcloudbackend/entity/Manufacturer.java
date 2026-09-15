@@ -14,6 +14,7 @@ public class Manufacturer {
     @Column(columnDefinition = "VARCHAR(36)")
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID id;
+
     private String name;
 
     @OneToMany(mappedBy = "manufacturer")

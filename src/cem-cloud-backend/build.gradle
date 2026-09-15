@@ -1,25 +1,38 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.0.13'
-    id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+    id 'io.github.ben-manes.versions'
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
 group = 'ch.fhnw'
-version = '0.1.0-SNAPSHOT'
+version = '0.2.0-SNAPSHOT'
 
 java {
-    sourceCompatibility = '21'
-    targetCompatibility = '21'
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 defaultTasks "bootRun"
 
 springBoot {
     mainClass = 'ch.fhnw.cemcloudbackend.CemCloudBackendApplication'
+}
+
+bootJar {
+    // hardcoded jar name due to CMD in Dockerfile
+    archiveFileName = 'cem-cloud-backend.jar'
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 dependencies {
@@ -29,11 +42,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
-    implementation 'com.hivemq:hivemq-mqtt-client:1.2.2'
+    implementation "com.hivemq:hivemq-mqtt-client:${mqttVersion}"
     implementation 'org.yaml:snakeyaml'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    developmentOnly 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+    developmentOnly "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocVersion}"
 
     runtimeOnly 'com.mysql:mysql-connector-j'
     runtimeOnly 'com.h2database:h2'
@@ -42,11 +55,6 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-tasks.named('test') {
+test {
     useJUnitPlatform()
-}
-
-jar {
-    archiveBaseName = 'cem-cloud-backend'
-    archiveVersion =  '0.1.0'
 }

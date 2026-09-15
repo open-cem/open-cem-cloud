@@ -15,9 +15,12 @@ public class Component {
     @Column(columnDefinition = "VARCHAR(36)")
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID id;
+
     private String name;
+
     @ManyToOne
     private ComponentType type;
+
     @Convert(converter = ParameterConverter.class)
     private Map<String, Object> parameter;
 

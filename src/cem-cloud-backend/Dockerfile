@@ -1,7 +1,6 @@
 FROM eclipse-temurin:21-jdk-alpine
 LABEL authors="Aaron Müller, Nils Stutz"
-ARG JAR_FILE=build/libs/*.jar
 
-COPY ${JAR_FILE} app.jar
+COPY ./build/libs/cem-cloud-backend.jar cem-cloud-backend.jar
 
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+ENTRYPOINT ["java", "-jar", "/cem-cloud-backend.jar"]
